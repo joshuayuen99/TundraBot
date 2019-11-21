@@ -1,0 +1,19 @@
+{
+  "name": "discordbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joshuayuen99/discordbot.git"
+  },
+  "author": "Joshua Yuen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joshuayuen99/discordbot/issues"
+  },
+  "homepage": "https://github.com/joshuayuen99/discordbot#readme"
+}
