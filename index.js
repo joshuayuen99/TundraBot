@@ -1,6 +1,8 @@
 const { Client, RichEmbed, Collection } = require("discord.js");
 const { config } = require("dotenv");
 const fs = require("fs");
+const { stripIndents } = require("common-tags");
+const { formatDate } = require("./functions.js");
 
 const client = new Client({
     disableEveryone: false
@@ -83,7 +85,29 @@ client.on("message", async message => {
     }
     */
 
-    if(!message.guild) return message.channel.send("Message my master TundraBuddy#4650 instead!");  // if the message was not sent in a server
+    if(!message.guild) {
+        const ownerID = "114848659891290118";
+        const owner = await client.fetchUser(ownerID);
+        const messageAuthor = message.author;
+        const messageContent = message.content;
+
+        const embedMsg = new RichEmbed()
+            .setColor("#0d6adb")
+            .setTimestamp()
+            .setFooter(message.author.username, message.author.displayAvatarURL)
+
+            .setDescription("Attempted DM")
+            .addField("User information", stripIndents`**\\> ID:** ${message.author.id}
+            **\\> Username:** ${message.author.username}
+            **\\> Discord Tag:** ${message.author.tag}
+            **\\> Created account:** ${formatDate(message.author.createdAt)}`, true)
+
+            .addField("DM:", messageContent);
+
+        owner.send(embedMsg);
+
+        return message.channel.send("Message my master TundraBuddy#4650 instead!");  // if the message was not sent in a server
+    }
     if(!message.content.startsWith(prefix)) return; // if the message did not contain the command prefix
     if(!message.member) message.member = await message.guild.fetchMember(message.member);
 
