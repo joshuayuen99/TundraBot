@@ -1,0 +1,45 @@
+const { RichEmbed } = require("discord.js");
+const { getMember, formatDate } = require("../../functions.js");
+const { stripIndents } = require("common-tags");
+
+module.exports = {
+    name: "whois",
+    aliases: ["userinfo"],
+    category: "info",
+    description: "Returns user information",
+    usage: "<username | id | mention>",
+    run: async (client, message, args) => {
+        const member = getMember(message, args.join(" "));
+
+        // Member variables
+        const joined = formatDate(member.joinedAt);
+        const roles = member.roles
+        .filter(r => r.id !== message.guild.id) // Filters out the @everyone role
+        .map(r => r)
+        .join(", ") || "none";
+
+        // User variables
+        const created = formatDate(member.user.createdAt);
+
+        const embedMsg = new RichEmbed()
+            .setFooter(member.displayName, member.user.displayAvatarURL)
+            .setThumbnail(member.user.displayAvatarURL)
+            .setColor(member.displayHexColor === "#000000" ? "ffffff" : member.displayHexColor)
+            .setDescription(`${member}`)
+
+            .addField("Member information", stripIndents`**\\> Display name:** ${member.displayName}
+            **\\> Joined the server:** ${joined}
+            **\\> Roles: ** ${roles}`, true)
+
+            .addField("User information", stripIndents`**\\> ID:** ${member.user.id}
+            **\\> Username:** ${member.user.username}
+            **\\> Discord Tag:** ${member.user.tag}
+            **\\> Created account:** ${created}`, true)
+
+            .setTimestamp()
+        if(member.user.presence.game)
+            embedMsg.addField("Currently playing", stripIndents`**\\>** ${member.user.presence.game.name}`);
+
+        return message.channel.send(embedMsg);
+    }
+};

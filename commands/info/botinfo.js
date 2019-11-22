@@ -1,0 +1,19 @@
+const { RichEmbed } = require("discord.js");
+
+module.exports = {
+    name: "botinfo",
+    category: "info",
+    description: "Returns information about the bot",
+    run: async (client, message, args) => {
+        const bicon = client.user.displayAvatarURL;
+
+        const embedMsg = new RichEmbed()
+            .setDescription("Bot information")
+            .setColor("#0b7ed6")
+            .setThumbnail(bicon)
+            .addField("Bot name", client.user.username)
+            .addField("Created at", client.user.createdAt);
+
+        return message.channel.send(embedMsg);
+    }
+};
