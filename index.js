@@ -85,15 +85,17 @@ client.on("message", async message => {
     }
     */
 
+    // If the message was not sent in a server
     if(!message.guild) {
         const ownerID = "114848659891290118";
         const owner = await client.fetchUser(ownerID);
         const messageAuthor = message.author;
         const messageContent = message.content;
+        const messageAttachments = message.attachments;
 
         const embedMsg = new RichEmbed()
             .setColor("#0d6adb")
-            .setTimestamp()
+            .setTimestamp(message.createdAt)
             .setFooter(message.author.username, message.author.displayAvatarURL)
 
             .setDescription("Attempted DM")
@@ -102,11 +104,19 @@ client.on("message", async message => {
             **\\> Discord Tag:** ${message.author.tag}
             **\\> Created account:** ${formatDate(message.author.createdAt)}`, true)
 
-            .addField("DM:", messageContent);
+        if(messageContent) {    // If there is text in the DM
+            embedMsg.addField("Text:", messageContent)
+        }
+        if(messageAttachments.first()) { // If there is an attachment in the DM
+            let attachments = messageAttachments.find(attachment => attachment.id).url;
+
+            embedMsg.addField("Attachments:", attachments)
+            embedMsg.setImage(attachments);
+        }
 
         owner.send(embedMsg);
 
-        return message.channel.send("Message my master TundraBuddy#4650 instead!");  // if the message was not sent in a server
+        return message.channel.send("Message my master TundraBuddy#4650 instead!");
     }
     if(!message.content.startsWith(prefix)) return; // if the message did not contain the command prefix
     if(!message.member) message.member = await message.guild.fetchMember(message.member);
