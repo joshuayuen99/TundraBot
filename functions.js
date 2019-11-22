@@ -9,7 +9,7 @@ module.exports = {
             target = message.mentions.members.first();
         }
 
-        // Searches for people in the server with a matching nickname or tag
+        // Searches for people in the server with a matching nickname or "name#tag"
         if(!target && toFind) {
             target = message.guild.members.find(member => {
                 return member.displayName.toLowerCase().includes(toFind) ||

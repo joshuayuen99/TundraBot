@@ -13,11 +13,11 @@ module.exports = {
 
         // If the reported member couldn't be found
         if(!rMember)
-            return message.reply("Couldn't find that person").then(m => m.delete(5000));
+            return message.reply("Couldn't find that person.").then(m => m.delete(5000));
 
         // If the reported member has permission to ban, or is a bot
         if(rMember.hasPermission("BAN_MEMBERS") || rMember.user.bot)
-            return message.reply("Can't report that member").then(m => m.delete(5000));
+            return message.reply("They can't be reported by the likes of you.").then(m => m.delete(5000));
         
         // If there was no reason specified
         if(!args[1])
@@ -26,7 +26,7 @@ module.exports = {
         const channel = message.guild.channels.find(channel => channel.name === "admin");
 
         if(!channel)
-            return message.channel.send("I couldn't find an #admin channel").then(m => m.delete(5000));
+            return message.channel.send("I couldn't find the #admin channel.").then(m => m.delete(5000));
 
         const embedMsg = new RichEmbed()
             .setColor("#ff0000")

@@ -32,18 +32,18 @@ module.exports = {
             .addField(result, `${reacted} vs ${botChoice}`)
 
         msg.edit(embedMsg);
-
-        function getResult(me, botChosen) {
-            // User wins
-            if((me === ROCK && botChosen === SCISSORS) ||
-                (me === PAPER && botChosen === ROCK) ||
-                (me === SCISSORS && botChosen === PAPER)) {
-                    return "You won!";
-                } else if(me === botChosen) {
-                    return "It's a tie!";
-                } else {
-                    return "You lost!";
-                }
-        }
     }
 };
+
+function getResult(me, botChosen) {
+    // User wins
+    if((me === ROCK && botChosen === SCISSORS) ||
+        (me === PAPER && botChosen === ROCK) ||
+        (me === SCISSORS && botChosen === PAPER)) {
+            return "You won!";
+        } else if(me === botChosen) {
+            return "It's a tie!";
+        } else {
+            return "You lost!";
+        }
+}

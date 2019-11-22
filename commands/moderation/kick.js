@@ -26,13 +26,13 @@ module.exports = {
 
         // No author permission
         if(!message.member.hasPermission("KICK_MEMBERS")) {
-            return message.reply("You do not have permission to kick members!")
+            return message.reply("Nice try guy, you don't have permission to kick people.")
                 .then(m => m.delete(5000));
         }
 
         // No bot permission
         if(!message.guild.me.hasPermission("KICK_MEMBERS")) {
-            return message.reply("I do not have permission to kick members!")
+            return message.reply("I don't have permission to kick people!")
                 .then(m => m.delete(5000));
         }
 
@@ -46,7 +46,7 @@ module.exports = {
 
         // Can't kick yourself
         if(kMember.id === message.author.id) {
-            return message.reply("Don't kick yourself...")
+            return message.reply("Don't kick yourself...It'll be alright.")
                 .then(m => m.delete(5000));
         }
 
@@ -58,7 +58,7 @@ module.exports = {
 
         // If user isn't kickable (role difference)
         if(!kMember.kickable) {
-            return message.reply("That user isn't kickable!")
+            return message.reply("They can't be kicked by the likes of you.")
                 .then(m => m.delete(5000));
         }
 
@@ -90,7 +90,7 @@ module.exports = {
             } else if(emoji === "\u2716") { // "X" emoji
                 msg.delete();
 
-                message.reply("Kick canceled...")
+                message.reply("Kick cancelled...")
                     .then(m => m.delete(5000));
             }
         })

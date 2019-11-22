@@ -2,6 +2,7 @@ const { RichEmbed } = require("discord.js");
 
 module.exports = {
     name: "botinfo",
+    alias: ["info"],
     category: "info",
     description: "Returns information about the bot",
     usage: "botinfo",
@@ -13,6 +14,7 @@ module.exports = {
             .setColor("#0b7ed6")
             .setThumbnail(bicon)
             .addField("Bot name", client.user.username)
+            .addField("My owner", "TundraBuddy#4650")
             .addField("Created at", client.user.createdAt);
 
         return message.channel.send(embedMsg);

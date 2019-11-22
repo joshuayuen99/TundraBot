@@ -10,7 +10,7 @@ config({
     path: __dirname + "/.env"
 });
 
-const prefix = "_";
+const prefix = "~";
 
 client.commands = new Collection();
 client.aliases = new Collection();
@@ -27,8 +27,8 @@ client.on("ready", () => {
     client.user.setPresence({
         status: "online",
         game: {
-            name: "me getting developed",
-            type: "WATCHING"
+            name: "~help",
+            type: "WATCHING",
         }
     });
 });
@@ -42,14 +42,15 @@ client.on("guildMemberRemove", async member => {
         .setColor("#0b7ed6")
         .setThumbnail(micon)
         .addField(`${member.user.username} joined`, member.joinedAt)
-        .addField("New total members", guild.memberCount);
+        .addField("New total members", guild.memberCount)
+        .setTimestamp();
     
     return guild.channels.find(channel => channel.name === "admin").send(embedMsg);
 });
 
 client.on("message", async message => {
     if(message.author.bot) return;  // if a bot sent the message
-    if(!message.guild) return;  // if the message was not sent in a server
+    if(!message.guild) return message.channel.send("Message my master TundraBuddy#4650 instead");  // if the message was not sent in a server
     if(!message.content.startsWith(prefix)) return; // if the message did not contain the command prefix
     if(!message.member) message.member = await message.guild.fetchMember(message.member);
 
