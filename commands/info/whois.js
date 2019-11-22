@@ -4,7 +4,7 @@ const { stripIndents } = require("common-tags");
 
 module.exports = {
     name: "whois",
-    aliases: ["userinfo"],
+    aliases: ["userinfo", "who"],
     category: "info",
     description: "Returns user information",
     usage: "<username | id | mention>",
@@ -14,9 +14,9 @@ module.exports = {
         // Member variables
         const joined = formatDate(member.joinedAt);
         const roles = member.roles
-        .filter(r => r.id !== message.guild.id) // Filters out the @everyone role
-        .map(r => r)
-        .join(", ") || "none";
+            .filter(r => r.id !== message.guild.id) // Filters out the @everyone role
+            .map(r => r)
+            .join(", ") || "none";
 
         // User variables
         const created = formatDate(member.user.createdAt);
@@ -26,6 +26,7 @@ module.exports = {
             .setThumbnail(member.user.displayAvatarURL)
             .setColor(member.displayHexColor === "#000000" ? "ffffff" : member.displayHexColor)
             .setDescription(`${member}`)
+            .setTimestamp()
 
             .addField("Member information", stripIndents`**\\> Display name:** ${member.displayName}
             **\\> Joined the server:** ${joined}
@@ -36,9 +37,10 @@ module.exports = {
             **\\> Discord Tag:** ${member.user.tag}
             **\\> Created account:** ${created}`, true)
 
-            .setTimestamp()
-        if(member.user.presence.game)
+        // If the user is currently playing a game
+        if(member.user.presence.game) {
             embedMsg.addField("Currently playing", stripIndents`**\\>** ${member.user.presence.game.name}`);
+        }
 
         return message.channel.send(embedMsg);
     }

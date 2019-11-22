@@ -9,6 +9,8 @@ config({
     path: __dirname + "/.env"
 });
 
+const prefix = "_";
+
 client.commands = new Map();
 client.aliases = new Map();
 
@@ -43,8 +45,6 @@ client.on("guildMemberRemove", async member => {
 });
 
 client.on("message", async message => {
-    const prefix = "_";
-
     if(message.author.bot) return;  // if a bot sent the message
     if(!message.guild) return;  // if the message was not sent in a server
     if(!message.content.startsWith(prefix)) return; // if the message did not contain the command prefix
