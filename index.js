@@ -3,7 +3,7 @@ const { config } = require("dotenv");
 const fs = require("fs");
 
 const client = new Client({
-    disableEveryone: true
+    disableEveryone: false
 });
 
 config({
@@ -39,7 +39,22 @@ client.on("guildMemberRemove", async member => {
 
     const embedMsg = new RichEmbed()
         .setDescription(`${member.user.username} left the server`)
-        .setColor("#0b7ed6")
+        .setColor("RED")
+        .setThumbnail(micon)
+        .addField(`${member.user.username} joined`, member.joinedAt)
+        .addField("New total members", guild.memberCount)
+        .setTimestamp();
+    
+    return guild.channels.find(channel => channel.name === "admin").send(embedMsg);
+});
+
+client.on("guildMemberAdd", async member => {
+    const guild = member.guild;
+    const micon = member.user.displayAvatarURL;
+
+    const embedMsg = new RichEmbed()
+        .setDescription(`${member.user.username} joined the server`)
+        .setColor("GREEN")
         .setThumbnail(micon)
         .addField(`${member.user.username} joined`, member.joinedAt)
         .addField("New total members", guild.memberCount)
@@ -50,7 +65,25 @@ client.on("guildMemberRemove", async member => {
 
 client.on("message", async message => {
     if(message.author.bot) return;  // if a bot sent the message
-    if(!message.guild) return message.channel.send("Message my master TundraBuddy#4650 instead");  // if the message was not sent in a server
+
+    // Will Sniper
+    if(message.author.id === "94164958056558592") {
+        if(message.attachments && !message.content) {
+            const sentMessage = await message.channel.send("@everyone POST THE DAMN SOURCE REEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+            sentMessage.pin();
+        }
+    }
+    /*
+    // Josh Sniper
+    if(message.author.id === "114848659891290118") {
+        if(message.attachments && !message.content) {
+            const sentMessage = await message.channel.send("@everyone POST THE DAMN SOURCE REEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+            sentMessage.pin();
+        }
+    }
+    */
+
+    if(!message.guild) return message.channel.send("Message my master TundraBuddy#4650 instead!");  // if the message was not sent in a server
     if(!message.content.startsWith(prefix)) return; // if the message did not contain the command prefix
     if(!message.member) message.member = await message.guild.fetchMember(message.member);
 
