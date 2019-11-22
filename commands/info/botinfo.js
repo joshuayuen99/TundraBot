@@ -2,7 +2,7 @@ const { RichEmbed } = require("discord.js");
 
 module.exports = {
     name: "botinfo",
-    aliases: ["info"],
+    aliases: ["info", "about"],
     category: "info",
     description: "Returns information about the bot",
     usage: "botinfo",
