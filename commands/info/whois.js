@@ -7,7 +7,7 @@ module.exports = {
     aliases: ["userinfo", "who"],
     category: "info",
     description: "Returns user information",
-    usage: "<username | id | mention>",
+    usage: "whois [username | id | mention]",
     run: async (client, message, args) => {
         const member = getMember(message, args.join(" "));
 

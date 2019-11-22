@@ -6,7 +6,7 @@ module.exports = {
     name: "kick",
     category: "moderation",
     decsription: "Kicks the member",
-    usage: "<mention | id>",
+    usage: "kick <mention | id> <reason>",
     run: async (client, message, args) => {
         const logChannel = message.guild.channels.find(channel => channel.name === "admin");
 

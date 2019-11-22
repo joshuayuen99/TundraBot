@@ -4,6 +4,7 @@ module.exports = {
     name: "serverinfo",
     category: "info",
     description: "Returns information about the server and when the user who requsted it joined",
+    usage: "serverinfo",
     run: async (client, message, args) => {
         const guild = message.guild;
         const sicon = guild.iconURL;
