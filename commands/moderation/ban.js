@@ -64,7 +64,7 @@ module.exports = {
         }
 
         const embedMsg = new RichEmbed()
-            .setColor("ff0000")
+            .setColor("RED")
             .setThumbnail(bMember.user.displayAvatarURL)
             .setFooter(message.member.displayName, message.author.displayAvatarURL)
             .setTimestamp()
