@@ -23,7 +23,7 @@ module.exports = {
             .setFooter(message.guild.name, message.guild.iconURL)
             .setAuthor("Suggestion by", message.author.displayAvatarURL)
             .setDescription(stripIndents`**\\> Member:** ${message.member} (${message.member.id})
-            **\\> Suggested in:** ${message.guild}'s ${message.channel}
+            **\\> Suggested in:** ${message.guild}'s ${message.channel} (${message.guild.id})
             **\\> Suggestion:** ${args.join(" ")}`);
 
         message.reply(`Thanks! Your suggestion has been sent to my creator ${process.env.OWNERNAME}${process.env.OWNERTAG}.`);
