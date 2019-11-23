@@ -50,7 +50,7 @@ client.on("guildMemberRemove", async member => {
         minute: "numeric",
         second: "numeric",
     };
-    const joined = new Intl.DateTimeFormat("en-US", options).format(member.user.createdAt);
+    const joined = new Intl.DateTimeFormat("en-US", options).format(member.joinedAt);
     const embedMsg = new RichEmbed()
         .setDescription(`${member.user.username} left the server`)
         .setColor("RED")
@@ -77,7 +77,7 @@ client.on("guildMemberAdd", async member => {
         minute: "numeric",
         second: "numeric",
     };
-    const joined = new Intl.DateTimeFormat("en-US", options).format(member.user.createdAt);
+    const joined = new Intl.DateTimeFormat("en-US", options).format(member.joinedAt);
     const embedMsg = new RichEmbed()
         .setDescription(`${member.user.username} joined the server`)
         .setColor("GREEN")
