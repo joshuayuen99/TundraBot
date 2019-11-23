@@ -10,6 +10,11 @@ module.exports = {
     run: async (client, message, args) => {
         const logChannel = message.guild.channels.find(channel => channel.name === "admin");
 
+        //const CONFIRM = "\u2611"; // Checkmark emoji
+        const CONFIRM = "💯";
+        //const CONFIRM = "\u1f4af";  // "100" emoji
+        const CANCEL = "\u274c";    // red "X" emoji
+
         if(message.deletable) message.delete();
 
         // No user specified
@@ -77,9 +82,9 @@ module.exports = {
             .setAuthor("This verification becomes invalid after 30s")
             .setDescription(`Do you want to kick ${kMember}?`)
         message.channel.send(promptEmbed).then(async msg => {
-            const emoji = await promptMessage(msg, message.author, 30, ["\u2611", "\u2716"]);
+            const emoji = await promptMessage(msg, message.author, 30, [CONFIRM, CANCEL]);
 
-            if(emoji === "\u2611") {    // "Check" emoji
+            if(emoji === CONFIRM) {
                 msg.delete();
 
                 kMember.kick(reason)
@@ -88,7 +93,7 @@ module.exports = {
                     });
 
                 logChannel.send(embedMsg);
-            } else if(emoji === "\u2716") { // "X" emoji
+            } else if(emoji === CANCEL) {
                 msg.delete();
 
                 message.reply("Kick cancelled...")
