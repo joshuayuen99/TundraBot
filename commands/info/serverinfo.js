@@ -2,8 +2,9 @@ const { RichEmbed } = require("discord.js");
 
 module.exports = {
     name: "serverinfo",
+    aliases: ["server"],
     category: "info",
-    description: "Returns information about the server and when the user who requsted it joined",
+    description: "Returns information about the server and when the user who requsted it joined.",
     usage: "serverinfo",
     run: async (client, message, args) => {
         const guild = message.guild;

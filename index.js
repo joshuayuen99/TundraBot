@@ -87,8 +87,7 @@ client.on("message", async message => {
 
     // If the message was not sent in a server
     if(!message.guild) {
-        const ownerID = "114848659891290118";
-        const owner = await client.fetchUser(ownerID);
+        const owner = await client.fetchUser(process.env.OWNERID);
         const messageAuthor = message.author;
         const messageContent = message.content;
         const messageAttachments = message.attachments;

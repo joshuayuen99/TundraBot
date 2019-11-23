@@ -4,7 +4,7 @@ module.exports = {
     name: "botinfo",
     aliases: ["info", "about"],
     category: "info",
-    description: "Returns information about the bot",
+    description: "Returns information about the bot.",
     usage: "botinfo",
     run: async (client, message, args) => {
         const bicon = client.user.displayAvatarURL;

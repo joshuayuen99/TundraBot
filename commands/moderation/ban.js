@@ -5,7 +5,7 @@ const { promptMessage } = require("../../functions.js");
 module.exports = {
     name: "ban",
     category: "moderation",
-    decsription: "Bans the member",
+    decsription: "Bans the member.",
     usage: "ban <mention | id> <reason>",
     run: async (client, message, args) => {
         const logChannel = message.guild.channels.find(channel => channel.name === "admin");

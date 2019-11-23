@@ -4,7 +4,7 @@ const { stripIndents } = require("common-tags");
 module.exports = {
     name: "report",
     category: "moderation",
-    description: "Reports a member",
+    description: "Reports a member.",
     usage: "report <mention | id> <reason>",
     run: async (client, message, args) => {
         if(message.deletable) message.delete();
