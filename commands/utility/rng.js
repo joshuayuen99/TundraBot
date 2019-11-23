@@ -25,8 +25,8 @@ module.exports = {
             .setColor(client.user.displayHexColor)
             .setFooter(message.guild.me.displayName, client.user.displayAvatarURL)
             .setTimestamp()
-            .setDescription(`Generated a random number from ${min}-${max}`)
-            .addField("Result", result);
+            .setDescription(`${DICE} Generated a random number from ${min}-${max} ${DICE}`)
+            .addField(`Result`, result);
 
         if(!(min < max)) {
             return message.reply("min must be smaller than max!");
