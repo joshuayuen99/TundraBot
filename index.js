@@ -35,30 +35,54 @@ client.on("ready", () => {
     });
 });
 
+// When someone leaves the guild
 client.on("guildMemberRemove", async member => {
     const guild = member.guild;
     const micon = member.user.displayAvatarURL;
-
+    const options = {
+        timeZone: "America/New_York",
+        hour12: true,
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+    };
+    const joined = new Intl.DateTimeFormat("en-US", options).format(member.user.createdAt);
     const embedMsg = new RichEmbed()
         .setDescription(`${member.user.username} left the server`)
         .setColor("RED")
         .setThumbnail(micon)
-        .addField(`${member.user.username} joined`, member.joinedAt)
+        .addField(`${member.user.username} joined`, `${joined} EST`)
         .addField("New total members", guild.memberCount)
         .setTimestamp();
     
     return guild.channels.find(channel => channel.name === "admin").send(embedMsg);
 });
 
+// When someone joins the guild
 client.on("guildMemberAdd", async member => {
     const guild = member.guild;
     const micon = member.user.displayAvatarURL;
-
+    const options = {
+        timeZone: "America/New_York",
+        hour12: true,
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+    };
+    const joined = new Intl.DateTimeFormat("en-US", options).format(member.user.createdAt);
     const embedMsg = new RichEmbed()
         .setDescription(`${member.user.username} joined the server`)
         .setColor("GREEN")
         .setThumbnail(micon)
-        .addField(`${member.user.username} joined`, member.joinedAt)
+        .addField(`${member.user.username} joined`, `${joined} EST`)
         .addField("New total members", guild.memberCount)
         .setTimestamp();
     

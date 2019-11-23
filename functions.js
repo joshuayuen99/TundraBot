@@ -26,7 +26,7 @@ module.exports = {
     },
 
     formatDate: function(date) {
-        return new Intl.DateTimeFormat("en-US", ["America/New_York"]).format(date);
+        return new Intl.DateTimeFormat("en-US").format(date);
     },
 
     promptMessage: async function(message, author, time, validReactions) {
