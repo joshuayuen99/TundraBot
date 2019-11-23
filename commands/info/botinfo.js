@@ -1,4 +1,5 @@
 const { RichEmbed } = require("discord.js");
+const { formatDateLong } = require("../../functions.js")
 
 module.exports = {
     name: "botinfo",
@@ -15,7 +16,7 @@ module.exports = {
             .setThumbnail(bicon)
             .addField("Bot name", client.user.username)
             .addField("My owner", "TundraBuddy#4650")
-            .addField("Created at", client.user.createdAt);
+            .addField("Created at", formatDateLong(client.user.createdAt));
 
         return message.channel.send(embedMsg);
     }

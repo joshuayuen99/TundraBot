@@ -2,7 +2,7 @@ const { Client, RichEmbed, Collection } = require("discord.js");
 const { config } = require("dotenv");
 const fs = require("fs");
 const { stripIndents } = require("common-tags");
-const { formatDate } = require("./functions.js");
+const { formatDate, formatDateLong } = require("./functions.js");
 
 const client = new Client({
     disableEveryone: false
@@ -39,23 +39,12 @@ client.on("ready", () => {
 client.on("guildMemberRemove", async member => {
     const guild = member.guild;
     const micon = member.user.displayAvatarURL;
-    const options = {
-        timeZone: "America/New_York",
-        hour12: true,
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-        second: "numeric",
-    };
-    const joined = new Intl.DateTimeFormat("en-US", options).format(member.joinedAt);
+
     const embedMsg = new RichEmbed()
         .setDescription(`${member.user.username} left the server`)
         .setColor("RED")
         .setThumbnail(micon)
-        .addField(`${member.user.username} joined`, `${joined} EST`)
+        .addField(`${member.user.username} joined`, `${formatDateLong(member.joinedAt)} EST`)
         .addField("New total members", guild.memberCount)
         .setTimestamp();
     
@@ -66,23 +55,12 @@ client.on("guildMemberRemove", async member => {
 client.on("guildMemberAdd", async member => {
     const guild = member.guild;
     const micon = member.user.displayAvatarURL;
-    const options = {
-        timeZone: "America/New_York",
-        hour12: true,
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-        second: "numeric",
-    };
-    const joined = new Intl.DateTimeFormat("en-US", options).format(member.joinedAt);
+    
     const embedMsg = new RichEmbed()
         .setDescription(`${member.user.username} joined the server`)
         .setColor("GREEN")
         .setThumbnail(micon)
-        .addField(`${member.user.username} joined`, `${joined} EST`)
+        .addField(`${member.user.username} joined`, `${formatDateLong(member.joinedAt)} EST`)
         .addField("New total members", guild.memberCount)
         .setTimestamp();
     

@@ -29,6 +29,21 @@ module.exports = {
         return new Intl.DateTimeFormat("en-US").format(date);
     },
 
+    formatDateLong: function(date) {
+        const options = {
+            timeZone: "America/New_York",
+            hour12: true,
+            weekday: "short",
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric",
+        };
+        return new Intl.DateTimeFormat("en-US", options).format(date);
+    },
+
     promptMessage: async function(message, author, time, validReactions) {
         time *= 1000;   // Convert from s to ms
 
