@@ -10,7 +10,7 @@ module.exports = {
     run: async (client, message, args) => {
         if(!args[0]) {
             if(message.deletable) message.delete();
-            message.reply(`Please specify "member", "user", or "account" as an argument`)
+            return message.reply(`Please specify "member", "user", or "account" as an argument`)
                 .then(m => m.delete(5000));
         }
         let member = message.member;
