@@ -5,20 +5,37 @@ const { stripIndents } = require("common-tags");
 module.exports = {
     name: "oldest",
     category: "info",
-    description: "Returns information about the oldest member of the server.",
-    usage: "oldest",
+    description: "Returns information about the oldest member or user(account) of the server.",
+    usage: "oldest <member | user | account>",
     run: async (client, message, args) => {
-        let oldestDate = message.createdAt;
-        let oldestMember;
-        message.guild.members.forEach(member => {
-            console.log(member.displayName);
-            if(member.joinedAt < oldestDate && member.user.id !== message.guild.ownerID) {
-                oldestDate = member.joinedAt;
-                oldestMember = member;
-            }
-        })
-        const member = oldestMember;
-
+        if(!args[0]) {
+            if(message.deletable) message.delete();
+            message.reply(`Please specify "member", "user", or "account" as an argument`)
+                .then(m => m.delete(5000));
+        }
+        let member = message.member;
+        if(args[0] === "member") {
+            let oldestDate = message.createdAt;
+            let oldestMember;
+            message.guild.members.forEach(member => {
+                if(member.joinedAt < oldestDate && member.user.id !== message.guild.ownerID) {
+                    oldestDate = member.joinedAt;
+                    oldestMember = member;
+                }
+            })
+            member = oldestMember;
+        } else if(args[0] === "user" || args[0] === "account") {
+            let oldestDate = message.author.createdAt;
+            let oldestMember = message.member;
+            message.guild.members.forEach(member => {
+                if(member.user.createdAt < oldestDate) {
+                    oldestDate = member.user.createdAt;
+                    oldestMember = member;
+                }
+            })
+            member = oldestMember;
+        }
+        
         // Member variables
         const joined = formatDateLong(member.joinedAt);
         const roles = member.roles
