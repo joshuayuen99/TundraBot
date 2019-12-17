@@ -22,7 +22,7 @@ module.exports = {
         const msg = await message.channel.send(embedMsg);
         const reacted = await promptMessage(msg, message.author, 30, emojiArray)
 
-        const botChoice = emojiArray[Math.round(Math.random() * emojiArray.length)];
+        const botChoice = emojiArray[Math.floor(Math.random() * emojiArray.length)];
 
         const result = await getResult(reacted, botChoice);
         await msg.clearReactions();
