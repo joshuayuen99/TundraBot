@@ -123,7 +123,7 @@ client.on("message", async message => {
     if(!message.member) message.member = await message.guild.fetchMember(message.member);
 
     const messageArray = message.content.split(" ");
-    const cmd = messageArray[0].slice(prefix.length);
+    const cmd = messageArray[0].slice(prefix.length).toLowerCase();
     const args = messageArray.slice(1);
 
     if(cmd.length === 0) return;
