@@ -106,7 +106,8 @@ async function createQueue(client, message, song) {
         songs: [],
         volume: 2,
         playing: true,
-        shuffle: false
+        shuffle: false,
+        repeat: false
     };
     // Add song to queue
     queueConstruct.songs.push(song);
