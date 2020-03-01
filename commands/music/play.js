@@ -14,11 +14,11 @@ module.exports = {
     aliases: ["p", "music"],
     category: "music",
     description: "Plays music in the current channel.",
-    usage: "play <youtube link>",
+    usage: "play <youtube link | search phrase>",
     run: async (client, message, args) => {
         // No link provided
         if(!args[0]) {
-            return message.reply("Please enter a Youtube link to play.")
+            return message.reply("Please enter a Youtube link to play or search phrase.")
                 .then(m => m.delete(5000));
         }
 
@@ -104,7 +104,7 @@ async function createQueue(client, message, song) {
         voiceChannel: message.member.voiceChannel,
         connection: null,
         songs: [],
-        volume: 3,
+        volume: 2,
         playing: true,
         shuffle: false
     };
