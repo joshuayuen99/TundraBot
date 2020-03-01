@@ -73,13 +73,15 @@ client.on("guildMemberAdd", async member => {
 client.on("message", async message => {
     if(message.author.bot) return;  // if a bot sent the message
 
+    /*
     // Will Sniper
     if(message.author.id === "94164958056558592") {
         if(message.attachments && !message.content) {
-            const sentMessage = await message.channel.send("@everyone POST THE DAMN SOURCE REEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+            const sentMessage = await message.channel.send("POST THE DAMN SOURCE REEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
             sentMessage.pin();
         }
     }
+    */
     /*
     // Josh Sniper
     if(message.author.id === "114848659891290118") {

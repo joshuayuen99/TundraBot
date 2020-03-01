@@ -28,7 +28,7 @@ module.exports = {
             return msg.edit(`Guess I win by default ${DISAPPOINTED}`);
         }
 
-        const botChoice = emojiArray[Math.round(Math.random() * emojiArray.length)];
+        const botChoice = emojiArray[Math.floor(Math.random() * emojiArray.length)];
 
         const result = await getResult(reacted, botChoice);
         await msg.clearReactions();
