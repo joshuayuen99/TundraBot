@@ -53,7 +53,8 @@ module.exports = {
 
         return message
             .awaitReactions(filter, {max: 1, time: time})
-            .then(collected => collected.first() && collected.first().emoji.name);
+            .then(collected => collected.first() && collected.first().emoji.name)
+            .catch(console.log);
     },
 
     waitResponse: async function(message, author, time) {
@@ -63,7 +64,8 @@ module.exports = {
 
         return message.channel
             .awaitMessages(filter, {max: 1, time: time})
-            .then(collected => collected.first());
+            .then(collected => collected.first())
+            .catch(console.log);
     },
 
     /**

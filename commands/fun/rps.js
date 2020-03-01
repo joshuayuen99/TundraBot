@@ -6,6 +6,7 @@ const ROCK = "⛰️";
 const PAPER = "📰";
 const SCISSORS = "✂️";
 const emojiArray = [ROCK, PAPER, SCISSORS];
+const DISAPPOINTED = "😞";
 
 module.exports = {
     name: "rps",
@@ -21,6 +22,11 @@ module.exports = {
 
         const msg = await message.channel.send(embedMsg);
         const reacted = await promptMessage(msg, message.author, 30, emojiArray)
+        // If they didn't respond back in time
+        if(!reacted) {
+            await msg.clearReactions();
+            return msg.edit(`Guess I win by default ${DISAPPOINTED}`);
+        }
 
         const botChoice = emojiArray[Math.round(Math.random() * emojiArray.length)];
 

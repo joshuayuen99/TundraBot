@@ -45,11 +45,18 @@ module.exports = {
                 videos = videos.concat(`**${i + 1}:** ${results[i].title}\n`);
             }
             const embedMsg = new RichEmbed()
-                .setDescription(stripIndents`Type 1-5 for the video result you want to play, or -1 to cancel`)
+                .setDescription(stripIndents`Type 1-5 for the video result you want to play, or anything else to cancel`)
                 .addField("Results", videos);
             // Get user choice
-            let choice = await message.reply(embedMsg).then(async msg => {
+            const choice = await message.reply(embedMsg).then(async msg => {
                 let response = await waitResponse(msg, message.author, 30);
+                
+                // If they didn't respond back in time
+                if(!response) {
+                    msg.edit("Cancelling play request...");
+                    return;
+                }
+
                 // Check user choice
                 switch(response.content) {
                 case "1":
@@ -59,13 +66,14 @@ module.exports = {
                 case "5":
                     songInfo = await ytdl.getInfo(results[parseInt(response.content) - 1].link);
                     msg.edit(`Adding "${songInfo.title}" to the queue`);
-                    break;
+                    return response;
                 default:
                     msg.edit("Cancelling play request...");
+                    return;
                 }
-                return response;
             });
-            
+            // If they didn't respond back correctly
+            if(!choice) return;
         }
         if(!songInfo) songInfo = await ytdl.getInfo(args[0]);
         const song = {
