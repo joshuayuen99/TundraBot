@@ -54,5 +54,30 @@ module.exports = {
         return message
             .awaitReactions(filter, {max: 1, time: time})
             .then(collected => collected.first() && collected.first().emoji.name);
+    },
+
+    waitResponse: async function(message, author, time) {
+        time *= 1000;   // Convert from s to ms
+
+        const filter = msg => msg.author.id === author.id;
+
+        return message.channel
+            .awaitMessages(filter, {max: 1, time: time})
+            .then(collected => collected.first());
+    },
+
+    /**
+     * Shuffles array in place.
+     * @param {Array} a items An array containing the items.
+     */
+    shuffle: function(a) {
+        var j, x, i;
+        for (i = a.length - 1; i > 0; i--) {
+            j = Math.floor(Math.random() * (i + 1));
+            x = a[i];
+            a[i] = a[j];
+            a[j] = x;
+        }
+        return a;
     }
 };

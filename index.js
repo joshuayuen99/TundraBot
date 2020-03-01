@@ -35,6 +35,9 @@ client.on("ready", () => {
     });
 });
 
+// Map with guilds playing music ?
+client.musicGuilds = new Map();
+
 // When someone leaves the guild
 client.on("guildMemberRemove", async member => {
     const guild = member.guild;
@@ -132,7 +135,11 @@ client.on("message", async message => {
     if(!command) command = client.commands.get(client.aliases.get(cmd));    // If the command was not found, check aliases
 
     if(command) {
-        command.run(client, message, args);
+        try{
+            command.run(client, message, args);
+        } catch(err) {
+            console.log(err);
+        }
     }
 });
 
