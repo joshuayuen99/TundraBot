@@ -29,8 +29,8 @@ client.on("ready", () => {
     client.user.setPresence({
         status: "online",
         game: {
-            name: "~help ~suggestion",
-            type: "WATCHING",
+            name: "music ~play | ~help",
+            type: "PLAYING",
         }
     });
 });
