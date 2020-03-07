@@ -6,6 +6,7 @@ const search = require('youtube-search');
 
 const opts = {
     maxResults: 5,
+    type: "video",
     key: "AIzaSyCssZkseV2OALkuYWeGUl-pfqJEeOBxOSE"
 };
 
@@ -45,7 +46,7 @@ module.exports = {
                 videos = videos.concat(`**${i + 1}:** ${results[i].title}\n`);
             }
             const embedMsg = new RichEmbed()
-                .setDescription(stripIndents`Type 1-5 for the video result you want to play, or anything else to cancel`)
+                .setDescription(stripIndents`Type \`1-5\` for the video result you want to play, or anything else to cancel`)
                 .addField("Results", videos);
             // Get user choice
             const choice = await message.reply(embedMsg).then(async msg => {
@@ -53,7 +54,8 @@ module.exports = {
                 
                 // If they didn't respond back in time
                 if(!response) {
-                    msg.edit("Cancelling play request...");
+                    msg.delete();
+                    msg.channel.send("Cancelling play request...");
                     return;
                 }
 
@@ -65,10 +67,11 @@ module.exports = {
                 case "4":
                 case "5":
                     songInfo = await ytdl.getInfo(results[parseInt(response.content) - 1].link);
-                    msg.edit(`Adding "${songInfo.title}" to the queue`);
+                    msg.delete();
                     return response;
                 default:
-                    msg.edit("Cancelling play request...");
+                    msg.delete();
+                    msg.channel.send("Cancelling play request...");
                     return;
                 }
             });
@@ -84,6 +87,7 @@ module.exports = {
         // If a queue does not already exist for the server
         if(!serverQueue) {
             createQueue(client, message, song);
+            message.channel.send(`Playing **${song.title}**`);
         }
         else {
             serverQueue.songs.push(song);
@@ -92,7 +96,7 @@ module.exports = {
                 serverQueue.songs = currentSong.concat(shuffle(serverQueue.songs.slice(1)));
             }
             console.log(serverQueue.songs);
-            return message.channel.send(`"${song.title}" has been added to the queue! There are currently ${serverQueue.songs.length} songs in queue.`);
+            return message.channel.send(`**${song.title}** has been added to the queue! There are currently ${serverQueue.songs.length} songs in queue.`);
         }
     }
 }
@@ -140,8 +144,7 @@ function play(client, guild) {
 
     // Create dispatcher to play song
     const dispatcher = serverQueue.connection.playStream(ytdl(song.url,
-                                                        { quality: "highestaudio",
-                                                        filter: "audioonly",
+                                                        { filter: "audioonly",
                                                         highWaterMark: 1<<25}))
         .on("end", () => {
             if(!serverQueue.repeat) serverQueue.songs.shift();

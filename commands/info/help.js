@@ -19,6 +19,7 @@ module.exports = {
 function getAll(client, message) {
     const embedMsg = new RichEmbed()
         .setColor("RANDOM")
+        .setDescription("**Commands**");
 
     // Get all the commands in a particular category
     const commands = category => {
@@ -27,12 +28,17 @@ function getAll(client, message) {
             .map(cmd => `- \`${cmd.name}\``)
             .join("\n");
     }
-
+/*
     const info = client.categories
         .map(cat => stripIndents`**${cat[0].toUpperCase() + cat.slice(1)}** \n${commands(cat)}`)
         .reduce((string, category) => string + "\n" + category);
 
     return message.channel.send(embedMsg.setDescription(info));
+    */
+   client.categories.forEach(category => {
+       embedMsg.addField(stripIndents`**${category[0].toUpperCase() + category.slice(1)}**`, commands(category), true);
+   });
+   return message.channel.send(embedMsg);
 }
 
 function getCommand(client, message, input) {
