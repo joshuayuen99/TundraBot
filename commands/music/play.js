@@ -41,6 +41,33 @@ module.exports = {
                 .then(m => m.delete(5000));
         }
 
+        // Check if playlist
+        let playlistId = /(?<=list=).*(?=&?)/.exec(args[0]);
+        if (playlistId) {
+            playlistId = playlistId[0];
+            let results = await axios.get("https://www.googleapis.com/youtube/v3/playlistItems?" + "part=contentDetails%2Csnippet" + "&maxResults=50" + "&playlistId=" + playlistId + "&key=" + youtubeKey);
+            if (results.data.items.length != 0) {
+                for (videoInfo of results.data.items) {
+                    const song = {
+                        title: videoInfo.snippet.title,
+                        url: "https://www.youtube.com/watch?v=" + videoInfo.contentDetails.videoId
+                    };
+                    // If a queue does not already exist for the server
+                    if (!serverQueue) {
+                        await createQueue(client, message, song);
+                        serverQueue = client.musicGuilds.get(message.guild.id);
+                    } else {
+                        serverQueue.songs.push(song);
+                        if (serverQueue.toggle) {
+                            const currentSong = serverQueue.songs.slice(0, 1);
+                            serverQueue.songs = currentSong + shuffle(serverQueue.songs.slice(1));
+                        }
+                    }
+                }
+                return message.channel.send(`**${results.data.items.length}** songs have been added to the queue! There are currently **${serverQueue.songs.length}** songs in queue.`);
+            }
+        }
+
         var songInfo;
         if (!ytdl.validateURL(args[0])) {
             let { results, pageInfo } = await search(args.join(" "), videoOpts);
@@ -96,32 +123,6 @@ module.exports = {
             if (!choice) return;
         }
 
-        // Check if playlist
-        let playlistId = /(?<=list=).*(?=&?)/.exec(args[0]);
-        if (playlistId) {
-            playlistId = playlistId[0];
-            let results = await axios.get("https://www.googleapis.com/youtube/v3/playlistItems?" + "part=contentDetails%2Csnippet" + "&maxResults=50" + "&playlistId=" + playlistId + "&key=" + youtubeKey);
-            if (results.data.items.length != 0) {
-                for (videoInfo of results.data.items) {
-                    const song = {
-                        title: videoInfo.snippet.title,
-                        url: "https://www.youtube.com/watch?v=" + videoInfo.contentDetails.videoId
-                    };
-                    // If a queue does not already exist for the server
-                    if (!serverQueue) {
-                        await createQueue(client, message, song);
-                        serverQueue = client.musicGuilds.get(message.guild.id);
-                    } else {
-                        serverQueue.songs.push(song);
-                        if (serverQueue.toggle) {
-                            const currentSong = serverQueue.songs.slice(0, 1);
-                            serverQueue.songs = currentSong + shuffle(serverQueue.songs.slice(1));
-                        }
-                    }
-                }
-                return message.channel.send(`**${results.data.items.length}** songs have been added to the queue! There are currently **${serverQueue.songs.length}** songs in queue.`);
-            }
-        }
         if (!songInfo) { // User entered a regular video link
             songInfo = await ytdl.getInfo(args[0]);
         }
