@@ -1,5 +1,6 @@
 module.exports = {
     name: "skip",
+    aliases: ["next"],
     category: "music",
     description: "Skips the currently playing song.",
     usage: "skip",
