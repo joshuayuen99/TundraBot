@@ -97,7 +97,7 @@ module.exports = {
         }
 
         // Check if playlist
-        let playlistId = /(?<=&list=).*(?=&?)/.exec(args[0]);
+        let playlistId = /(?<=list=).*(?=&?)/.exec(args[0]);
         if (playlistId) {
             playlistId = playlistId[0];
             let results = await axios.get("https://www.googleapis.com/youtube/v3/playlistItems?" + "part=contentDetails%2Csnippet" + "&maxResults=50" + "&playlistId=" + playlistId + "&key=" + youtubeKey);
