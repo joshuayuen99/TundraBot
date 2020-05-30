@@ -5,13 +5,10 @@ const { waitResponse, shuffle } = require("../../functions");
 const search = require("youtube-search");
 const axios = require("axios");
 
-//const youtubeKey = "AIzaSyCssZkseV2OALkuYWeGUl-pfqJEeOBxOSE";
-const youtubeKey = "AIzaSyBbmhBBE4f-zLVG5c2cHVi4nzW_IBKDrA0";
-
 const videoOpts = {
     maxResults: 5,
     type: "video",
-    key: youtubeKey
+    key: process.env.YOUTUBEKEY
 };
 
 module.exports = {
@@ -51,7 +48,7 @@ module.exports = {
         let playlistId = /(?<=list=).*(?=&?)/.exec(args[0]);
         if (playlistId) {
             playlistId = playlistId[0];
-            let results = await axios.get("https://www.googleapis.com/youtube/v3/playlistItems?" + "part=contentDetails%2Csnippet" + "&maxResults=50" + "&playlistId=" + playlistId + "&key=" + youtubeKey);
+            let results = await axios.get("https://www.googleapis.com/youtube/v3/playlistItems?" + "part=contentDetails%2Csnippet" + "&maxResults=50" + "&playlistId=" + playlistId + "&key=" + process.env.YOUTUBEKEY);
             if (results.data.items.length != 0) {
                 for (videoInfo of results.data.items) {
                     const song = {
@@ -218,7 +215,7 @@ async function queueSong(client, message, song) {
 }
 
 async function getVideoDuration(videoId) {
-    let videoDetails = await axios.get("https://www.googleapis.com/youtube/v3/videos?" + "part=contentDetails" + "&id=" + videoId + "&key=" + youtubeKey);
+    let videoDetails = await axios.get("https://www.googleapis.com/youtube/v3/videos?" + "part=contentDetails" + "&id=" + videoId + "&key=" + process.env.YOUTUBEKEY);
     let videoDurationRaw = videoDetails.data.items[0].contentDetails.duration;
 
     let hours;
