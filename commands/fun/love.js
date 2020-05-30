@@ -1,4 +1,4 @@
-const { RichEmbed } = require("discord.js");
+const { MessageEmbed } = require("discord.js");
 const { stripIndents } = require("common-tags");
 const { getMember } = require("../../functions.js");
 
@@ -14,8 +14,8 @@ module.exports = {
     run: async (client, message, args) => {
         let person = getMember(message, args[0]);
 
-        if(!person || message.author.id === person.id) {
-            person = message.guild.members
+        if (!person || message.author.id === person.id) {
+            person = message.guild.members.cache
                 .filter(m => m.id != message.author.id)
                 .random();
         }
@@ -24,11 +24,11 @@ module.exports = {
         const loveIndex = Math.round(love / 10);
         const loveLevel = HEART.repeat(loveIndex) + BROKENHEART.repeat(10 - loveIndex);
 
-        const embedMsg = new RichEmbed()
+        const embedMsg = new MessageEmbed()
             .setColor("#ffb6c1")
-            .setThumbnail(person.user.displayAvatarURL)
+            .setThumbnail(person.user.displayAvatarURL())
             .addField(stripIndents`**${person.displayName}** loves **${message.member.displayName}** this much:`,
-            `${GROWINGHEART}: ${Math.round(love)}%
+                `${GROWINGHEART}: ${Math.round(love)}%
             
             
             ${loveLevel}`);

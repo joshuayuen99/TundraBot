@@ -1,35 +1,44 @@
 module.exports = {
-    getMember: function(message, toFind = '') {
+    getMember: function (message, toFind = '') {
         toFind = toFind.toLowerCase();
 
-        let target = message.guild.members.get(toFind);
+        let target = message.guild.members.cache.find(member => member == toFind);
 
         // If there is no target, but there is a mention in the message, use the first mention instead
-        if(!target && message.mentions.members) {
+        if (!target && message.mentions.members) {
             target = message.mentions.members.first();
         }
 
         // Searches for people in the server with a matching nickname or "name#tag"
-        if(!target && toFind) {
-            target = message.guild.members.find(member => {
+        if (!target && toFind) {
+            target = message.guild.members.cache.find(member => {
                 return member.displayName.toLowerCase().includes(toFind) ||
-                member.user.tag.toLowerCase().includes(toFind);
+                    member.user.tag.toLowerCase().includes(toFind);
             });
         }
 
         // If no one is found that matches, return the callee
-        if(!target) {
+        if (!target) {
             target = message.member;
         }
 
         return target;
     },
 
-    formatDate: function(date) {
+    createChannel: function (guild, name, permissions) {
+        if (guild.channels.cache.some(channel => channel.name === name)) return;
+
+        guild.channels.create(name, {
+            type: "text",
+            permissionOverwrites: permissions,
+        });
+    },
+
+    formatDate: function (date) {
         return new Intl.DateTimeFormat("en-US").format(date);
     },
 
-    formatDateLong: function(date) {
+    formatDateLong: function (date) {
         const options = {
             timeZone: "America/New_York",
             hour12: true,
@@ -44,35 +53,39 @@ module.exports = {
         return new Intl.DateTimeFormat("en-US", options).format(date);
     },
 
-    promptMessage: async function(message, author, time, validReactions) {
+    promptMessage: async function (message, author, time, validReactions) {
         time *= 1000;   // Convert from s to ms
 
-        for(const reaction of validReactions) await message.react(reaction);
+        for (const reaction of validReactions) await message.react(reaction);
 
         const filter = (reaction, user) => validReactions.includes(reaction.emoji.name) && user.id === author.id;
 
         return message
-            .awaitReactions(filter, {max: 1, time: time})
+            .awaitReactions(filter, { max: 1, time: time })
             .then(collected => collected.first() && collected.first().emoji.name)
-            .catch(console.log);
+            .catch(err => {
+                console.error("Error in promptMessage: ", err);
+            });
     },
 
-    waitResponse: async function(message, author, time) {
+    waitResponse: async function (message, author, time) {
         time *= 1000;   // Convert from s to ms
 
         const filter = msg => msg.author.id === author.id;
 
         return message.channel
-            .awaitMessages(filter, {max: 1, time: time})
+            .awaitMessages(filter, { max: 1, time: time })
             .then(collected => collected.first())
-            .catch(console.log);
+            .catch(err => {
+                console.error("Error in waitresponse: ", err);
+            });
     },
 
     /**
      * Shuffles array in place.
      * @param {Array} a items An array containing the items.
      */
-    shuffle: function(a) {
+    shuffle: function (a) {
         var j, x, i;
         for (i = a.length - 1; i > 0; i--) {
             j = Math.floor(Math.random() * (i + 1));

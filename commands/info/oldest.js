@@ -1,4 +1,4 @@
-const { RichEmbed } = require("discord.js");
+const { MessageEmbed } = require("discord.js");
 const { getMember, formatDate, formatDateLong } = require("../../functions.js");
 const { stripIndents } = require("common-tags");
 
@@ -8,37 +8,39 @@ module.exports = {
     description: "Returns information about the oldest member or user(account) of the server.",
     usage: "oldest <member | user | account>",
     run: async (client, message, args) => {
-        if(!args[0]) {
-            if(message.deletable) message.delete();
+        if (!args[0]) {
+            if (message.deletable) message.delete();
             return message.reply(`Please specify "member", "user", or "account" as an argument`)
-                .then(m => m.delete(5000));
+                .then(m => m.delete({
+                    timeout: 5000
+                }));
         }
         let member = message.member;
-        if(args[0] === "member") {
+        if (args[0] === "member") {
             let oldestDate = message.createdAt;
             let oldestMember;
-            message.guild.members.forEach(member => {
-                if(member.joinedAt < oldestDate && member.user.id !== message.guild.ownerID) {
+            message.guild.members.cache.forEach(member => {
+                if (member.joinedAt < oldestDate && member.user.id !== message.guild.ownerID) {
                     oldestDate = member.joinedAt;
                     oldestMember = member;
                 }
             })
             member = oldestMember;
-        } else if(args[0] === "user" || args[0] === "account") {
+        } else if (args[0] === "user" || args[0] === "account") {
             let oldestDate = message.author.createdAt;
             let oldestMember = message.member;
-            message.guild.members.forEach(member => {
-                if(member.user.createdAt < oldestDate) {
+            message.guild.members.cache.forEach(member => {
+                if (member.user.createdAt < oldestDate) {
                     oldestDate = member.user.createdAt;
                     oldestMember = member;
                 }
             })
             member = oldestMember;
         }
-        
+
         // Member variables
         const joined = formatDateLong(member.joinedAt);
-        const roles = member.roles
+        const roles = member.roles.cache
             .filter(r => r.id !== message.guild.id) // Filters out the @everyone role
             .map(r => r)
             .join(", ") || "none";
@@ -46,9 +48,9 @@ module.exports = {
         // User variables
         const created = formatDate(member.user.createdAt);
 
-        const embedMsg = new RichEmbed()
-            .setFooter(member.displayName, member.user.displayAvatarURL)
-            .setThumbnail(member.user.displayAvatarURL)
+        const embedMsg = new MessageEmbed()
+            .setFooter(member.displayName, member.user.displayAvatarURL())
+            .setThumbnail(member.user.displayAvatarURL())
             .setColor(member.displayHexColor === "#000000" ? "ffffff" : member.displayHexColor)
             .setDescription(`${member}`)
             .setTimestamp()
@@ -63,7 +65,7 @@ module.exports = {
             **\\> Created account:** ${created}`, true)
 
         // If the user is currently playing a game
-        if(member.user.presence.game) {
+        if (member.user.presence.game) {
             embedMsg.addField("Currently playing", stripIndents`**\\>** ${member.user.presence.game.name}`);
         }
 

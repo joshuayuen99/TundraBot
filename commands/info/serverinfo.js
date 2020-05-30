@@ -1,4 +1,4 @@
-const { RichEmbed } = require("discord.js");
+const { MessageEmbed } = require("discord.js");
 const { formatDateLong } = require("../../functions.js")
 
 module.exports = {
@@ -9,10 +9,10 @@ module.exports = {
     usage: "serverinfo",
     run: async (client, message, args) => {
         const guild = message.guild;
-        const sicon = guild.iconURL;
+        const sicon = guild.iconURL();
 
-        const embedMsg = new RichEmbed()
-            .setDescription("Server information")
+        const embedMsg = new MessageEmbed()
+            .setDescription("Server Information")
             .setColor("#0b7ed6")
             .setThumbnail(sicon)
             .addField("Server name", guild.name)

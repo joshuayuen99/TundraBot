@@ -1,4 +1,4 @@
-const { RichEmbed } = require("discord.js");
+const { MessageEmbed } = require("discord.js");
 const { formatDateLong } = require("../../functions.js")
 
 module.exports = {
@@ -8,10 +8,10 @@ module.exports = {
     description: "Returns information about the bot.",
     usage: "botinfo",
     run: async (client, message, args) => {
-        const bicon = client.user.displayAvatarURL;
+        const bicon = client.user.displayAvatarURL();
 
-        const embedMsg = new RichEmbed()
-            .setDescription("Bot information")
+        const embedMsg = new MessageEmbed()
+            .setDescription("Bot Information")
             .setColor("#0b7ed6")
             .setThumbnail(bicon)
             .addField("Bot name", client.user.username)

@@ -9,10 +9,10 @@ module.exports = client => {
         const commands = readdirSync(`./commands/${dir}`).filter(f => f.endsWith(".js"));
 
         // For every .js "command"
-        for(let file of commands) {
+        for (let file of commands) {
             let pull = require(`../commands/${dir}/${file}`);
 
-            if(pull.name) { // Name of the command
+            if (pull.name) { // Name of the command
                 client.commands.set(pull.name, pull);
                 table.addRow(file, "\u2714");
             } else {    // If there is no command name specified
@@ -21,7 +21,7 @@ module.exports = client => {
             }
 
             // If there are any aliases for the command
-            if(pull.aliases && Array.isArray(pull.aliases)) {
+            if (pull.aliases && Array.isArray(pull.aliases)) {
                 pull.aliases.forEach(alias => client.aliases.set(alias, pull.name));
             }
         }

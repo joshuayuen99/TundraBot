@@ -1,4 +1,4 @@
-const { RichEmbed } = require("discord.js");
+const { MessageEmbed } = require("discord.js");
 const { config } = require("dotenv");
 const { stripIndents } = require("common-tags");
 
@@ -10,18 +10,21 @@ module.exports = {
     usage: "suggest <suggestion>",
     run: async (client, message, args) => {
         // If there was no suggestion specified
-        if(!args[0]) {
-            if(message.deletable) message.delete();
-            return message.reply("Please specify a suggestion!").then(m => m.delete(5000));
+        if (!args[0]) {
+            if (message.deletable) message.delete();
+            return message.reply("Please specify a suggestion!")
+                .then(m => m.delete({
+                    timeout: 5000
+                }));
         }
 
-        const owner = await client.fetchUser(process.env.OWNERID);
+        const owner = await client.users.fetch(process.env.OWNERID);
 
-        const embedMsg = new RichEmbed()
+        const embedMsg = new MessageEmbed()
             .setColor("#390645")
             .setTimestamp()
-            .setFooter(message.guild.name, message.guild.iconURL)
-            .setAuthor("Suggestion by", message.author.displayAvatarURL)
+            .setFooter(message.guild.name, message.guild.iconURL())
+            .setAuthor("Suggestion by", message.author.displayAvatarURL())
             .setDescription(stripIndents`**\\> Member:** ${message.member} (${message.member.id})
             **\\> Suggested in:** ${message.guild}'s ${message.channel} (${message.guild.id})
             **\\> Suggestion:** ${args.join(" ")}`);

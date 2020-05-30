@@ -1,4 +1,4 @@
-const { RichEmbed } = require("discord.js");
+const { MessageEmbed } = require("discord.js");
 const { stripIndents } = require("common-tags");
 const ytdl = require("ytdl-core");
 const { waitResponse, shuffle } = require("../../functions");
@@ -24,21 +24,27 @@ module.exports = {
         // No link provided
         if (!args[0]) {
             return message.reply("Please enter a Youtube link to play or search phrase.")
-                .then(m => m.delete(5000));
+                .then(m => m.delete({
+                    timeout: 5000
+                }));
         }
 
         var serverQueue = client.musicGuilds.get(message.guild.id);
 
         // Not in a voice channel
-        if (!message.member.voiceChannel) {
+        if (!message.member.voice.channel) {
             return message.reply("You must be in a voice channel!")
-                .then(m => m.delete(5000));
+                .then(m => m.delete({
+                    timeout: 5000
+                }));
         }
 
         // No bot permission
         if (!message.guild.me.hasPermission("CONNECT") || !message.guild.me.hasPermission("SPEAK")) {
             return message.reply("I need permission to join and speak in that channel!")
-                .then(m => m.delete(5000));
+                .then(m => m.delete({
+                    timeout: 5000
+                }));
         }
 
         // Check if playlist
@@ -86,8 +92,11 @@ module.exports = {
                 };
                 videoDetailsList.push(videoInfo);
             }
-            const embedMsg = new RichEmbed()
-                .setDescription(stripIndents`Type \`1-5\` for the video result you want to play, or anything else to cancel`)
+            if(!videos) {
+                return message.reply("I couldn't find any results with that title.");
+            }
+            const embedMsg = new MessageEmbed()
+                .setDescription(stripIndents`Type \`1-5\` for the video result you want to play, or anything else to cancel.`)
                 .addField("Results", videos);
             // Get user choice
             const choice = await message.reply(embedMsg).then(async msg => {
@@ -140,7 +149,7 @@ async function createQueue(client, message, song) {
     // Create queue struct
     const queueConstruct = {
         textChannel: message.channel,
-        voiceChannel: message.member.voiceChannel,
+        voiceChannel: message.member.voice.channel,
         connection: null,
         songs: [],
         volume: 2,
@@ -160,7 +169,7 @@ async function createQueue(client, message, song) {
         play(client, message.guild.id);
     }
     catch (err) {
-        console.log(err);
+        console.error("Failed to join channel and start playing music: ", err);
         client.musicGuilds.delete(message.guild.id);
         return message.channel.send(err);
     }
@@ -178,19 +187,19 @@ function play(client, guild) {
     }
 
     // Create dispatcher to play song
-    const dispatcher = serverQueue.connection.playStream(ytdl(song.url,
+    const dispatcher = serverQueue.connection.play(ytdl(song.url,
         {
             filter: "audioonly",
             highWaterMark: 1 << 25
         }))
-        .on("end", () => {
+        .on("finish", () => {
             if (!serverQueue.repeat) serverQueue.songs.shift();
             play(client, guild);
         })
-        .on("error", () => {
-            console.log(error);
+        .on("error", (err) => {
+            console.error("Error playing song: ", err);
         });
-    dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
+    dispatcher.setVolumeLogarithmic(serverQueue.volume / 10);
 }
 
 async function queueSong(client, message, song) {

@@ -1,8 +1,8 @@
 module.exports = {
-    name: "stop",
+    name: "restart",
     category: "music",
-    description: "Stops playing music.",
-    usage: "stop",
+    description: "Restarts the currently playing song.",
+    usage: "restart",
     run: async (client, message, args) => {
         const serverQueue = client.musicGuilds.get(message.guild.id);
         if (!serverQueue) {
@@ -12,9 +12,12 @@ module.exports = {
                 }));
         }
 
-        message.channel.send("Stopping...");
-        serverQueue.songs = [];
-        client.musicGuilds.delete(message.guild.id);
-        serverQueue.voiceChannel.leave();
+		message.channel.send("Restarting...");
+		const oldRepeat = serverQueue.repeat;
+		serverQueue.repeat = true;
+		await serverQueue.connection.dispatcher.end();
+		setTimeout(() => {
+			serverQueue.repeat = oldRepeat;
+		}, 1000);
     }
 }

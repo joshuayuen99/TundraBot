@@ -1,4 +1,4 @@
-const { RichEmbed } = require("discord.js");
+const { MessageEmbed } = require("discord.js");
 const { stripIndents } = require("common-tags");
 
 module.exports = {
@@ -8,11 +8,11 @@ module.exports = {
     description: "Gives the unicode for the entered emoji(s).",
     usage: "emoji <emoji> [...emoji] ",
     run: async (client, message, args) => {
-        if(!args[0]) return message.reply("Please enter an emoji");
+        if (!args[0]) return message.reply("Please enter an emoji");
 
         let emojisList;
-        for(const word of args) {
-            if(!emojisList) {
+        for (const word of args) {
+            if (!emojisList) {
                 emojisList = `\`\\u${toUni(word)}\``;
                 continue;
             }
@@ -26,6 +26,6 @@ module.exports = {
 
 const toUni = function (str) {
     if (str.length < 4)
-      return str.codePointAt(0).toString(16);
+        return str.codePointAt(0).toString(16);
     return str.codePointAt(0).toString(16) + '-' + str.codePointAt(2).toString(16);
-  };
+};

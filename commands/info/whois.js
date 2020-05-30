@@ -1,4 +1,4 @@
-const { RichEmbed } = require("discord.js");
+const { MessageEmbed } = require("discord.js");
 const { getMember, formatDate } = require("../../functions.js");
 const { stripIndents } = require("common-tags");
 
@@ -13,7 +13,7 @@ module.exports = {
 
         // Member variables
         const joined = formatDate(member.joinedAt);
-        const roles = member.roles
+        const roles = member.roles.cache
             .filter(r => r.id !== message.guild.id) // Filters out the @everyone role
             .map(r => r)
             .join(", ") || "none";
@@ -21,9 +21,9 @@ module.exports = {
         // User variables
         const created = formatDate(member.user.createdAt);
 
-        const embedMsg = new RichEmbed()
-            .setFooter(member.displayName, member.user.displayAvatarURL)
-            .setThumbnail(member.user.displayAvatarURL)
+        const embedMsg = new MessageEmbed()
+            .setFooter(member.displayName, member.user.displayAvatarURL())
+            .setThumbnail(member.user.displayAvatarURL())
             .setColor(member.displayHexColor === "#000000" ? "ffffff" : member.displayHexColor)
             .setDescription(`${member}`)
             .setTimestamp()
@@ -38,7 +38,7 @@ module.exports = {
             **\\> Created account:** ${created}`, true)
 
         // If the user is currently playing a game
-        if(member.user.presence.game) {
+        if (member.user.presence.game) {
             embedMsg.addField("Currently playing", stripIndents`**\\>** ${member.user.presence.game.name}`);
         }
 
