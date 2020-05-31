@@ -102,6 +102,24 @@ function setup() {
 		return logChannel.send(embedMsg);
 	});
 
+	client.on("guildCreate", async guild => {
+		console.log(`Joined new guild: ${guild.name}`);
+
+		const owner = await client.users.fetch(process.env.OWNERID);
+
+		const embedMsg = new MessageEmbed()
+				.setColor("#0d6adb")
+				.setTimestamp(guild.joinedTimestamp)
+				.setFooter(guild.name, guild.iconURL())
+				.setAuthor("Joined server", guild.iconURL())
+				.addField("Guild information", stripIndents`**\\> ID:** ${guild.id}
+				**\\> Name:** ${guild.name}
+				**\\> Member count:** ${guild.memberCount}
+				**\\> Joined at:** ${formatDate(guild.joinedTimestamp)}`, true);
+
+		owner.send(embedMsg);
+	});
+
 	client.on("message", async message => {
 		if (message.author.bot) return;  // if a bot sent the message
 
@@ -135,12 +153,11 @@ function setup() {
 				.setColor("#0d6adb")
 				.setTimestamp(message.createdAt)
 				.setFooter(message.author.username, message.author.displayAvatarURL())
-
 				.setDescription("Attempted DM")
 				.addField("User information", stripIndents`**\\> ID:** ${message.author.id}
 				**\\> Username:** ${message.author.username}
 				**\\> Discord Tag:** ${message.author.tag}
-				**\\> Created account:** ${formatDate(message.author.createdAt)}`, true)
+				**\\> Created account:** ${formatDate(message.author.createdAt)}`, true);
 
 			if (messageContent) {    // If there is text in the DM
 				embedMsg.addField("Text:", messageContent)
