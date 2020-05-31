@@ -138,9 +138,9 @@ You're done! All you need now is to copy the link at the bottom of the "Scopes" 
 
 `|`s in either `<>`s or `[]`s indicate that any of the choices will work.
 
-`mention` indicates an @someone format (eg. @TundraBot)
+`mention` indicates an @someone format (eg. @TundraBot).
 
-`username` indicates someone's display name in a server. (eg. TundraBot)
+`username` indicates someone's display name in a server (eg. TundraBot).
 
 `id` indicates the unique id associated with each Discord account. Generally hidden from users unless retrieved via a bot command.
 
