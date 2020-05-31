@@ -19,13 +19,14 @@
   },
   "homepage": "https://github.com/joshuayuen99/discordbot#readme",
   "dependencies": {
-    "@discordjs/opus": "^0.1.0",
+    "@discordjs/opus": "^0.3.2",
     "ascii-table": "0.0.9",
     "assert": "^2.0.0",
     "common-tags": "^1.8.0",
     "discord.js": "^12.2.0",
     "ffmpeg": "0.0.4",
     "he": "^1.2.0",
+    "node-gyp": "^5.1.1",
     "node-opus": "^0.3.3",
     "youtube-search": "^1.1.4",
     "ytdl-core": "^2.0.0"
