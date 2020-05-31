@@ -115,7 +115,7 @@ Once you've set up your Discord and YouTube APIs, you're ready to start the bot.
 
 To start the bot, simply navigate to your `discordbot` directory and enter the command:
 ```
-node start
+npm start
 ```
 
 ## Inviting the Bot to Servers

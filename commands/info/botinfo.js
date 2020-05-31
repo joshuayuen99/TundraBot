@@ -15,7 +15,8 @@ module.exports = {
             .setColor("#0b7ed6")
             .setThumbnail(bicon)
             .addField("Bot name", client.user.username)
-            .addField("My owner", "TundraBuddy#4650")
+			.addField("My owner", "TundraBuddy#4650")
+			.addField("GitHub link", "https://github.com/joshuayuen99/discordbot")
             .addField("Created at", formatDateLong(client.user.createdAt));
 
         return message.channel.send(embedMsg);
