@@ -9,4 +9,4 @@ jobs:
   include:
     - stage: "Tests"      # Naming the Tests stage
       name: "Unit Tests"  # Names the first Tests stage job
-      script: 
+      script: "./test/test.js"
