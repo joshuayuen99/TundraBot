@@ -24,7 +24,7 @@ module.exports = {
         const reacted = await promptMessage(msg, message.author, 30, emojiArray)
         // If they didn't respond back in time
         if (!reacted) {
-            await msg.clearReactions();
+            await msg.reactions.removeAll();
             return msg.edit(`Guess I win by default ${DISAPPOINTED}`);
         }
 

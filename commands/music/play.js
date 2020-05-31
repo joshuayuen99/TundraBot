@@ -1,9 +1,10 @@
 const { MessageEmbed } = require("discord.js");
 const { stripIndents } = require("common-tags");
 const ytdl = require("ytdl-core");
-const { waitResponse, shuffle } = require("../../functions");
+const { waitResponse, shuffle, jDecode } = require("../../functions");
 const search = require("youtube-search");
 const axios = require("axios");
+const he = require("he");
 
 const videoOpts = {
     maxResults: 5,
@@ -80,7 +81,7 @@ module.exports = {
             for (i = 0; i < results.length; i++) {
                 let videoDurationString = await getVideoDuration(results[i].id);
 
-                videos = videos + `**${i + 1}:** ${results[i].title} **(${videoDurationString})**\n`;
+                videos = videos + `**${i + 1}:** ${he.decode(results[i].title)} **(${videoDurationString})**\n`;
 
                 const videoInfo = {
                     title: results[i].title,
@@ -93,29 +94,29 @@ module.exports = {
                 return message.reply("I couldn't find any results with that title.");
             }
             const embedMsg = new MessageEmbed()
-                .setDescription(stripIndents`Type \`1-5\` for the video result you want to play, or anything else to cancel.`)
+                .setDescription(stripIndents`Type \`${process.env.PREFIX}play 1-5\` for the video result you want to play, or anything else to cancel.`)
                 .addField("Results", videos);
             // Get user choice
             const choice = await message.reply(embedMsg).then(async msg => {
-                let response = await waitResponse(msg, message.author, 30);
+                let response = await waitResponse(client, msg, message.author, 30);
 
                 // If they didn't respond back in time
                 if (!response) {
                     msg.delete();
                     msg.channel.send("Cancelling play request...");
                     return;
-                }
-
+				}
+				
                 // Check user choice
                 switch (response.content) {
-                    case "1":
-                    case "2":
-                    case "3":
-                    case "4":
-                    case "5":
+                    case `${process.env.PREFIX}play 1`:
+                    case `${process.env.PREFIX}play 2`:
+                    case `${process.env.PREFIX}play 3`:
+                    case `${process.env.PREFIX}play 4`:
+                    case `${process.env.PREFIX}play 5`:
                         //songInfo = await ytdl.getInfo(results[parseInt(response.content) - 1].link);
-                        songInfo = videoDetailsList[parseInt(response.content) - 1];
-                        songInfo.title = songInfo.title;
+                        songInfo = videoDetailsList[parseInt(response.content.charAt(response.content.length - 1)) - 1];
+                        songInfo.title = he.decode(songInfo.title);
                         songInfo.video_url = "https://www.youtube.com/watch?v=" + songInfo.videoId;
                         msg.delete();
                         return response;

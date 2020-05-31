@@ -6,7 +6,7 @@ module.exports = {
     name: "whois",
     aliases: ["userinfo", "who"],
     category: "info",
-    description: "Returns user information.",
+    description: "Returns user information. If no one is specified, it will return user information about the person who used this command.",
     usage: "whois [username | id | mention]",
     run: async (client, message, args) => {
         const member = getMember(message, args.join(" "));

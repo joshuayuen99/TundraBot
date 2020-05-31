@@ -9,7 +9,7 @@ const GROWINGHEART = "💗";
 module.exports = {
     name: "love",
     category: "fun",
-    description: "Calculates the love affinity you have for another user.",
+    description: "Calculates the love affinity you have with another user.",
     usage: "love [mention | id | username]",
     run: async (client, message, args) => {
         let person = getMember(message, args[0]);

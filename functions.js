@@ -56,7 +56,11 @@ module.exports = {
     promptMessage: async function (message, author, time, validReactions) {
         time *= 1000;   // Convert from s to ms
 
-        for (const reaction of validReactions) await message.react(reaction);
+		async function setReactions() {
+			for (const reaction of validReactions) message.react(reaction);
+		}
+
+		await setReactions();
 
         const filter = (reaction, user) => validReactions.includes(reaction.emoji.name) && user.id === author.id;
 
@@ -68,14 +72,18 @@ module.exports = {
             });
     },
 
-    waitResponse: async function (message, author, time) {
+    waitResponse: async function (client, message, author, time) {
+		client.waitingResponse.add(author.id);
         time *= 1000;   // Convert from s to ms
 
         const filter = msg => msg.author.id === author.id;
 
         return message.channel
             .awaitMessages(filter, { max: 1, time: time })
-            .then(collected => collected.first())
+            .then((collected) => {
+				client.waitingResponse.delete(author.id);
+				return collected.first()
+			})
             .catch(err => {
                 console.error("Error in waitresponse: ", err);
             });
@@ -94,5 +102,5 @@ module.exports = {
             a[j] = x;
         }
         return a;
-    }
+	}
 };
