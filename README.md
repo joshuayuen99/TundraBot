@@ -28,7 +28,9 @@ A personal Discord bot made in my free time and used by me and my friends. I've 
 
 # Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+These instructions will get you a copy of the bot up and running on your local machine for development and testing purposes.
+
+If you'd like to just use my bot on your server without setting anything up yourself locally, invite my bot to your Discord server [here](https://discord.com/api/oauth2/authorize?client_id=647196546492006423&permissions=309587062&scope=bot)!
 
 ## Prerequisites
 
