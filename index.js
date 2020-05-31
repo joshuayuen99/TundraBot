@@ -170,7 +170,7 @@ function setup() {
 		if(client.waitingResponse.has(message.author.id)) return;
 
 		const messageArray = message.content.split(" ");
-		const cmd = messageArray[0].slice(process.env.prefix.length).toLowerCase();
+		const cmd = messageArray[0].slice(process.env.PREFIX.length).toLowerCase();
 		const args = messageArray.slice(1);
 
 		if (cmd.length === 0) return;
