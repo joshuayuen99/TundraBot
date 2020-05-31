@@ -2,7 +2,7 @@
 
 # TundraBot
 
-A personal Discord bot made in my free time and used by me and my friends. I've been developing it in chunks ever since November 2019, and still plan to continue improving it and adding new features moving forward.
+A personal Discord bot made in my free time and used by me and my friends. I've been developing it in chunks ever since November 2019, and still plan to continue improving it and adding new features moving forward. Updated for Discord.js v12.
 
 # Table of Contents
 
@@ -131,6 +131,18 @@ npm start
 You're done! All you need now is to copy the link at the bottom of the "Scopes" section and share that with any server owner that wants to use the bot.
 
 # Commands
+
+`<>`s in commands indicate required arguments.
+
+`[]`s in commands indicate optional arguments.
+
+`|`s in either `<>`s or `[]`s indicate that any of the choices will work.
+
+`mention` indicates an @someone format (eg. @TundraBot)
+
+`username` indicates someone's display name in a server. (eg. TundraBot)
+
+`id` indicates the unique id associated with each Discord account. Generally hidden from users unless retrieved via a bot command.
 
 ## Info
 
