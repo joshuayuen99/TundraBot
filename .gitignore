@@ -3095,7 +3095,6 @@ node_modules/ytdl-core/lib/info.js
 node_modules/ytdl-core/lib/sig.js
 node_modules/ytdl-core/lib/util.js
 node_modules/ytdl-core/typings/index.d.ts
-.env
 discordbot.code-workspace
 node_modules/.bin/_mocha
 node_modules/.bin/_mocha.cmd
