@@ -17,6 +17,7 @@ module.exports = {
             .addField("Bot name", client.user.username)
 			.addField("My owner", "TundraBuddy#4650")
 			.addField("GitHub link", "https://github.com/joshuayuen99/discordbot")
+			.addField("Server count", client.guilds.cache.size)
             .addField("Created at", formatDateLong(client.user.createdAt));
 
         return message.channel.send(embedMsg);
