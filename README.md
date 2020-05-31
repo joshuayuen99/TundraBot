@@ -80,6 +80,8 @@ And that's all for installing!
 
 # Using the Bot
 
+If you'd like to just use my bot on your server without setting anything up yourself locally, invite my bot to your Discord server [here](https://discord.com/api/oauth2/authorize?client_id=647196546492006423&permissions=309587062&scope=bot)!
+
 ## Setting Up the Bot
 
 To start using the bot, you will first need to generate a Discord API token.
