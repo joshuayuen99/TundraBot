@@ -39,12 +39,18 @@ If you'd like to just use my bot on your server without setting anything up your
 
 ### [Node.js v12.x](https://nodejs.org/en/download/)
 
+When installing Node.js, make sure you check the box to install Python and Visual Studio Build Tools:
+
+![Node.js Setup](/images/node_setup.png)
+
+If you are having trouble with installing npm packages, not having Python or Visual Studio Build Tools is likely the issue.
+
 To check if you have Node.js installed, run this command in your terminal:
 ```
 node -v
 ```
 
-### [FFmpeg (built with v0.0.4)](https://www.ffmpeg.org/)
+### [FFmpeg](https://www.ffmpeg.org/)
 
 To install on Debian/Ubuntu, run this command in your terminal:
 
@@ -54,10 +60,12 @@ sudo apt-get install ffmpeg
 
 To install on Windows:
 
-- Download FFmpeg from their [website](https://www.ffmpeg.org/download.html)
-- Unzip the .tar.bz2 file twice with a tool such as [7-Zip](https://www.7-zip.org/)
-- Save the resulting ffmpeg folder wherever you want to keep it
-- Add the absolute path of your new ffmpeg folder to your computer's [environment variables](https://www.howtogeek.com/118594/how-to-edit-your-system-path-for-easy-command-line-access/)
+- Download FFmpeg from [here](https://ffmpeg.zeranoe.com/builds/) (latest version should work fine)
+- Unzip the .zip file with a tool such as [7-Zip](https://www.7-zip.org/)
+- Save the resulting `ffmpeg` folder wherever you want to keep it
+- Add the absolute path of the `bin` folder within your new `ffmpeg` folder to your computer's [environment variables](https://www.howtogeek.com/118594/how-to-edit-your-system-path-for-easy-command-line-access/)
+
+![Setting up environment variables](/images/environment_variables.png)
 
 To check if you have FFmpeg installed, run this command in your terminal:
 ```
@@ -76,7 +84,7 @@ Navigate to the newly created `discordbot` directory and type the following comm
 npm install
 ```
 
-And that's all for installing!
+You are likely to get a ton of errors that look fatal, however this won't affect the bot functioning at all—that's all for installing!
 
 # Using the Bot
 
