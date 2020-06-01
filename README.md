@@ -155,15 +155,10 @@ You're done! All you need now is to copy the link at the bottom of the "Scopes" 
 ## Info
 
 - `Help [command | alias]` Displays a list of all commands, or detailed info about the provided command (can provide command aliases as well).
-
 - `Whois [username | id | mention]` Displays user information such as the date someone joined the server, their roles, and when they created their account. If a user is not given, it will display user information about the person who used this command.
-
 - `Oldest <member | user | account>` Returns information about the oldest member (server member) or user (account) of the server. When considering the oldest member of the server, it disregards the original creator of the server as they will always be the oldest except for when ownership is transferred.
-
 - `Serverinfo` Displays information about the server such as the date it was created and how many people are currently in the server.
-
 - `Botinfo` Displays basic information about the bot.
-
 - `Ping` Gives you the delay between sending this command and getting a response as well as the current API latency.
 
 ## Music
@@ -171,23 +166,14 @@ You're done! All you need now is to copy the link at the bottom of the "Scopes" 
 My bot can play music or other YouTube links directly through Discord via a voice channel in a server. It's able to serve multiple servers at the same time such that music playing in one server has no effect on music playing in another server. I've also implemented a dynamic queuing system so that you can not only add new songs to the queue while music is already playing, but you can also shuffle, pause, and skip songs at any point as well.
 
 - `Play <YouTube link | search phrase>` Plays music from YouTube! Accepts either a YouTube link (playlists included) or a search phrase. If given a search phrase, it will search YouTube directly and give you the option to choose from the top 5 results.
-
 - `Skip` Skips the currently playing song and moves on to the next one in queue.
-
 - `Stop` Stops playing music, clears the queue of songs, and leaves the voice channel.
-
 - `Playing` Displays and links the currently playing song.
-
 - `Queue` Displays the next 5 songs to be played in queue.
-
 - `Repeat` Sets the currently playing song to repeat after it's done. Can be toggled on or off.
-
 - `Shuffle [toggle | t]` Shuffles the current queue of songs once. If provided the [toggle] or [t] option, it toggles the queue to be shuffled every time a new song is added to the queue.
-
 - `Pause` Pauses the currently playing song.
-
 - `Resume` Resumes the currently paused song.
-
 - `Restart` Restarts the currently playing song immediately.
 
 ## Moderation
