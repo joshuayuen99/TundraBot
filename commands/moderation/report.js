@@ -1,5 +1,6 @@
 const { MessageEmbed } = require("discord.js");
 const { stripIndents } = require("common-tags");
+const { createChannel } = require("../../functions.js");
 
 module.exports = {
     name: "report",

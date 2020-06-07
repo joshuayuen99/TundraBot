@@ -2,7 +2,7 @@ const { Client, MessageEmbed, Collection } = require("discord.js");
 const { config } = require("dotenv");
 const fs = require("fs");
 const { stripIndents } = require("common-tags");
-const { formatDate, formatDateLong } = require("./functions.js");
+const { createChannel, formatDate, formatDateLong } = require("./functions.js");
 
 function setup() {
 	const client = new Client({
