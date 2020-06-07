@@ -61,16 +61,24 @@ function setup() {
 				// TODO: send message in #general?
 				//message.channel.send("I couldn't send the log to the correct channel and I don't have permissions to create it.");
 			} else {
-				createChannel(member.guild, "admin", [{
+				await createChannel(member.guild, "admin", [{
 					id: member.guild.id,
 					deny: ["VIEW_CHANNEL"],
-				}]);
+				}])
+					.then(() => {
+						const logChannel = member.guild.channels.cache.find(channel => channel.name === "admin");
+
+						return logChannel.send(embedMsg);
+					})
+					.catch(err => {
+						console.log(err);
+					});;
 			}
+		} else { // Channel already exists
+			const logChannel = member.guild.channels.cache.find(channel => channel.name === "admin");
+
+			return logChannel.send(embedMsg);
 		}
-
-		const logChannel = member.guild.channels.cache.find(channel => channel.name === "admin");
-
-		return logChannel.send(embedMsg);
 	});
 
 	// When someone joins the guild
@@ -92,16 +100,24 @@ function setup() {
 				// TODO: send message in #general?
 				//message.channel.send("I couldn't send the log to the correct channel and I don't have permissions to create it.");
 			} else {
-				createChannel(member.guild, "admin", [{
+				await createChannel(member.guild, "admin", [{
 					id: member.guild.id,
 					deny: ["VIEW_CHANNEL"],
-				}]);
+				}])
+					.then(() => {
+						const logChannel = member.guild.channels.cache.find(channel => channel.name === "admin");
+
+						return logChannel.send(embedMsg);
+					})
+					.catch(err => {
+						console.log(err);
+					});
 			}
+		} else { // Channel already exists
+			const logChannel = member.guild.channels.cache.find(channel => channel.name === "admin");
+
+			return logChannel.send(embedMsg);
 		}
-
-		const logChannel = member.guild.channels.cache.find(channel => channel.name === "admin");
-
-		return logChannel.send(embedMsg);
 	});
 
 	client.on("guildCreate", async guild => {
@@ -110,16 +126,16 @@ function setup() {
 		const owner = await client.users.fetch(process.env.OWNERID);
 
 		const embedMsg = new MessageEmbed()
-				.setColor("GREEN")
-				.setTimestamp()
-				.setFooter(guild.name, guild.iconURL())
-				.setAuthor("Joined server :)", guild.iconURL())
-				.addField("Guild information", stripIndents`**\\> ID:** ${guild.id}
+			.setColor("GREEN")
+			.setTimestamp()
+			.setFooter(guild.name, guild.iconURL())
+			.setAuthor("Joined server :)", guild.iconURL())
+			.addField("Guild information", stripIndents`**\\> ID:** ${guild.id}
 				**\\> Name:** ${guild.name}
 				**\\> Member count:** ${guild.memberCount}
 				**\\> Created at:** ${formatDateLong(guild.createdTimestamp)}
 				**\\> Joined at:** ${formatDateLong(guild.joinedTimestamp)}`)
-				.addField("Server owner information", stripIndents`**\\> ID:** ${guild.owner.user.id}
+			.addField("Server owner information", stripIndents`**\\> ID:** ${guild.owner.user.id}
 				**\\> Username:** ${guild.owner.user.username}
 				**\\> Discord Tag:** ${guild.owner.user.tag}
 				**\\> Created account:** ${formatDate(guild.owner.user.createdAt)}`, true);
@@ -133,16 +149,16 @@ function setup() {
 		const owner = await client.users.fetch(process.env.OWNERID);
 
 		const embedMsg = new MessageEmbed()
-				.setColor("RED")
-				.setTimestamp()
-				.setFooter(guild.name, guild.iconURL())
-				.setAuthor("Left server :(", guild.iconURL())
-				.addField("Guild information", stripIndents`**\\> ID:** ${guild.id}
+			.setColor("RED")
+			.setTimestamp()
+			.setFooter(guild.name, guild.iconURL())
+			.setAuthor("Left server :(", guild.iconURL())
+			.addField("Guild information", stripIndents`**\\> ID:** ${guild.id}
 				**\\> Name:** ${guild.name}
 				**\\> Member count:** ${guild.memberCount}
 				**\\> Created at:** ${formatDateLong(guild.createdTimestamp)}
 				**\\> Joined at:** ${formatDateLong(guild.joinedTimestamp)}`)
-				.addField("Server owner information", stripIndents`**\\> ID:** ${guild.owner.user.id}
+			.addField("Server owner information", stripIndents`**\\> ID:** ${guild.owner.user.id}
 				**\\> Username:** ${guild.owner.user.username}
 				**\\> Discord Tag:** ${guild.owner.user.tag}
 				**\\> Created account:** ${formatDate(guild.owner.user.createdAt)}`, true);
@@ -214,7 +230,7 @@ function setup() {
 		if (!message.member) message.member = await message.guild.members.fetch(message.member);
 
 		// If we are waiting on a response from this member, skip the regular command handler
-		if(client.waitingResponse.has(message.author.id)) return;
+		if (client.waitingResponse.has(message.author.id)) return;
 
 		const messageArray = message.content.split(" ");
 		const cmd = messageArray[0].slice(process.env.PREFIX.length).toLowerCase();

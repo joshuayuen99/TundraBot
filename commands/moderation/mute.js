@@ -126,16 +126,24 @@ module.exports = {
 					if (!message.guild.me.hasPermission("MANAGE_CHANNELS")) {
 						message.channel.send("I couldn't send the log to the correct channel and I don't have permissions to create it.");
 					} else {
-						createChannel(message.guild, "admin", [{
+						await createChannel(message.guild, "admin", [{
 							id: message.guild.id,
 							deny: ["VIEW_CHANNEL"],
-						}]);
+						}])
+							.then(() => {
+								const logChannel = message.guild.channels.cache.find(channel => channel.name === "admin");
+
+								logChannel.send(embedMsg);
+							})
+							.catch(err => {
+								console.log(err);
+							});;
 					}
+				} else { // Channel already exists
+					const logChannel = message.guild.channels.cache.find(channel => channel.name === "admin");
+
+					return logChannel.send(embedMsg);
 				}
-
-				const logChannel = message.guild.channels.cache.find(channel => channel.name === "admin");
-
-				logChannel.send(embedMsg);
 
 				// Remove role after duration
 				setTimeout(() => {
