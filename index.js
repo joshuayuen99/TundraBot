@@ -56,18 +56,19 @@ function setup() {
 			.setTimestamp();
 
 		// Log activity and create channel if necessary
-		if (!message.guild.channels.cache.some(channel => channel.name === "admin")) {
-			if (!message.guild.me.hasPermission("MANAGE_CHANNELS")) {
-				message.channel.send("I couldn't send the log to the correct channel and I don't have permissions to create it.");
+		if (!member.guild.channels.cache.some(channel => channel.name === "admin")) {
+			if (!member.guild.me.hasPermission("MANAGE_CHANNELS")) {
+				// TODO: send message in #general?
+				//message.channel.send("I couldn't send the log to the correct channel and I don't have permissions to create it.");
 			} else {
-				createChannel(message.guild, "admin", [{
-					id: message.guild.id,
+				createChannel(member.guild, "admin", [{
+					id: member.guild.id,
 					deny: ["VIEW_CHANNEL"],
 				}]);
 			}
 		}
 
-		const logChannel = message.guild.channels.cache.find(channel => channel.name === "admin");
+		const logChannel = member.guild.channels.cache.find(channel => channel.name === "admin");
 
 		return logChannel.send(embedMsg);
 	});
@@ -86,18 +87,19 @@ function setup() {
 			.setTimestamp();
 
 		// Log activity and create channel if necessary
-		if (!message.guild.channels.cache.some(channel => channel.name === "admin")) {
-			if (!message.guild.me.hasPermission("MANAGE_CHANNELS")) {
-				message.channel.send("I couldn't send the log to the correct channel and I don't have permissions to create it.");
+		if (!member.guild.channels.cache.some(channel => channel.name === "admin")) {
+			if (!member.guild.me.hasPermission("MANAGE_CHANNELS")) {
+				// TODO: send message in #general?
+				//message.channel.send("I couldn't send the log to the correct channel and I don't have permissions to create it.");
 			} else {
-				createChannel(message.guild, "admin", [{
-					id: message.guild.id,
+				createChannel(member.guild, "admin", [{
+					id: member.guild.id,
 					deny: ["VIEW_CHANNEL"],
 				}]);
 			}
 		}
 
-		const logChannel = message.guild.channels.cache.find(channel => channel.name === "admin");
+		const logChannel = member.guild.channels.cache.find(channel => channel.name === "admin");
 
 		return logChannel.send(embedMsg);
 	});
