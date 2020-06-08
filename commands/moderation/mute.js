@@ -47,7 +47,7 @@ module.exports = {
 				}));
 		}
 
-		const mMember = message.mentions.members.first() || message.guild.members.get(args[0]);
+		const mMember = message.mentions.members.first() || message.guild.members.cache.get(args[0]);
 
 		// No member found
 		if (!mMember) {
@@ -102,9 +102,11 @@ module.exports = {
 
 				// If the role doesn't already exist, make it
 				if (!message.guild.roles.cache.some(role => role.name === "tempmute")) {
-					message.guild.roles.create({
-						name: "tempmute",
-						mentionable: false,
+					await message.guild.roles.create({
+						data: {
+							name: "tempmute",
+							mentionable: false,
+						}
 					});
 				}
 
@@ -119,7 +121,7 @@ module.exports = {
 				});
 
 				mMember.roles.add(role);
-				mMember.voice.setMute(true);
+				if(mMember.voice.channel) mMember.voice.setMute(true);
 
 				// Log activity and create channel if necessary
 				if (!message.guild.channels.cache.some(channel => channel.name === "admin")) {
@@ -142,13 +144,13 @@ module.exports = {
 				} else { // Channel already exists
 					const logChannel = message.guild.channels.cache.find(channel => channel.name === "admin");
 
-					return logChannel.send(embedMsg);
+					logChannel.send(embedMsg);
 				}
 
 				// Remove role after duration
 				setTimeout(() => {
 					mMember.roles.remove(role);
-					mMember.voice.setMute(false);
+					if(mMember.voice.channel) mMember.voice.setMute(false);
 				}, ms(duration))
 			} else if (emoji === CANCEL) {
 				msg.delete();
