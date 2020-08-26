@@ -70,7 +70,26 @@ module.exports = {
 			.catch(err => {
 				console.error("Error in promptMessage: ", err);
 			});
-	},
+    },
+    
+    waitPollResponse: async function (message, time, validReactions) {
+        time *= 1000;   // Convert from s to ms
+
+        async function setReactions() {
+			for (const reaction of validReactions) message.react(reaction);
+		}
+
+        await setReactions();
+        
+        const filter = (reaction, user) => validReactions.includes(reaction.emoji.name);
+
+        return message
+        .awaitReactions(filter, { time: time })
+        .then(collected => collected)
+        .catch(err => {
+            console.error("Error in waitPollResponse: ", err);
+        });
+    },
 
 	waitResponse: async function (client, message, author, time) {
 		client.waitingResponse.add(author.id);

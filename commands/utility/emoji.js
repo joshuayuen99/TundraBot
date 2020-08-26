@@ -6,7 +6,7 @@ module.exports = {
     aliases: ["unicode", "uni"],
     category: "utility",
     description: "Gives the unicode for the entered emoji(s).",
-    usage: "emoji <emoji> [...emoji] ",
+    usage: "emoji <emoji> [...emoji]",
     run: async (client, message, args) => {
         if (!args[0]) return message.reply("Please enter an emoji");
 
