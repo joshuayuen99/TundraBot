@@ -30,6 +30,7 @@ module.exports = {
         }
 
         let momentEventDate = moment(eventDate.content + " " + timeOfDay.content, "MM/DD/YY hh:mm a");
+        if (!momentEventDate.isValid()) return message.reply("I couldn't understand the time and date of the event. Please enter it as shown when prompted.");
 
         const promptEmbed = new MessageEmbed()
             .setColor("PURPLE")
