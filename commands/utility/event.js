@@ -35,7 +35,7 @@ module.exports = {
         const promptEmbed = new MessageEmbed()
             .setColor("PURPLE")
             .setFooter("Starts at:")
-            .setTimestamp(momentEventDate.toDate())
+            .setTimestamp(momentEventDate.toISOString())
             .setTitle("Scheduled Event")
             .setDescription(stripIndents`**${event.content}**
                         
