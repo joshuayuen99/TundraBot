@@ -34,13 +34,15 @@ module.exports = {
 
         const promptEmbed = new MessageEmbed()
             .setColor("PURPLE")
-            .setThumbnail(message.author.displayAvatarURL())
-            .setFooter(`React with a ${HAND_EMOJI} emoji to be alerted when the event starts!`)
+            .setFooter("Starts at:")
+            .setTimestamp(momentEventDate.toDate())
             .setTitle("Scheduled Event")
             .setDescription(stripIndents`**${event.content}**
+                        
+            **Scheduled by:** ${message.member}
             
-            **Created by:** ${message.member}
-            **Starts at:** ${momentEventDate.format("LT")}`);
+            React with a ${HAND_EMOJI} emoji to be alerted when the event starts!
+            `);
 
         // Log activity and create channel if necessary
         if (!message.guild.channels.cache.some(channel => channel.name === "events")) {
@@ -71,7 +73,6 @@ module.exports = {
                                 const personalEmbed = new MessageEmbed()
                                     .setColor("BLUE")
                                     .setFooter(`From the server: ${message.guild.name}`, message.guild.iconURL())
-                                    .setTimestamp()
                                     .setTitle("Event starting now!")
                                     .setDescription(stripIndents`The event you signed up for: **${event.content}** is starting now!`);
 
@@ -114,7 +115,6 @@ module.exports = {
                     const personalEmbed = new MessageEmbed()
                         .setColor("BLUE")
                         .setFooter(`From the server: ${message.guild.name}`, message.guild.iconURL())
-                        .setTimestamp()
                         .setTitle("Event starting now!")
                         .setDescription(stripIndents`The event you signed up for: **${event.content}** is starting now!`);
 
