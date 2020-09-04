@@ -2,6 +2,7 @@ const { MessageEmbed } = require("discord.js");
 const { stripIndents } = require("common-tags");
 const { createChannel, formatDateLong, waitPollResponse, waitResponse } = require("../../functions.js");
 const moment = require("moment");
+const momentTimezone = require("moment-timezone");
 
 const HAND_EMOJI = "✋";
 
@@ -23,13 +24,20 @@ module.exports = {
             return message.reply("Cancelling event.");
         }
 
+        message.channel.send(stripIndents`What timezone are you in?
+        (Visit https://en.wikipedia.org/wiki/List_of_tz_database_time_zones and copy and paste your **TZ database name**)`);
+        let timezone = await waitResponse(client, message, message.author, 120);
+        if (!timezone) {
+            return message.reply("Cancelling event.");
+        }
+
         message.channel.send("What time will the event take place? (hh:mm AM/PM)");
         let timeOfDay = await waitResponse(client, message, message.author, 30);
         if (!timeOfDay) {
             return message.reply("Cancelling event.");
         }
 
-        let momentEventDate = moment(eventDate.content + " " + timeOfDay.content, "MM/DD/YY hh:mm a");
+        let momentEventDate = momentTimezone.tz(eventDate.content + " " + timeOfDay.content, "MM/DD/YY hh:mm a", timezone.content);
         if (!momentEventDate.isValid()) return message.reply("I couldn't understand the time and date of the event. Please enter it as shown when prompted.");
 
         const promptEmbed = new MessageEmbed()
