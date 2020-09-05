@@ -118,9 +118,8 @@ module.exports = {
                     participantsString = "`None`";
                 } else if (maxParticipants === 0) { // No participants limit
                     if (participants.size <= maxShownParticipants) { // maxShownParticipants or less
-                        const iterator = participants.entries();
-                        for (let participant of iterator) {
-                            participantsString += `${participant[0]}\n`;
+                        for (let participant of participants) {
+                            participantsString += `${participant}\n`;
                         }
                     } else { // More than maxShownParticipants
                         const iterator = participants[Symbol.iterator]();
@@ -131,9 +130,8 @@ module.exports = {
                     }
                 } else { // There's a participants limit
                     if (participants.size <= maxParticipants) { // maxParticipants or less
-                        const iterator = participants.entries();
-                        for (let participant of iterator) {
-                            participantsString += `${participant[0]}\n`;
+                        for (let participant of participants) {
+                            participantsString += `${participant}\n`;
                         }
                     } else { // More than maxParticipants
                         const iterator = participants[Symbol.iterator]();
@@ -224,11 +222,21 @@ module.exports = {
 
             // Let everyone who responded know the event is starting
             async function alertParticipants() {
-                for (user of participants) {
-                    let respondent = await client.users.fetch(user.id);
-                    if (respondent.bot) continue;
+                if (maxParticipants !== 0 && participants.size > maxParticipants) { // Only let those who signed up before the limit was hit know
+                    const iterator = participants[Symbol.iterator]();
+                    for (let i = 0; i < maxParticipants; i++) {
+                        let respondent = await client.users.fetch(iterator.next().value.id);
+                        if (respondent.bot) continue;
 
-                    respondent.send(personalEmbed);
+                        respondent.send(personalEmbed);
+                    }
+                } else { // Let everyone know
+                    for (user of participants) {
+                        let respondent = await client.users.fetch(user.id);
+                        if (respondent.bot) continue;
+    
+                        respondent.send(personalEmbed);
+                    }
                 }
             }
 
