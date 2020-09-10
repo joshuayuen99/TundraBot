@@ -38,6 +38,10 @@ function getAll(client, message) {
     client.categories.forEach(category => {
         embedMsg.addField(stripIndents`**${category[0].toUpperCase() + category.slice(1)}**`, commands(category), true);
     });
+
+    embedMsg.addField("Detailed usage", `Type \`${process.env.PREFIX}help <command>\` to get detailed information about the given command.`);
+
+
     return message.channel.send(embedMsg);
 }
 
