@@ -108,8 +108,10 @@ module.exports = {
 						await createChannel(message.guild, "admin", [{
 							id: message.guild.id,
 							deny: ["VIEW_CHANNEL"],
-						}])
-							.then(() => {
+                        }, {
+                            id: client.user.id,
+                            allow: ["VIEW_CHANNEL"]
+                        }]).then(() => {
 								const logChannel = message.guild.channels.cache.find(channel => channel.name === "admin");
 
 								logChannel.send(embedMsg);

@@ -4,6 +4,10 @@
 
 A personal Discord bot made in my free time and used by me and my friends. I've been developing it in chunks ever since November 2019, and still plan to continue improving it and adding new features moving forward. Updated for Discord.js v12.
 
+Main features include playing music, server moderation, organizing events and polls, and general info commands about the server and its members.
+
+To add me to your server click [here](https://discord.com/api/oauth2/authorize?client_id=647196546492006423&permissions=309587062&scope=bot)!
+
 # Table of Contents
 
 <!--ts-->
@@ -177,6 +181,7 @@ My bot can play music or other YouTube links directly through Discord via a voic
 - `Restart` Restarts the currently playing song immediately.
 
 ## Moderation
+My bot will automatically log whenever someone joins and leaves the server, along with when they first joined. Alongside this feature, my bot will provide logs for server admins whenever commands such as `ban`, `kick`, and `mute` are used, including information such as who issued the command and for what reason. These logs will be posted in a private admin channel that will be created automatically if it doesn't already exist. It will default to disallowing the @everyone role from being able to read it, thus allowing only members with Administrator permission to see it.
 
 - `Ban <mention | id> <reason>` Bans a member of the server and logs the reason to the admins.
 - `Kick <mention | id> <reason>` Kicks a member of the server and logs the reason to the admins.
@@ -186,6 +191,8 @@ My bot can play music or other YouTube links directly through Discord via a voic
 
 ## Utility
 
+- `Event` Creates an event that members of the server can sign up for, just provide the date and time! It gets updated in real-time whenever someone signs up for it, and automatically DM's each participant when the event starts. It allows you to set a limit for how many people can sign up, and keeps track of a waitlist of who is next in line in case someone drops out.
+- `Poll` Creates a poll that members of the server can respond to! Input is given by reacting to the poll with emojis that the poll creator specifies (👍 and 👎 for example). The creator just needs to provide how long the poll should last and when the time comes, the poll will be automatically updated to show what the final results were. Each participant in the poll will also be DM'd with the final results.
 - `RNG [min max]` Randomly picks a number between [min] and [max] if provided, or 0-100 otherwise.
 - `Emoji <emoji> [...emoji]` Gives the unicode for the entered emoji(s).
 
