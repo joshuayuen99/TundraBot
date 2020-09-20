@@ -74,7 +74,9 @@ module.exports = {
 
         var songInfo;
         if (!ytdl.validateURL(args[0])) {
-            let { results, pageInfo } = await search(args.join(" "), videoOpts);
+            let { results, pageInfo } = await search(args.join(" "), videoOpts).catch((err) => {
+                return message.channel.send("I had trouble searching for that song. Cancelling.");
+            });
 
             let videos = "";
             let videoDetailsList = [];
@@ -90,7 +92,7 @@ module.exports = {
                 };
                 videoDetailsList.push(videoInfo);
             }
-            if(!videos) {
+            if (!videos) {
                 return message.reply("I couldn't find any results with that title.");
             }
             const embedMsg = new MessageEmbed()
@@ -105,8 +107,8 @@ module.exports = {
                     msg.delete();
                     msg.channel.send("Cancelling play request...");
                     return;
-				}
-				
+                }
+
                 // Check user choice
                 switch (response.content) {
                     case `${process.env.PREFIX}play 1`:
@@ -137,9 +139,15 @@ module.exports = {
             title: songInfo.title,
             url: songInfo.video_url,
         };
-        queueSong(client, message, song);
+        await queueSong(client, message, song).catch((err) => {
+            return message.channel.send(`There was an error playing this song. Try again and if this issue persists, please contact my creator ${process.env.OWNERNAME}${process.env.OWNERTAG}`);
+        });
         serverQueue = client.musicGuilds.get(message.guild.id);
-        return message.channel.send(`**${song.title}** has been added to the queue! There are currently **${serverQueue.songs.length}** songs in queue.`);
+        if (serverQueue.songs.length > 1) {
+            return message.channel.send(`\`${song.title}\` has been added to the queue! There are currently \`${serverQueue.songs.length}\` songs in queue.`);
+        } else {
+            return message.channel.send(`\`${song.title}\` has been added to the queue! There is currently \`${serverQueue.songs.length}\` song in queue.`);
+        }
     }
 }
 
