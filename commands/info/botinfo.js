@@ -16,7 +16,7 @@ module.exports = {
             .setThumbnail(bicon)
             .addField("Bot name", client.user.username)
 			.addField("My owner", `${process.env.OWNERNAME}${process.env.OWNERTAG}`)
-			.addField("GitHub link", "https://github.com/joshuayuen99/discordbot")
+			.addField("Source code", "https://github.com/joshuayuen99/discordbot")
 			.addField("Server count", client.guilds.cache.size)
             .addField("Created at", formatDateLong(client.user.createdAt));
 
