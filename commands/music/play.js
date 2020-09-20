@@ -171,6 +171,7 @@ async function createQueue(client, message, song) {
 
     try {
         let connection = await queueConstruct.voiceChannel.join();
+        connection.voice.setSelfDeaf(true);
         queueConstruct.connection = connection;
         play(client, message.guild.id);
     }
