@@ -73,7 +73,7 @@ function setup() {
                     return logChannel.send(embedMsg);
                 })
                     .catch(err => {
-                        console.log(err);
+                        console.error("guildMemberRemove event error: ", err);
                     });;
             }
         } else { // Channel already exists
@@ -114,7 +114,7 @@ function setup() {
                     return logChannel.send(embedMsg);
                 })
                     .catch(err => {
-                        console.log(err);
+                        console.error("guildMemberAdd event error: ", err);
                     });
             }
         } else { // Channel already exists

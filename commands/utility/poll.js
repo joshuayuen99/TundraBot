@@ -69,12 +69,14 @@ module.exports = {
             .addField("Created by", message.member);
 
         postChannel.send(promptEmbed).then(async msg => {
-            message.reply(`Poll created! Check the ${postChannel} channel to find it.`);
+            const pollCreationMessage = await message.reply(`Poll created! Check the ${postChannel} channel to find it.`);
 
             const results = await waitPollResponse(msg, ms(duration.content) / 1000, emojisList).catch((err) => {
-                console.log(err);
+                console.error("Poll error: ", err);
                 return message.reply("I had trouble reacting with those emojis...");
             });
+
+            if (results.size == 0) return;
 
             let participants = [];
             let resultsString = "";

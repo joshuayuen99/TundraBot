@@ -118,7 +118,7 @@ module.exports = {
                             logChannel.send(embedMsg);
                         })
                             .catch(err => {
-                                console.log(err);
+								console.error("kick command create admin channel error: ", err);
                             });;
                     }
                 } else { // Channel already exists

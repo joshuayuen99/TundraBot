@@ -60,7 +60,7 @@ module.exports = {
             for (const reaction of validReactions) {
                 message.react(reaction).catch((err) => {
                     message.channel.send("I had trouble reacting with those emojis...");
-                    console.log(err);
+                    console.error("promptMessage error: ", err);
                 });
             }
         }
@@ -83,8 +83,9 @@ module.exports = {
         async function setReactions() {
             for (const reaction of validReactions) {
                 message.react(reaction).catch((err) => {
-                    message.channel.send("I had trouble reacting with those emojis...");
-                    console.log(err);
+                    message.channel.send("I had trouble reacting with those emojis... removing the poll.");
+                    if(message.deletable) message.delete();
+                    console.error("waitPollResponse error: ", err);
                 });
             }
         }

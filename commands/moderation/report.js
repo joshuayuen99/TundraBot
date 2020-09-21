@@ -68,7 +68,7 @@ module.exports = {
                     return message.reply("Your report was submitted.");
                 })
                     .catch(err => {
-                        console.log(err);
+                        console.error("report command create admin channel error: ", err);
                     });;
             }
         } else { // Channel already exists
