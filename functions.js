@@ -111,7 +111,9 @@ module.exports = {
         return message.channel
             .awaitMessages(filter, { max: 1, time: time })
             .then((collected) => {
-                client.waitingResponse.delete(author.id);
+                setTimeout(() => {
+                    client.waitingResponse.delete(author.id);
+                }, 1000);
                 return collected.first()
             })
             .catch(err => {

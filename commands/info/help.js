@@ -11,12 +11,12 @@ module.exports = {
         if (args[0]) {
             return getCommand(client, message, args[0]);
         } else {
-            return getAll(client, message);
+            return getAll(client, message, settings);
         }
     }
 };
 
-function getAll(client, message) {
+function getAll(client, message, settings) {
     const embedMsg = new MessageEmbed()
         .setColor("RANDOM")
         .setDescription("**Commands**");
@@ -41,7 +41,7 @@ function getAll(client, message) {
         }
     });
 
-    embedMsg.addField("Detailed usage", `Type \`${process.env.PREFIX}help <command>\` to get detailed information about the given command.`);
+    embedMsg.addField("Detailed usage", `Type \`${settings.prefix}help <command>\` to get detailed information about the given command.`);
 
 
     return message.channel.send(embedMsg);

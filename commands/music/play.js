@@ -96,7 +96,7 @@ module.exports = {
                 return message.reply("I couldn't find any results with that title.");
             }
             const embedMsg = new MessageEmbed()
-                .setDescription(stripIndents`Type \`${process.env.PREFIX}play 1-5\` for the video result you want to play, or anything else to cancel.`)
+                .setDescription(stripIndents`Type \`${settings.prefix}play 1-5\` for the video result you want to play, or anything else to cancel.`)
                 .addField("Results", videos);
             // Get user choice
             const choice = await message.reply(embedMsg).then(async msg => {
@@ -111,11 +111,11 @@ module.exports = {
 
                 // Check user choice
                 switch (response.content) {
-                    case `${process.env.PREFIX}play 1`:
-                    case `${process.env.PREFIX}play 2`:
-                    case `${process.env.PREFIX}play 3`:
-                    case `${process.env.PREFIX}play 4`:
-                    case `${process.env.PREFIX}play 5`:
+                    case `${settings.prefix}play 1`:
+                    case `${settings.prefix}play 2`:
+                    case `${settings.prefix}play 3`:
+                    case `${settings.prefix}play 4`:
+                    case `${settings.prefix}play 5`:
                         //songInfo = await ytdl.getInfo(results[parseInt(response.content) - 1].link);
                         songInfo = videoDetailsList[parseInt(response.content.charAt(response.content.length - 1)) - 1];
                         songInfo.title = he.decode(songInfo.title);
