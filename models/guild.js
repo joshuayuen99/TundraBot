@@ -5,6 +5,7 @@ const guildSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     guildID: String,
     guildName: String,
+    timeJoined: Date,
     prefix: {
         type: String,
         default: defaults.prefix
@@ -24,7 +25,11 @@ const guildSchema = mongoose.Schema({
     adminRole: {
         type: String,
         default: defaults.adminRole
-    }
+    },
+    messages: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Message"
+    }]
 });
 
 module.exports = mongoose.model("Guild", guildSchema);

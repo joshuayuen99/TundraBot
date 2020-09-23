@@ -82,6 +82,9 @@ module.exports = async (client, message) => {
 
     if (cmd.length === 0) return;
 
+    // Save to database
+    client.addMessage(message, settings);
+
     let command = client.commands.get(cmd); // Set the command to call
     if (!command) command = client.commands.get(client.aliases.get(cmd));    // If the command was not found, check aliases
 

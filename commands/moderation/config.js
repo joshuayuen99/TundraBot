@@ -33,7 +33,14 @@ module.exports = {
                 break;
             }
             default:
+                let settingsString = "";
+                for (let setting in settings) {
+                    settingsString += `\`${setting}\`: ${settings[setting]}\n`;
+                }
 
+                message.channel.send(settingsString).catch((err) => {
+                    message.channel.send("Error displaying current config.");
+                });
                 break;
         }
     }

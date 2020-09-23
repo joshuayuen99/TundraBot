@@ -1,10 +1,11 @@
 const { MessageEmbed } = require("discord.js");
 const { stripIndents } = require("common-tags");
 const { formatDate, formatDateLong } = require("../functions");
+const { Guild } = require("../models");
 
 module.exports = async (client, guild) => {
     try {
-        await client.getGuild(newGuild);
+        await Guild.findOneAndDelete({ guildID: guild.id });
     } catch (err) {
         console.error("Leave server error: ", err);
     }

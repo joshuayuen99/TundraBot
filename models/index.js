@@ -1,5 +1,6 @@
 const { model } = require("./guild");
 
 module.exports = {
-    Guild: require("./guild")
+    Guild: require("./guild"),
+    Message: require("./message")
 };
