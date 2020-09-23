@@ -66,7 +66,7 @@ module.exports = async (client, message) => {
     try {
         settings = await client.getGuild(message.guild);
     } catch (err) {
-        console.err("message event error: ", err);
+        console.error("message event error: ", err);
     }
 
     // Sent in a guild

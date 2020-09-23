@@ -1,9 +1,15 @@
+const { stripIndents } = require("common-tags");
+
 module.exports = {
     name: "config",
     aliases: ["configs"],
     category: "moderation",
-    description: "Allows members with the \`Manage Server\` permission to edit the config for the bot. No arguments will display all the current settings. config <setting> will display the current value of that particular setting.",
-    usage: "config [setting] [new setting] (ex. config prefix ~)",
+    description: stripIndents`Allows members with the \`Manage Server\` permission to edit the config for the bot.
+
+    No arguments will display all the current settings.
+    config <setting> will display the current value of that particular setting.
+    config <setting> <new value> will change the value of that particular setting.`,
+    usage: "config [setting] [new value]",
     run: async (client, message, args, settings) => {
         if (!message.member.hasPermission("MANAGE_GUILD")) {
             return message.reply("Sorry but you don't have the permissions to change the configs. You must have the \`Manage Server\` permission.");
@@ -33,9 +39,11 @@ module.exports = {
                 break;
             }
             default:
+                const editableSettings = ["prefix"];
                 let settingsString = "";
                 for (let setting in settings) {
-                    settingsString += `\`${setting}\`: ${settings[setting]}\n`;
+                    if (!editableSettings.includes(setting)) continue;
+                    settingsString += `**${setting}**: \`${settings[setting]}\`\n`;
                 }
 
                 message.channel.send(settingsString).catch((err) => {

@@ -3,9 +3,11 @@ const { Guild, Message } = require("../models");
 
 module.exports = (client) => {
     client.getGuild = async (guild) => {
-        let data = await Guild.findOne({ guildID: guild.id }).toObject;
-        if (data) return data;
-        else return client.config.defaultGuildSettings;
+        return Guild.findOne({ guildID: guild.id })
+            .then((guild, err) => {
+                if (guild) return guild.toObject();
+                else return client.config.defaultGuildSettings;
+            });
     };
 
     client.updateGuild = async (guild, settings) => {
@@ -28,24 +30,20 @@ module.exports = (client) => {
                 text: message.content,
                 command: message.content.split(" ")[0].slice(settings.prefix.length).toLowerCase(),
                 userID: message.author.id,
-                username: message.author.username
+                username: message.author.username,
+                guildID: message.guild.id
             },
         });
-        
+
         await newMessage.save();
-        await Guild.findOneAndUpdate( { guildID: message.guild.id }, {
-            $push: {messages: newMessage._id }})
+        await Guild.findOneAndUpdate({ guildID: message.guild.id }, {
+            $push: { messages: newMessage._id }
+        })
             .catch((err) => {
                 console.error("Error adding message to database: ", err);
             });
-        // await guildObject.messages.push(newMessage._id);
-        // await guildObject.save();
 
         return;
-
-        await Guild.findOneAndUpdate({ guildID: messageObject.guildID }, { $push: {messages: messageObject }}).catch((err) => {
-            console.error("Error adding message to guild: ", err);
-        });
     }
 
     client.createGuild = async (settings) => {
@@ -58,7 +56,7 @@ module.exports = (client) => {
     };
 
     client.clean = async (client, text) => {
-        if (typeof(text) === "string") {
+        if (typeof (text) === "string") {
             text = text
                 .replace(/`/g, "`" + String.fromCharCode(8203))
                 .replace(/@/g, "@" + String.fromCharCode(8203))
@@ -69,7 +67,7 @@ module.exports = (client) => {
                 .replace(process.env.MONGOOSE_USERNAME, "YEET")
                 .replace(process.env.MONGOOSE_PASSWORD, "YEET");
 
-                return text;
+            return text;
         } else {
             return text;
         }

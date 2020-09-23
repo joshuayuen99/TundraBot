@@ -6,7 +6,8 @@ const messageSchema = mongoose.Schema({
         text: { type: String, required: true },
         command: String,
         userID: String,
-        username: String
+        username: String,
+        guildID: String
     },
 },
     {
