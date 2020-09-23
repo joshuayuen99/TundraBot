@@ -14,9 +14,9 @@ module.exports = client => {
 
             if (pull.name) { // Name of the command
                 client.commands.set(pull.name, pull);
-                table.addRow(file, "\u2714");
+                table.addRow(pull.name, "\u2714");
             } else {    // If there is no command name specified
-                table.addRow(file, "\u2716");
+                table.addRow(pull.name, "\u2716");
                 continue;
             }
 
@@ -25,6 +25,6 @@ module.exports = client => {
                 pull.aliases.forEach(alias => client.aliases.set(alias, pull.name));
             }
         }
-    })
+    });
     console.log(table.toString());
 }
