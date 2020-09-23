@@ -7,7 +7,7 @@ module.exports = {
     category: "info",
     description: "Returns information about the bot.",
     usage: "botinfo",
-    run: async (client, message, args) => {
+    run: async (client, message, args, settings) => {
         const bicon = client.user.displayAvatarURL();
 
         const embedMsg = new MessageEmbed()

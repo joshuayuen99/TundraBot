@@ -11,7 +11,7 @@ module.exports = {
     category: "fun",
     description: "Calculates the love affinity you have with another user.",
     usage: "love [mention | id | username]",
-    run: async (client, message, args) => {
+    run: async (client, message, args, settings) => {
         let person = getMember(message, args[0]);
 
         if (!person || message.author.id === person.id) {

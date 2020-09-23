@@ -7,7 +7,7 @@ module.exports = {
     category: "info",
     description: "Returns information about the oldest member or user(account) of the server.",
     usage: "oldest <member | user | account>",
-    run: async (client, message, args) => {
+    run: async (client, message, args, settings) => {
         if (!args[0]) {
             if (message.deletable) message.delete();
             return message.reply(`Please specify "member", "user", or "account" as an argument`)

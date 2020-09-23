@@ -18,7 +18,7 @@ module.exports = {
     category: "music",
     description: "Plays music in the current channel.",
     usage: "play <youtube link | search phrase>",
-    run: async (client, message, args) => {
+    run: async (client, message, args, settings) => {
         // No link provided
         if (!args[0]) {
             return message.reply("Please enter a Youtube link to play or search phrase.")

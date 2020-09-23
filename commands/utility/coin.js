@@ -6,7 +6,7 @@ module.exports = {
     category: "utility",
     description: "Flips a coin!",
     usage: "coin",
-    run: async (client, message, args) => {
+    run: async (client, message, args, settings) => {
         const result = Math.round(Math.random());
 
         let resultString;

@@ -8,7 +8,7 @@ module.exports = {
     category: "moderation",
     description: "Suggests a feature to implement.",
     usage: "suggest <suggestion>",
-    run: async (client, message, args) => {
+    run: async (client, message, args, settings) => {
         // If there was no suggestion specified
         if (!args[0]) {
             if (message.deletable) message.delete();

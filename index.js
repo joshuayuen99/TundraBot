@@ -11,6 +11,10 @@ function setup() {
         path: __dirname + "/.env"
     });
 
+    client.mongoose = require("./utils/mongoose");
+    client.config = require("./config");
+    require("./utils/mongooseFunctions")(client);
+
     client.commands = new Collection();
     client.aliases = new Collection();
 
@@ -25,6 +29,8 @@ function setup() {
 
     // Set of people we are currently waiting on a response from so that we can ignore any further commands until we get it
     client.waitingResponse = new Set();
+
+    client.mongoose.init();
 
     client.login(process.env.DISCORDTOKEN);
 }

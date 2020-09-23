@@ -11,7 +11,7 @@ module.exports = {
     category: "utility",
     description: "Schedules an event to begin at a given time. Anyone who would like to participate in the event can respond to be notified when it begins.",
     usage: "event",
-    run: async (client, message, args) => {
+    run: async (client, message, args, settings) => {
         message.channel.send("What channel should I post the event in? (type `here` for the current one)");
         let postChannelMessage = await waitResponse(client, message, message.author, 120);
         if (!postChannelMessage) {

@@ -3,7 +3,7 @@ module.exports = {
     category: "music",
     description: "Stops playing music.",
     usage: "stop",
-    run: async (client, message, args) => {
+    run: async (client, message, args, settings) => {
         const serverQueue = client.musicGuilds.get(message.guild.id);
         if (!serverQueue) {
             return message.reply("There isn't a song currently playing.")

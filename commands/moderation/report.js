@@ -7,7 +7,7 @@ module.exports = {
     category: "moderation",
     description: "Reports a member.",
     usage: "report <mention | id> <reason>",
-    run: async (client, message, args) => {
+    run: async (client, message, args, settings) => {
         if (message.deletable) message.delete();
 
         // No user specified

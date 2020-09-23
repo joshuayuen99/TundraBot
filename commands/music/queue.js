@@ -7,7 +7,7 @@ module.exports = {
     category: "music",
     description: "Displays the current queue.",
     usage: "queue",
-    run: async (client, message, args) => {
+    run: async (client, message, args, settings) => {
         const serverQueue = client.musicGuilds.get(message.guild.id);
         if (!serverQueue) return message.channel.send("There isn't a queue currently.");
 

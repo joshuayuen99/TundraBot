@@ -10,7 +10,7 @@ module.exports = {
     decsription: "Temporarily mutes the member for the specified duration so they can't talk or type.",
     usage: `mute <mention | id> <duration (#s/m/h)>
 	eg. mute @TundraBot 10m`,
-    run: async (client, message, args) => {
+    run: async (client, message, args, settings) => {
         const CONFIRM = "💯";
         const CANCEL = "\u274c";    // red "X" emoji
 

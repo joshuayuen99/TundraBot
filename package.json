@@ -33,6 +33,7 @@
     "he": "^1.2.0",
     "moment": "^2.27.0",
     "moment-timezone": "^0.5.31",
+    "mongoose": "^5.10.6",
     "node-gyp": "^5.1.1",
     "node-opus": "^0.3.3",
     "youtube-search": "^1.1.4",

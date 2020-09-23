@@ -1,7 +1,14 @@
 const { MessageEmbed } = require("discord.js");
 const { stripIndents } = require("common-tags");
+const { formatDate, formatDateLong } = require("../functions");
 
 module.exports = async (client, guild) => {
+    try {
+        await client.getGuild(newGuild);
+    } catch (err) {
+        console.error("Leave server error: ", err);
+    }
+
     console.log(`Left guild: ${guild.name}`);
 
     const owner = await client.users.fetch(process.env.OWNERID);

@@ -1,5 +1,6 @@
 const { MessageEmbed } = require("discord.js");
 const { stripIndents } = require("common-tags");
+const { formatDate } = require("../functions");
 
 module.exports = async (client, message) => {
     if (message.author.bot) return;  // if a bot sent the message
@@ -60,15 +61,23 @@ module.exports = async (client, message) => {
 
         return message.channel.send("Message my master TundraBuddy#4650 instead!");
     }
+    
+    let settings;
+    try {
+        settings = await client.getGuild(message.guild);
+    } catch (err) {
+        console.err("message event error: ", err);
+    }
+
     // Sent in a guild
-    if (!message.content.startsWith(process.env.PREFIX)) return; // if the message did not contain the command prefix
+    if (!message.content.startsWith(settings.prefix)) return; // if the message did not contain the command prefix
     if (!message.member) message.member = await message.guild.members.fetch(message.member);
 
     // If we are waiting on a response from this member, skip the regular command handler
     if (client.waitingResponse.has(message.author.id)) return;
 
     const messageArray = message.content.split(" ");
-    const cmd = messageArray[0].slice(process.env.PREFIX.length).toLowerCase();
+    const cmd = messageArray[0].slice(settings.prefix.length).toLowerCase();
     const args = messageArray.slice(1);
 
     if (cmd.length === 0) return;
@@ -78,7 +87,7 @@ module.exports = async (client, message) => {
 
     if (command) {
         try {
-            command.run(client, message, args);
+            command.run(client, message, args, settings);
         } catch (err) {
             console.error("Error running command: ", err);
         }

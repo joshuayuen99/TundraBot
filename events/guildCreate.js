@@ -1,7 +1,19 @@
 const { MessageEmbed } = require("discord.js");
 const { stripIndents } = require("common-tags");
+const { formatDate, formatDateLong } = require("../functions");
 
 module.exports = async (client, guild) => {
+    try {
+        const newGuild = {
+            guildID: guild.id,
+            guildName: guild.name
+        };
+
+        await client.createGuild(newGuild);
+    } catch (err) {
+        console.error("Join server error: ", err);
+    }
+
     console.log(`Joined new guild: ${guild.name}`);
 
     const owner = await client.users.fetch(process.env.OWNERID);

@@ -11,7 +11,7 @@ module.exports = {
     category: "utility",
     description: "Starts a poll for a given duration. Responses are given by responding to the poll with emojis. The creator and anyone who participates in the poll will be notified of the results when it finishes.",
     usage: "poll",
-    run: async (client, message, args) => {
+    run: async (client, message, args, settings) => {
         message.channel.send("What channel should I post the poll in? (type `here` for the current one)");
         let postChannelMessage = await waitResponse(client, message, message.author, 120);
         if (!postChannelMessage) {

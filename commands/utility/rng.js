@@ -8,7 +8,7 @@ module.exports = {
     category: "utility",
     description: "Provides a random number from <min> to <max> or from 0-100 by default.",
     usage: "rng [<min max>]",
-    run: async (client, message, args) => {
+    run: async (client, message, args, settings) => {
         let min, max;
         if (args[0] && args[1]) {
             min = parseInt(args[0]);

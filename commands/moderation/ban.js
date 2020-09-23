@@ -7,7 +7,7 @@ module.exports = {
 	category: "moderation",
 	decsription: "Bans the member.",
 	usage: "ban <mention | id> <reason>",
-	run: async (client, message, args) => {
+    run: async (client, message, args, settings) => {
 		const CONFIRM = "💯";
 		//const CONFIRM = "\u1f4af";  // "100" emoji
 		const CANCEL = "\u274c";    // red "X" emoji

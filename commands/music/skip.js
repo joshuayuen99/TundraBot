@@ -4,7 +4,7 @@ module.exports = {
     category: "music",
     description: "Skips the currently playing song.",
     usage: "skip",
-    run: async (client, message, args) => {
+    run: async (client, message, args, settings) => {
         const serverQueue = client.musicGuilds.get(message.guild.id);
         if (!serverQueue) {
             return message.reply("There isn't a song currently playing.")

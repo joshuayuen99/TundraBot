@@ -5,7 +5,7 @@ module.exports = {
     category: "music",
     description: "Shuffles the current queue, or toggles shuffling of the queue with the [toggle] or [t] option. This will cause the queue to be shuffled whenever a new song is added to it.",
     usage: "shuffle [toggle | t]",
-    run: async (client, message, args) => {
+    run: async (client, message, args, settings) => {
         const serverQueue = client.musicGuilds.get(message.guild.id);
         if (!serverQueue) {
             return message.reply("There isn't a queue to shuffle.")

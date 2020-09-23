@@ -7,7 +7,7 @@ module.exports = {
     category: "moderation",
     decsription: "Kicks the member.",
     usage: "kick <mention | <id> <reason>",
-    run: async (client, message, args) => {
+    run: async (client, message, args, settings) => {
         //const CONFIRM = "\u2611"; // Checkmark emoji
         const CONFIRM = "💯";
         //const CONFIRM = "\u1f4af";  // "100" emoji

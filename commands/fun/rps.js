@@ -13,7 +13,7 @@ module.exports = {
     category: "fun",
     description: "Rock paper scissors game. React to one of the emojis to play.",
     usage: "rps",
-    run: async (client, message, args) => {
+    run: async (client, message, args, settings) => {
         const embedMsg = new MessageEmbed()
             .setColor("#ffffff")
             .setFooter(message.guild.me.displayName, client.user.displayAvatarURL())

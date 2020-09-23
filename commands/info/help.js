@@ -7,7 +7,7 @@ module.exports = {
     category: "info",
     description: "Returns all commands, or one specific command info.",
     usage: "help [command | alias]",
-    run: async (client, message, args) => {
+    run: async (client, message, args, settings) => {
         if (args[0]) {
             return getCommand(client, message, args[0]);
         } else {
@@ -36,7 +36,9 @@ function getAll(client, message) {
         return message.channel.send(embedMsg.setDescription(info));
         */
     client.categories.forEach(category => {
-        embedMsg.addField(stripIndents`**${category[0].toUpperCase() + category.slice(1)}**`, commands(category), true);
+        if (category != "ownerCommands") {
+            embedMsg.addField(stripIndents`**${category[0].toUpperCase() + category.slice(1)}**`, commands(category), true);
+        }
     });
 
     embedMsg.addField("Detailed usage", `Type \`${process.env.PREFIX}help <command>\` to get detailed information about the given command.`);
@@ -53,8 +55,8 @@ function getCommand(client, message, input) {
     if (!cmd) { // If the command wasn't found, check aliases
         cmd = client.commands.get(client.aliases.get(input.toLowerCase()));
     }
-    if (!cmd) { // If the command still wasn't found
-        let info = `No information found for command **${input.toLowerCase()}**`;
+    if (!cmd || cmd.category === "ownerCommands") { // If the command still wasn't found
+        let info = `No information found for command \`${input.toLowerCase()}\``;
         return message.channel.send(embedMsg.setColor("RED").setDescription(info));
     }
 
