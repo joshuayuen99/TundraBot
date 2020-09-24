@@ -152,7 +152,7 @@ module.exports = {
                 kMember.kick(reason)
                     .catch(err => {
                         if (err) {
-                            await message.channel.send("Well... something went wrong?");
+                            message.channel.send("Well... something went wrong?");
                             if (message.deletable) message.delete();
                         }
                     });

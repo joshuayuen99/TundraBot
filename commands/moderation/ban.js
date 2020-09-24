@@ -151,7 +151,7 @@ module.exports = {
 				bMember.ban(reason)
 					.catch(err => {
 						if (err) {
-                            await message.channel.send("Well... something went wrong?");
+                            message.channel.send("Well... something went wrong?");
                             if (message.deletable) message.delete();
                         }
 					});
