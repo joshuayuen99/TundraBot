@@ -224,6 +224,7 @@ module.exports = (client) => {
         const newUser = await new User({
             _id: new mongoose.Types.ObjectId(),
             userID: user.id,
+            username: user.username,
             guilds: [guildObject._id]
         });
 
