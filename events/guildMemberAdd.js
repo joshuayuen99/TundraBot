@@ -13,6 +13,13 @@ module.exports = async (client, member) => {
         .addField("New total members", guild.memberCount)
         .setTimestamp();
 
+    let settings;
+    try {
+        settings = await client.getGuild(member.guild);
+    } catch (err) {
+        console.error("message event error: ", err);
+    }
+
     // Log activity and create channel if necessary
     if (!member.guild.channels.cache.some(channel => channel.name === settings.logChannel)) {
         if (!member.guild.me.hasPermission("MANAGE_CHANNELS")) {

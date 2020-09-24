@@ -7,7 +7,7 @@ module.exports = {
     name: "mute",
     aliases: ["tempmute"],
     category: "moderation",
-    decsription: "Temporarily mutes the member for the specified duration so they can't talk or type.",
+    description: "Temporarily mutes the member for the specified duration so they can't talk or type.",
     usage: `mute <mention | id> <duration (#s/m/h)>
 	eg. mute @TundraBot 10m`,
     run: async (client, message, args, settings) => {

@@ -69,6 +69,9 @@ module.exports = async (client, message) => {
         console.error("message event error: ", err);
     }
 
+    // Save to database
+    client.createMessage(message, settings);
+
     // Sent in a guild
     if (!message.content.startsWith(settings.prefix)) return; // if the message did not contain the command prefix
     if (!message.member) message.member = await message.guild.members.fetch(message.member);
@@ -81,9 +84,6 @@ module.exports = async (client, message) => {
     const args = messageArray.slice(1);
 
     if (cmd.length === 0) return;
-
-    // Save to database
-    client.createMessage(message, settings);
 
     let command = client.commands.get(cmd); // Set the command to call
     if (!command) command = client.commands.get(client.aliases.get(cmd));    // If the command was not found, check aliases

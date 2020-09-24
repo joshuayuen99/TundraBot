@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { Guild, User, Message } = require("../models");
+const { Guild, User, Channel, Message } = require("../models");
 
 module.exports = (client) => {
     client.getGuild = async (guild) => {
@@ -35,32 +35,140 @@ module.exports = (client) => {
 
         const newGuild = await new Guild(merged);
         newGuild.save()
-            .then(console.log(`Default settings saved for guild "${merged.guildName}" (${merged.guildID})`))
-            .catch((err) => {
+            .then(() => {
+                console.log(`Default settings saved for guild "${merged.guildName}" (${merged.guildID})`);
+                
+                let guild = client.guilds.cache.get(newGuild.guildID);
+                let channels = guild.channels.cache;
+                channels.forEach(channel => {
+                    client.createChannel(channel);
+                });
+            }).catch((err) => {
                 console.error("Error adding guild to database: ", err);
             });
 
         return;
     };
 
+    client.getChannel = async (channel) => {
+        return Channel.findOne({ channelID: channel.id })
+            .then((channel, err) => {
+                if (err) console.error(err);
+
+                if (channel) return channel.toObject();
+                else return null;
+            });
+    };
+
+    client.updateChannel = async (channel, settings) => {
+        let data = await client.getChannel(channel);
+
+        if (typeof data !== "object") data = {};
+        for (const key in settings) {
+            if (data[key] !== settings[key]) data[key] = settings[key];
+            else return;
+        }
+
+        await Channel.findOneAndUpdate({ channelID: channel.id }, data)
+            .catch((err) => {
+                console.error("Error updating channel in database: ", err);
+            });
+        return;
+    };
+
+    client.createChannel = async (channel) => {
+        let guildObject = await client.getGuild(channel.guild);
+
+        const newChannel = await new Channel({
+            _id: new mongoose.Types.ObjectId(),
+            channelID: channel.id,
+            channelName: channel.name,
+            guildID: guildObject._id
+        });
+
+        newChannel.save()
+            .then(() => {
+                Guild.findOneAndUpdate({ guildID: channel.guild.id }, {
+                    $addToSet: { channels: newChannel._id }
+                }).catch((err) => {
+                    console.error("Error linking channel to guild in database: ", err);
+                });
+            }).catch((err) => {
+                console.error("Error adding channel to database: ", err);
+            });
+
+        return;
+    };
+
+    client.getMessage = async (message) => {
+        return Message.findOne({ messageID: message.id })
+            .then((message, err) => {
+                if (err) console.error(err);
+
+                if (message) return message.toObject();
+                else return null;
+            });
+    }
+
+    client.updateMessage = async (message, newMessage, settings) => {
+        // The message was edited
+        if (newMessage) {
+            await Message.findOneAndUpdate({ messageID: message.id }, {
+                $push: { editedText: newMessage.content }
+            }).catch((err) => {
+                console.error("Error updating edited message in database: ", err);
+            });
+            
+            return;
+        }
+
+        // Change message attributes (deleted)
+        let data = await client.getMessage(message);
+
+        if (typeof data !== "object") data = {};
+        for (const key in settings) {
+            if (data[key] !== settings[key]) data[key] = settings[key];
+            else return;
+        }
+
+        await Message.findOneAndUpdate({ messageID: message.id }, data)
+            .catch((err) => {
+                console.error("Error updating message in database: ", err);
+            });
+        return;
+    }
+
     client.createMessage = async (message, settings) => {
         let guildObject = await client.getGuild(message.guild);
+        let channelObject = await client.getChannel(message.channel);
+
+        if (!guildObject || !channelObject) return;
+
+        let command;
+        if (message.content.startsWith(settings.prefix)) {
+            command = message.content.split(" ")[0].slice(settings.prefix.length).toLowerCase();
+        } else {
+            command = "";
+        }
+
         const newMessage = await new Message({
             _id: new mongoose.Types.ObjectId(),
             text: message.content,
-            command: message.content.split(" ")[0].slice(settings.prefix.length).toLowerCase(),
+            command: command,
             userID: message.author.id,
             username: message.author.username,
-            guildID: guildObject._id
+            guildID: guildObject._id,
+            channelID: channelObject._id,
+            messageID: message.id,
         });
 
         await newMessage.save().catch((err) => {
             console.error("Error saving message to database: ", err);
         });
-        await Guild.findOneAndUpdate({ guildID: message.guild.id }, {
+        await Channel.findOneAndUpdate({ guildID: guildObject._id }, {
             $push: { messages: newMessage._id }
         }).catch((err) => {
-            console.error("Error linking message to guild in database: ", err);
+            console.error("Error linking message to channel in database: ", err);
         });
 
         return;

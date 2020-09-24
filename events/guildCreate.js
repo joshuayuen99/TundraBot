@@ -5,7 +5,6 @@ const { formatDate, formatDateLong } = require("../functions");
 module.exports = async (client, guild) => {
     try {
         let clientMember = await guild.members.cache.get(client.user.id);
-
         const newGuild = {
             guildID: guild.id,
             guildName: guild.name,

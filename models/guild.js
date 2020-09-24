@@ -30,9 +30,9 @@ const guildSchema = mongoose.Schema({
         type: String,
         default: defaults.logChannel
     },
-    messages: [{
+    channels: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Message"
+        ref: "Channel"
     }]
 });
 

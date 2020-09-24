@@ -5,7 +5,7 @@ const { createChannel, promptMessage } = require("../../functions.js");
 module.exports = {
 	name: "ban",
 	category: "moderation",
-	decsription: "Bans the member.",
+	description: "Bans the member.",
 	usage: "ban <mention | id> <reason>",
     run: async (client, message, args, settings) => {
 		const CONFIRM = "💯";

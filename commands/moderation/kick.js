@@ -5,7 +5,7 @@ const { createChannel, promptMessage } = require("../../functions.js");
 module.exports = {
     name: "kick",
     category: "moderation",
-    decsription: "Kicks the member.",
+    description: "Kicks the member.",
     usage: "kick <mention | <id> <reason>",
     run: async (client, message, args, settings) => {
         //const CONFIRM = "\u2611"; // Checkmark emoji
