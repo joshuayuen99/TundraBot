@@ -14,19 +14,19 @@ module.exports = async (client, member) => {
         .setTimestamp();
 
     // Log activity and create channel if necessary
-    if (!member.guild.channels.cache.some(channel => channel.name === "admin")) {
+    if (!member.guild.channels.cache.some(channel => channel.name === settings.logChannel)) {
         if (!member.guild.me.hasPermission("MANAGE_CHANNELS")) {
             // TODO: send message in #general?
             //message.channel.send("I couldn't send the log to the correct channel and I don't have permissions to create it.");
         } else {
-            await createChannel(member.guild, "admin", [{
+            await createChannel(member.guild, settings.logChannel, [{
                 id: member.guild.id,
                 deny: ["VIEW_CHANNEL"],
             }, {
                 id: client.user.id,
                 allow: ["VIEW_CHANNEL"]
             }]).then(() => {
-                const logChannel = member.guild.channels.cache.find(channel => channel.name === "admin");
+                const logChannel = member.guild.channels.cache.find(channel => channel.name === settings.logChannel);
 
                 return logChannel.send(embedMsg);
             })
@@ -35,7 +35,7 @@ module.exports = async (client, member) => {
                 });;
         }
     } else { // Channel already exists
-        const logChannel = member.guild.channels.cache.find(channel => channel.name === "admin");
+        const logChannel = member.guild.channels.cache.find(channel => channel.name === settings.logChannel);
 
         return logChannel.send(embedMsg);
     }
