@@ -21,8 +21,12 @@ module.exports = (client) => {
             else return;
         }
 
-        await Guild.findOneAndUpdate({ guildID: guild.id }, data);
-        return console.log(`Guild "${data.guildName}" updated settings: ${Object.keys(settings)}`);
+        await Guild.findOneAndUpdate({ guildID: guild.id }, data)
+            .catch((err) => {
+                console.error("Error updating guild in database: ", err);
+            });
+        console.log(`Guild "${data.guildName}" updated settings: ${Object.keys(settings)}`);
+        return;
     };
 
     client.createGuild = async (settings) => {
@@ -30,8 +34,13 @@ module.exports = (client) => {
         let merged = Object.assign(defaults, settings);
 
         const newGuild = await new Guild(merged);
-        return newGuild.save()
-            .then(console.log(`Default settings saved for guild "${merged.guildName}" (${merged.guildID})`));
+        newGuild.save()
+            .then(console.log(`Default settings saved for guild "${merged.guildName}" (${merged.guildID})`))
+            .catch((err) => {
+                console.error("Error adding guild to database: ", err);
+            });
+
+        return;
     };
 
     client.createMessage = async (message, settings) => {
@@ -46,14 +55,16 @@ module.exports = (client) => {
             },
         });
 
-        await newMessage.save();
+        await newMessage.save().catch((err) => {
+            console.error("Error saving message to database: ", err);
+        });
         await Guild.findOneAndUpdate({ guildID: message.guild.id }, {
             $push: { messages: newMessage._id }
         }).catch((err) => {
-            console.error("Error adding message to database: ", err);
+            console.error("Error linking message to guild in database: ", err);
         });
 
-        return newMessage;
+        return;
     };
 
     client.getUser = async (user) => {
@@ -66,32 +77,52 @@ module.exports = (client) => {
             });
     };
 
-    client.updateUser = async (user, guild, timezone) => {
-        if (guild) {
-            await User.findOneAndUpdate({ userID: user.id }, {
-                $push: { guilds: await client.getGuild(guild)._id }
-            }).catch((err) => {
-                console.error("Error updating user guilds in database: ", err);
-            });
+    client.updateUser = async (user, guild, settings) => {
+        let data = await client.getUser(user).settings;
+        let guildObject = await client.getGuild(guild);
+
+        if (typeof data !== "object") data = {};
+        for (const key in settings) {
+            if (data[key] !== settings[key]) data[key] = settings[key];
+            else return;
         }
-        if (timezone) {
-            await User.findOneAndUpdate({ userID: user.id }, {
-                timezone: timezone
-            }).catch((err) => {
-                console.error("Error updating user timezone in database: ", err);
-            });
-        }
+
+        await User.findOneAndUpdate({ userID: user.id }, {
+            settings: data,
+            $addToSet: { guilds: guildObject._id },
+        }).catch((err) => {
+            console.error("Error updating user settings in database: ", err);
+        });
+
+        // if (guild) {
+        //     await User.findOneAndUpdate({ userID: user.id }, {
+        //         $addToSet: { guilds: await client.getGuild(guild)._id }
+        //     }).catch((err) => {
+        //         console.error("Error updating user guilds in database: ", err);
+        //     });
+        // }
+        // if (timezone) {
+        //     await User.findOneAndUpdate({ userID: user.id }, {
+        //         $addToSet: { guilds: await client.getGuild(guild)._id },
+        //         timezone: timezone
+        //     }).catch((err) => {
+        //         console.error("Error updating user timezone in database: ", err);
+        //     });
+        // }
         return client.getUser(user);
     }
 
     client.createUser = async (user, guild) => {
+        const guildObject = await client.getGuild(guild);
         const newUser = await new User({
             _id: new mongoose.Types.ObjectId(),
             userID: user.id,
-            guilds: [await client.getGuild(guild)._id]
+            guilds: [guildObject._id]
         });
 
-        return await newUser.save();
+        return await newUser.save().catch((err) => {
+            console.error("Error creating new user in database: ", err);
+        });
     };
 
     client.clean = async (client, text) => {

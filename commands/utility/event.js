@@ -55,7 +55,7 @@ module.exports = {
 
         const maxParticipants = parseInt(maxParticipantsMessage.content);
         if (isNaN(maxParticipants)) {
-            return message.reply("Please enter a number.");
+            return message.reply("Cancelling event. Please enter a number.");
         }
 
         // Get saved user settings
@@ -65,7 +65,7 @@ module.exports = {
         }
 
         // If we don't have a saved timezone for the user
-        if (!userSettings.timezone) {
+        if (!userSettings.settings.timezone) {
             message.channel.send(stripIndents`What timezone are you in?
             (Visit https://en.wikipedia.org/wiki/List_of_tz_database_time_zones and copy and paste your \`TZ database name\`)`);
             let timezoneMessage = await waitResponse(client, message, message.author, 120);
@@ -76,10 +76,11 @@ module.exports = {
             // Check if valid timezone
             if (!moment.tz.zone(timezoneMessage.content)) return message.reply("I couldn't understand that timezone. Please check to make sure you copied your timezone correctly.");
 
-            userSettings = await client.updateUser(message.author, null, timezoneMessage.content);
+            await client.updateUser(message.author, message.guild, timezoneMessage.content);
+            userSettings = await client.getUser(message.author);
         }
 
-        message.channel.send(stripIndents`Using timezone: \`${userSettings.timezone}\`. To change this use the \`settimezone\` command.`);
+        message.channel.send(stripIndents`Using timezone: \`${userSettings.settings.timezone}\`. To change this use the \`settimezone\` command.`);
 
         message.channel.send("What date will the event take place? `(mm/dd/yy)`");
         let eventDate = await waitResponse(client, message, message.author, 60);
@@ -93,7 +94,7 @@ module.exports = {
             return message.reply("Cancelling event.");
         }
 
-        let momentEventDate = momentTimezone.tz(eventDate.content + " " + timeOfDay.content, "MM/DD/YY hh:mm a", userSettings.timezone);
+        let momentEventDate = momentTimezone.tz(eventDate.content + " " + timeOfDay.content, "MM/DD/YY hh:mm a", userSettings.settings.timezone);
         if (!momentEventDate.isValid()) return message.reply("I couldn't understand the time and date of the event. Please enter it as shown when prompted.");
 
         const promptEmbed = new MessageEmbed()

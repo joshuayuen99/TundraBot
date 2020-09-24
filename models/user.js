@@ -7,7 +7,9 @@ const userSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Guild"
     }],
-    timezone: String,
+    settings: {
+        timezone: { type: String, default: null }
+    }
 });
 
 module.exports = mongoose.model("User", userSchema);

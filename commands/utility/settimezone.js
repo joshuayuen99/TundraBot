@@ -13,22 +13,24 @@ module.exports = {
         // Get saved user settings
         let userSettings = await client.getUser(message.author);
         if (!userSettings) { // Create new user if we need
-            userSettings = await client.createUser(message.author, message.guild);
+            await client.createUser(message.author, message.guild);
+            userSettings = await client.getUser(message.author);
         }
 
         if (args[0]) {
             // Check if valid timezone
             if (!moment.tz.zone(args[0])) return message.reply("I couldn't understand that timezone, cancelling command. Please check to make sure you copied your timezone correctly.");
 
-            userSettings = await client.updateUser(message.author, null, args[0]);
+            await client.updateUser(message.author, message.guild, { timezone: args[0] });
+            userSettings = await client.getUser(message.author);
 
-            message.channel.send(`Saved! Your new timezone is \`${userSettings.timezone}\`.`);
+            message.channel.send(`Saved! Your new timezone is \`${userSettings.settings.timezone}\`.`);
 
             return;
         }
 
-        if (userSettings.timezone) {
-            message.channel.send(`Your currently saved timezone is \`${userSettings.timezone}\`.`);
+        if (userSettings.settings.timezone) {
+            message.channel.send(`Your currently saved timezone is \`${userSettings.settings.timezone}\`.`);
         }
 
         message.channel.send(stripIndents`What timezone are you in?
@@ -41,8 +43,9 @@ module.exports = {
         // Check if valid timezone
         if (!moment.tz.zone(timezoneMessage.content)) return message.reply("I couldn't understand that timezone, cancelling command. Please check to make sure you copied your timezone correctly.");
 
-        userSettings = await client.updateUser(message.author, null, timezoneMessage.content);
+        await client.updateUser(message.author, message.guild, { timezone: timezoneMessage.content });
+        userSettings = await client.getUser(message.author);
 
-        message.channel.send(`Saved! Your new timezone is \`${userSettings.timezone}\`.`);
+        message.channel.send(`Saved! Your new timezone is \`${userSettings.settings.timezone}\`.`);
     }
 };
