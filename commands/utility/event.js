@@ -76,7 +76,7 @@ module.exports = {
             // Check if valid timezone
             if (!moment.tz.zone(timezoneMessage.content)) return message.reply("I couldn't understand that timezone. Please check to make sure you copied your timezone correctly.");
 
-            await client.updateUser(message.author, message.guild, timezoneMessage.content);
+            await client.updateUser(message.author, message.guild, { timezone: timezoneMessage.content });
             userSettings = await client.getUser(message.author);
         }
 

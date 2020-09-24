@@ -35,4 +35,9 @@ function setup() {
     client.login(process.env.DISCORDTOKEN);
 }
 
+// if there is an unhandledRejection, log them
+process.on("unhandledRejection", (err) => {
+	console.error("unhandledRejection:\n", err);
+});
+
 setup();
