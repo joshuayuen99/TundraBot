@@ -44,13 +44,14 @@ module.exports = (client) => {
     };
 
     client.createMessage = async (message, settings) => {
+        let guildObject = await client.getGuild(message.guild);
         const newMessage = await new Message({
             _id: new mongoose.Types.ObjectId(),
             text: message.content,
             command: message.content.split(" ")[0].slice(settings.prefix.length).toLowerCase(),
             userID: message.author.id,
             username: message.author.username,
-            guildID: message.guild.id
+            guildID: guildObject._id
         });
 
         await newMessage.save().catch((err) => {

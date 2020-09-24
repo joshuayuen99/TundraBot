@@ -6,7 +6,7 @@ const messageSchema = mongoose.Schema({
     command: String,
     userID: String,
     username: String,
-    guildID: String
+    guildID: { type: mongoose.Types.Schema.ObjectId, ref: "Guild"}
 },
     {
         timestamps: true
