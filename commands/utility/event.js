@@ -9,10 +9,10 @@ const HAND_EMOJI = "✋";
 module.exports = {
     name: "event",
     category: "utility",
-    description: "Schedules an event to begin at a given time. Anyone who would like to participate in the event can respond to be notified when it begins.",
+    description: "Starts an interactive wizard to schedule an event to begin at a given time. Anyone who would like to participate in the event can respond to be notified when it begins.",
     usage: "event",
     run: async (client, message, args, settings) => {
-        message.channel.send("What channel should I post the event in? (type `here` for the current one)");
+        message.channel.send("What channel should I post the event in? eg. #general (type `here` for the current one)");
         let postChannelMessage = await waitResponse(client, message, message.author, 120);
         if (!postChannelMessage) {
             return message.reply("Cancelling event.");
