@@ -37,7 +37,7 @@ module.exports = {
             const botPermissionsIn = message.guild.me.permissionsIn(postChannel);
             if (!botPermissionsIn.has("SEND_MESSAGES")) return message.reply("I don't have permission to post in that channel. Contact your server admin to give me permission overrides.");
         } else { // Channel doesn't exist
-            return message.reply("I couldn't find that channel! Please check to make sure you typed it correctly.");
+            return message.reply("I couldn't find that channel! Cancelling event.");
         }
 
         message.channel.send(stripIndents`Using channel ${postChannel}
@@ -74,7 +74,7 @@ module.exports = {
             }
 
             // Check if valid timezone
-            if (!moment.tz.zone(timezoneMessage.content)) return message.reply("I couldn't understand that timezone. Please check to make sure you copied your timezone correctly.");
+            if (!moment.tz.zone(timezoneMessage.content)) return message.reply("I couldn't understand that timezone. Cancelling event.");
 
             await client.updateUser(message.author, message.guild, { timezone: timezoneMessage.content });
             userSettings = await client.getUser(message.author);
@@ -95,7 +95,7 @@ module.exports = {
         }
 
         let momentEventDate = momentTimezone.tz(eventDate.content + " " + timeOfDay.content, "MM/DD/YY hh:mm a", userSettings.settings.timezone);
-        if (!momentEventDate.isValid()) return message.reply("I couldn't understand the time and date of the event. Please enter it as shown when prompted.");
+        if (!momentEventDate.isValid()) return message.reply("I couldn't understand the time and date of the event. Cancelling event.");
 
         const promptEmbed = new MessageEmbed()
             .setColor("PURPLE")
