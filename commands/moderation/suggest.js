@@ -11,11 +11,12 @@ module.exports = {
     run: async (client, message, args, settings) => {
         // If there was no suggestion specified
         if (!args[0]) {
-            if (message.deletable) message.delete();
-            return message.reply("Please specify a suggestion!")
+            await message.reply("Please specify a suggestion!")
                 .then(m => m.delete({
                     timeout: 5000
                 }));
+            if (message.deletable) message.delete();
+            return;
         }
 
         const owner = await client.users.fetch(process.env.OWNERID);

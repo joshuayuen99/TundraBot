@@ -7,5 +7,6 @@ module.exports = {
         welcomeMessage: "Welcome **{{user}}** to **{{guild}}**!",
         modRole: "Moderator",
         adminRole: "Administrator",
+        logChannel: "admin"
     }
 }

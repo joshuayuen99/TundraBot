@@ -13,73 +13,87 @@ module.exports = {
         //const CONFIRM = "\u1f4af";  // "100" emoji
         const CANCEL = "\u274c";    // red "X" emoji
 
-        if (message.deletable) message.delete();
-
         // No user specified
         if (!args[0]) {
-            return message.reply("Please provide a user to kick.")
+            await message.reply("Please provide a user to kick.")
                 .then(m => m.delete({
                     timeout: 5000
                 }));
+            if (message.deletable) message.delete();
+            return;
         }
 
         // No reason specified
         if (!args[1]) {
-            return message.reply("Please provide a reason to kick.")
+            await message.reply("Please provide a reason to kick.")
                 .then(m => m.delete({
                     timeout: 5000
                 }));
+            if (message.deletable) message.delete();
+            return;
         }
         const reason = args.splice(1).join(" ");
 
         // No author permission
         if (!message.member.hasPermission("KICK_MEMBERS")) {
-            return message.reply("Nice try guy, you don't have permission to kick people.")
+            await message.reply("Nice try guy, you don't have permission to kick people.")
                 .then(m => m.delete({
                     timeout: 5000
                 }));
+            if (message.deletable) message.delete();
+            return;
         }
 
         // No bot permission
         if (!message.guild.me.hasPermission("KICK_MEMBERS")) {
-            return message.reply("I don't have permission to kick people!")
+            await message.reply("I don't have permission to kick people!")
                 .then(m => m.delete({
                     timeout: 5000
                 }));
+            if (message.deletable) message.delete();
+            return;
         }
 
         const kMember = message.mentions.members.first() || message.guild.members.get(args[0]);
 
         // No member found
         if (!kMember) {
-            return message.reply("Couldn't find that member, try again!")
+            await message.reply("Couldn't find that member, try again!")
                 .then(m => m.delete({
                     timeout: 5000
                 }));
+            if (message.deletable) message.delete();
+            return;
         }
 
         // Can't kick yourself
         if (kMember.id === message.author.id) {
-            return message.reply("Don't kick yourself...It'll be alright.")
+            await message.reply("Don't kick yourself...It'll be alright.")
                 .then(m => m.delete({
                     timeout: 5000
                 }));
+            if (message.deletable) message.delete();
+            return;
         }
 
         // Can't kick bots
         if (kMember.user.bot) {
-            return message.reply("Don't try to kick bots...")
+            await message.reply("Don't try to kick bots...")
                 .then(m => m.delete({
                     timeout: 5000
                 }));
+            if (message.deletable) message.delete();
+            return;
         }
 
         // If user isn't kickable (role difference)
         if (!kMember.kickable) {
-            return message.reply("They can't be kicked by the likes of you.")
+            await message.reply("They can't be kicked by the likes of you.")
                 .then(m => m.delete({
                     timeout: 5000
                 }));
+            if (message.deletable) message.delete();
+            return;
         }
 
         const embedMsg = new MessageEmbed()
@@ -102,38 +116,49 @@ module.exports = {
                 msg.delete();
 
                 // Log activity and create channel if necessary
-                if (!message.guild.channels.cache.some(channel => channel.name === "admin")) {
+                if (!message.guild.channels.cache.some(channel => channel.name === settings.logChannel)) {
                     if (!message.guild.me.hasPermission("MANAGE_CHANNELS")) {
                         message.channel.send("I couldn't send the log to the correct channel and I don't have permissions to create it.");
                     } else {
-                        await createChannel(message.guild, "admin", [{
+                        await createChannel(message.guild, settings.logChannel, [{
                             id: message.guild.id,
                             deny: ["VIEW_CHANNEL"],
                         }, {
                             id: client.user.id,
                             allow: ["VIEW_CHANNEL"]
                         }]).then(() => {
-                            const logChannel = message.guild.channels.cache.find(channel => channel.name === "admin");
+                            const logChannel = message.guild.channels.cache.find(channel => channel.name === settings.logChannel);
 
                             logChannel.send(embedMsg);
+                            if (message.deletable) message.delete();
+                            
+                            return;
                         })
                             .catch(err => {
-								console.error("kick command create admin channel error: ", err);
+                                console.error("kick command create log channel error: ", err);
+                                if (message.deletable) message.delete();
                             });;
                     }
                 } else { // Channel already exists
-                    const logChannel = message.guild.channels.cache.find(channel => channel.name === "admin");
+                    const logChannel = message.guild.channels.cache.find(channel => channel.name === settings.logChannel);
 
                     logChannel.send(embedMsg);
+                    if (message.deletable) message.delete();
+
+                    return;
                 }
 
                 // Kick after potentially creating the logging channel to avoid it happening twice (once in member leave event as well)
                 kMember.kick(reason)
                     .catch(err => {
-                        if (err) return message.channel.send("Well... something went wrong?");
+                        if (err) {
+                            await message.channel.send("Well... something went wrong?");
+                            if (message.deletable) message.delete();
+                        }
                     });
             } else if (emoji === CANCEL) {
                 msg.delete();
+                if (message.deletable) message.delete();
 
                 message.reply("Kick cancelled...")
                     .then(m => m.delete({

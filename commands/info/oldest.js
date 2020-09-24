@@ -9,11 +9,12 @@ module.exports = {
     usage: "oldest <member | user | account>",
     run: async (client, message, args, settings) => {
         if (!args[0]) {
-            if (message.deletable) message.delete();
-            return message.reply(`Please specify "member", "user", or "account" as an argument`)
+            await message.reply(`Please specify "member", "user", or "account" as an argument`)
                 .then(m => m.delete({
                     timeout: 5000
                 }));
+            if (message.deletable) message.delete();
+            return;
         }
         let member = message.member;
         if (args[0] === "member") {
@@ -69,6 +70,7 @@ module.exports = {
             embedMsg.addField("Currently playing", stripIndents`**\\>** ${member.user.presence.game.name}`);
         }
 
-        return message.channel.send(embedMsg);
+        await message.channel.send(embedMsg);
+        if (message.deletable) message.delete();
     }
 };

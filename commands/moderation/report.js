@@ -8,8 +8,6 @@ module.exports = {
     description: "Reports a member.",
     usage: "report <mention | id> <reason>",
     run: async (client, message, args, settings) => {
-        if (message.deletable) message.delete();
-
         // No user specified
         if (!args[0]) {
             return message.reply("Please provide a user to report.")
@@ -40,41 +38,48 @@ module.exports = {
                     timeout: 5000
                 }));
 
+        const embedMsg = new MessageEmbed()
+            .setColor("#ff0000")
+            .setTimestamp()
+            .setFooter(message.guild.name, message.guild.iconURL)
+            .setAuthor("Reported member", rMember.user.displayAvatarURL())
+            .setDescription(stripIndents`**\\> Member:** ${rMember} (${rMember.id})
+			**\\> Reported by:** ${message.member} (${message.member.id})
+			**\\> Reported in:** ${message.channel}
+			**\\> Reason:** ${args.slice(1).join(" ")}`);
+
         // Log activity and create channel if necessary
-        if (!message.guild.channels.cache.some(channel => channel.name === "admin")) {
+        if (!message.guild.channels.cache.some(channel => channel.name === settings.logChannel)) {
             if (!message.guild.me.hasPermission("MANAGE_CHANNELS")) {
                 message.channel.send("I couldn't send the log to the correct channel and I don't have permissions to create it.");
             } else {
-                await createChannel(message.guild, "admin", [{
+                await createChannel(message.guild, settings.logChannel, [{
                     id: message.guild.id,
                     deny: ["VIEW_CHANNEL"],
                 }, {
                     id: client.user.id,
                     allow: ["VIEW_CHANNEL"]
                 }]).then(() => {
-                    const logChannel = message.guild.channels.cache.find(channel => channel.name === "admin");
-
-                    const embedMsg = new MessageEmbed()
-                        .setColor("#ff0000")
-                        .setTimestamp()
-                        .setFooter(message.guild.name, message.guild.iconURL)
-                        .setAuthor("Reported member", rMember.user.displayAvatarURL())
-                        .setDescription(stripIndents`**\\> Member:** ${rMember} (${rMember.id})
-					**\\> Reported by:** ${message.member} (${message.member.id})
-					**\\> Reported in:** ${message.channel}
-					**\\> Reason:** ${args.slice(1).join(" ")}`);
+                    const logChannel = message.guild.channels.cache.find(channel => channel.name === settings.logChannel);
 
                     logChannel.send(embedMsg);
-                    return message.reply("Your report was submitted.");
+                    message.reply("Your report was submitted.");
+                    if (message.deletable) message.delete();
+
+                    return;
                 })
                     .catch(err => {
-                        console.error("report command create admin channel error: ", err);
+                        console.error("report command create log channel error: ", err);
                     });;
             }
         } else { // Channel already exists
-            const logChannel = message.guild.channels.cache.find(channel => channel.name === "admin");
+            const logChannel = message.guild.channels.cache.find(channel => channel.name === settings.logChannel);
 
-            return logChannel.send(embedMsg);
+            await logChannel.send(embedMsg);
+            await message.reply("Your report was submitted.");
+            if (message.deletable) message.delete();
+
+            return;
         }
     }
 };

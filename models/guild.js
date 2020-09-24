@@ -26,6 +26,10 @@ const guildSchema = mongoose.Schema({
         type: String,
         default: defaults.adminRole
     },
+    logChannel: {
+        type: String,
+        default: defaults.logChannel
+    },
     messages: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Message"
