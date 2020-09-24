@@ -61,7 +61,7 @@ module.exports = async (client, message) => {
 
         return message.channel.send("Message my master TundraBuddy#4650 instead!");
     }
-    
+
     let settings;
     try {
         settings = await client.getGuild(message.guild);
@@ -69,8 +69,10 @@ module.exports = async (client, message) => {
         console.error("message event error: ", err);
     }
 
-    // Save to database
-    client.createMessage(message, settings);
+    if (message.content) {
+        // Save to database
+        client.createMessage(message, settings);
+    }
 
     // Sent in a guild
     if (!message.content.startsWith(settings.prefix)) return; // if the message did not contain the command prefix
