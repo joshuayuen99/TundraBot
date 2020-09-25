@@ -146,7 +146,15 @@ module.exports = (client) => {
 
         let command;
         if (message.content.startsWith(settings.prefix)) {
-            command = message.content.split(" ")[0].slice(settings.prefix.length).toLowerCase();
+            let commandString = message.content.split(" ")[0].slice(settings.prefix.length).toLowerCase();
+            if (commandString.length === 0) command = "";
+            else {
+                let commandFunction = client.commands.get(commandString);
+                if (!commandFunction) commandFunction = client.commands.get(client.aliases.get(commandString));
+
+                if (commandFunction) command = commandString;
+                else command = "";
+            }
         } else {
             command = "";
         }
