@@ -16,7 +16,8 @@ module.exports = {
             .setThumbnail(bicon)
             .addField("Bot name", client.user.username)
             .addField("My owner", `${process.env.OWNERNAME}${process.env.OWNERTAG}`)
-            .addField("Invite link", "[Invite me to your server!](https://discord.com/api/oauth2/authorize?client_id=647196546492006423&permissions=309587062&scope=bot)")
+            .addField("Invite link", `[Invite me to your server!](${process.env.BOT_INVITE_LINK})`)
+            .addField("Official Discord server", `[Join my official Discord server!](${process.env.SUPPORT_SERVER_INVITE_LINK})`)
             .addField("Source code", "https://github.com/joshuayuen99/discordbot")
 			.addField("Server count", client.guilds.cache.size)
             .addField("Created at", formatDateLong(client.user.createdAt));
