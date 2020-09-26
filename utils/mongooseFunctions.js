@@ -111,8 +111,8 @@ module.exports = (client) => {
     }
 
     client.updateMessage = async (message, newMessage, settings) => {
-        // The message was edited
-        if (newMessage) {
+        // The message was edited (check to make sure it wasn't just an embed being added onto the message)
+        if (newMessage && message.content != newMessage.content) {
             await Message.findOneAndUpdate({ messageID: message.id }, {
                 $push: { editedText: newMessage.content }
             }).catch((err) => {
@@ -124,6 +124,8 @@ module.exports = (client) => {
 
         // Change message attributes (deleted)
         let data = await client.getMessage(message);
+        // We didn't save the original message
+        if (!data) return;
 
         if (typeof data !== "object") data = {};
         for (const key in settings) {
