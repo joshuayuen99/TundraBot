@@ -130,9 +130,7 @@ module.exports = {
                             const logChannel = message.guild.channels.cache.find(channel => channel.name === settings.logChannel);
 
                             logChannel.send(embedMsg);
-                            if (message.deletable) message.delete();
-                            
-                            return;
+                            if (message.deletable) message.delete();                            
                         })
                             .catch(err => {
                                 console.error("kick command create log channel error: ", err);
@@ -144,8 +142,6 @@ module.exports = {
 
                     logChannel.send(embedMsg);
                     if (message.deletable) message.delete();
-
-                    return;
                 }
 
                 // Kick after potentially creating the logging channel to avoid it happening twice (once in member leave event as well)
@@ -156,6 +152,8 @@ module.exports = {
                             if (message.deletable) message.delete();
                         }
                     });
+
+                return;
             } else if (emoji === CANCEL) {
                 msg.delete();
                 if (message.deletable) message.delete();

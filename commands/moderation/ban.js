@@ -143,8 +143,6 @@ module.exports = {
 
                     logChannel.send(embedMsg);
                     if (message.deletable) message.delete();
-
-                    return;
 				}
 
 				// Ban after potentially creating the logging channel to avoid it happening twice (once in member leave event as well)
