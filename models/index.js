@@ -1,6 +1,7 @@
 module.exports = {
-    Guild: require("./guild"),
-    User: require("./user"),
-    Channel: require("./channel"),
-    Message: require("./message")
+    Guild: require("./Guild"),
+    User: require("./User"),
+    Channel: require("./Channel"),
+    Message: require("./Message"),
+    Poll: require("./Poll")
 };

@@ -2,6 +2,8 @@ const { Client, Collection } = require("discord.js");
 const { config } = require("dotenv");
 const fs = require("fs");
 
+const checkPolls = require("./helpers/checkPolls");
+
 function setup() {
     const client = new Client({
         disableEveryone: false
@@ -32,7 +34,12 @@ function setup() {
 
     client.mongoose.init();
 
+    client.databaseCache = {};
+    client.databaseCache.polls = new Collection();
+
     client.login(process.env.DISCORDTOKEN);
+
+    checkPolls.init(client);
 }
 
 // if there is an unhandledRejection, log them

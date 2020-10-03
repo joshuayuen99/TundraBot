@@ -32,15 +32,11 @@ module.exports = {
         }
 
         // If the user specified a channel, search that
-        let channelObject;
-        if (targetChannel) {
-            channelObject = await client.getChannel(targetChannel);
-        } else { // Default to searching current channel
+        if (!targetChannel) { // Default to searching current channel
             if (targetChannelName) {
                 await message.channel.send("I couldn't find that channel! Please make sure you typed it correctly. Defaulting to the current channel.");
             }
             targetChannel = message.channel;
-            channelObject = await client.getChannel(message.channel);
         }
 
         let searchOptions;
@@ -49,7 +45,7 @@ module.exports = {
             if (args[0].toLowerCase() === "all") {
                 if (message.member.hasPermission("MANAGE_MESSAGES")) {
                     searchOptions = {
-                        channelID: channelObject._id,
+                        channelID: message.channel.id,
                         deleted: true
                     };
                 } else {
@@ -59,7 +55,7 @@ module.exports = {
             } else if (message.guild.members.cache.some(member => member == args[0])) {
                 if (message.member.hasPermission("MANAGE_MESSAGES")) {
                     searchOptions = {
-                        channelID: channelObject._id,
+                        channelID: message.channel.id,
                         deleted: true,
                         userID: args[0]
                     };
@@ -69,7 +65,7 @@ module.exports = {
             } else if (message.mentions && message.mentions.users.size > 0) {
                 if (message.member.hasPermission("MANAGE_MESSAGES")) {
                     searchOptions = {
-                        channelID: channelObject._id,
+                        channelID: message.channel.id,
                         deleted: true,
                         userID: message.mentions.users.first().id
                     }
@@ -78,14 +74,14 @@ module.exports = {
                 }
             } else { // Default to only searching for their deleted messages
                 searchOptions = {
-                    channelID: channelObject._id,
+                    channelID: message.channel.id,
                     deleted: true,
                     userID: message.author.id
                 };
             }
         } else { // Default to only searching for their deleted messages
             searchOptions = {
-                channelID: channelObject._id,
+                channelID: message.channel.id,
                 deleted: true,
                 userID: message.author.id
             };

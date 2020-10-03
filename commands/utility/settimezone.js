@@ -13,7 +13,7 @@ module.exports = {
         // Get saved user settings
         let userSettings = await client.getUser(message.author);
         if (!userSettings) { // Create new user if we need
-            await client.createUser(message.author, message.guild);
+            await client.createUser(message.author);
             userSettings = await client.getUser(message.author);
         }
 
@@ -21,7 +21,7 @@ module.exports = {
             // Check if valid timezone
             if (!moment.tz.zone(args[0])) return message.reply("I couldn't understand that timezone, cancelling command. Please check to make sure you copied your timezone correctly.");
 
-            await client.updateUser(message.author, message.guild, { timezone: args[0] });
+            await client.updateUser(message.author, { timezone: args[0] });
             userSettings = await client.getUser(message.author);
 
             message.channel.send(`Saved! Your new timezone is \`${userSettings.settings.timezone}\`.`);
@@ -43,7 +43,7 @@ module.exports = {
         // Check if valid timezone
         if (!moment.tz.zone(timezoneMessage.content)) return message.reply("I couldn't understand that timezone, cancelling command. Please check to make sure you copied your timezone correctly.");
 
-        await client.updateUser(message.author, message.guild, { timezone: timezoneMessage.content });
+        await client.updateUser(message.author, { timezone: timezoneMessage.content });
         userSettings = await client.getUser(message.author);
 
         message.channel.send(`Saved! Your new timezone is \`${userSettings.settings.timezone}\`.`);

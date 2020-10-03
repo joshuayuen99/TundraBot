@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const { defaultGuildSettings: defaults } = require("../config");
 
 const guildSchema = mongoose.Schema({
-    _id: mongoose.Schema.Types.ObjectId,
     guildID: String,
     guildName: String,
     timeJoined: Date,
@@ -29,11 +28,7 @@ const guildSchema = mongoose.Schema({
     logChannel: {
         type: String,
         default: defaults.logChannel
-    },
-    channels: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Channel"
-    }]
+    }
 });
 
 module.exports = mongoose.model("Guild", guildSchema);

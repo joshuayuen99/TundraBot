@@ -1,6 +1,6 @@
 const { MessageEmbed, Message } = require("discord.js");
 const { stripIndents } = require("common-tags");
-const { createChannel, formatDateLong, waitPollResponse, waitResponse } = require("../../functions.js");
+const { createChannel, formatDateLong, waitResponse } = require("../../functions.js");
 const moment = require("moment");
 const momentTimezone = require("moment-timezone");
 
@@ -61,7 +61,7 @@ module.exports = {
         // Get saved user settings
         let userSettings = await client.getUser(message.author);
         if (!userSettings) { // Create new user if we need
-            userSettings = await client.createUser(message.author, message.guild);
+            userSettings = await client.createUser(message.author);
         }
 
         // If we don't have a saved timezone for the user
@@ -76,7 +76,7 @@ module.exports = {
             // Check if valid timezone
             if (!moment.tz.zone(timezoneMessage.content)) return message.reply("I couldn't understand that timezone. Cancelling event.");
 
-            await client.updateUser(message.author, message.guild, { timezone: timezoneMessage.content });
+            await client.updateUser(message.author, { timezone: timezoneMessage.content });
             userSettings = await client.getUser(message.author);
         }
 

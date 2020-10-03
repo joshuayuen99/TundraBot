@@ -77,31 +77,6 @@ module.exports = {
             });
     },
 
-    waitPollResponse: async function (message, time, validReactions) {
-        time *= 1000;   // Convert from s to ms
-
-        async function setReactions() {
-            for (const reaction of validReactions) {
-                message.react(reaction).catch((err) => {
-                    message.channel.send("I had trouble reacting with those emojis... removing the poll.");
-                    if(message.deletable) message.delete();
-                    console.error("waitPollResponse error: ", err);
-                });
-            }
-        }
-
-        await setReactions();
-
-        const filter = (reaction, user) => validReactions.includes(reaction.emoji.name);
-
-        return message
-            .awaitReactions(filter, { time: time })
-            .then(collected => collected)
-            .catch(err => {
-                console.error("Error in waitPollResponse: ", err);
-            });
-    },
-
     waitResponse: async function (client, message, author, time) {
         client.waitingResponse.add(author.id);
         time *= 1000;   // Convert from s to ms

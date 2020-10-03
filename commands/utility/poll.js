@@ -1,6 +1,7 @@
 const { MessageEmbed } = require("discord.js");
+const { Poll } = require("../../models");
 const { stripIndents } = require("common-tags");
-const { createChannel, formatDateLong, waitPollResponse, waitResponse } = require("../../functions.js");
+const { createChannel, formatDateLong, waitResponse } = require("../../functions.js");
 const ms = require("ms");
 const GraphemeSplitter = require("grapheme-splitter");
 
@@ -60,10 +61,13 @@ module.exports = {
             return message.reply("Cancelling poll.");
         }
 
+        const startTime = message.createdAt.getTime();
+        const endTime = message.createdAt.getTime() + ms(duration.content);
+
         const promptEmbed = new MessageEmbed()
             .setColor("PURPLE")
             .setFooter("Poll ends")
-            .setTimestamp(message.createdAt.getTime() + ms(duration.content))
+            .setTimestamp(endTime)
             .setTitle("Poll")
             .addField("Question", pollQuestion.content)
             .addField("Created by", message.member);
@@ -71,214 +75,106 @@ module.exports = {
         postChannel.send(promptEmbed).then(async msg => {
             const pollCreationMessage = await message.reply(`Poll created! Check the ${postChannel} channel to find it.`);
 
-            const results = await waitPollResponse(msg, ms(duration.content) / 1000, emojisList).catch((err) => {
-                console.error("Poll error: ", err);
-                return message.reply("I had trouble reacting with those emojis...");
-            });
-
-            if (results.size == 0) return;
-
-            let participants = [];
-            let resultsString = "";
-            for (const [key, value] of results.entries()) {
-                resultsString += `${key}: ${value.count - 1}\n`;
-
-                for (const [userKey, userValue] of value.users.cache) {
-                    if (userKey != message.author.id && !(userKey in participants)) {
-                        participants.push(userKey);
-                    }
+            async function setReactions() {
+                for (const reaction of emojisList) {
+                    msg.react(reaction).catch((err) => {
+                        msg.channel.send("I had trouble reacting with those emojis... removing the poll.");
+                        if(msg.deletable) msg.delete();
+                        console.error("setReactions for poll command error: ", err);
+                        throw err;
+                    });
                 }
             }
-
-            const personalEmbed = new MessageEmbed()
-                .setColor("BLUE")
-                .setFooter(`From the server: ${message.guild.name}`, message.guild.iconURL())
-                .setTitle("Poll Results")
-                .addField("Question", pollQuestion.content)
-                .addField("Results", resultsString)
-                .addField("Created by", message.member);
-
-            // Let everyone who responded know the results
-            for (user of participants) {
-                let respondent = await client.users.fetch(user);
-                if (respondent.bot) continue;
-
-                respondent.send("You recently responded to a poll. Here are the results!");
-                respondent.send(personalEmbed);
-            }
-
-            // Let the author know the results
-            let pollCreator = await client.users.fetch(message.author.id);
-            if (!pollCreator.bot) {
-                pollCreator.send("A poll you recently created has concluded. Here are the results!");
-                pollCreator.send(personalEmbed);
-            }
-
-            const resultsEmbed = new MessageEmbed()
-                .setColor("BLUE")
-                .setFooter("Poll ended")
-                .setTimestamp()
-                .setTitle("Poll Results")
-                .addField("Question", pollQuestion.content)
-                .addField("Results", resultsString)
-                .addField("Created by", message.member);
-
-            return msg.edit(resultsEmbed);
+    
+            await setReactions().then(() => {
+                const pollObject = {
+                    messageID: msg.id,
+                    guildID: msg.guild.id,
+                    channelID: msg.channel.id,
+                    pollQuestion: pollQuestion.content,
+                    emojisList: emojisList,
+                    creatorID: message.author.id,
+                    startTime: startTime,
+                    endTime: endTime
+                };
+    
+                client.createPoll(pollObject);
+                setTimeout(() => {
+                    module.exports.pollHandleFinish(client, pollObject);
+                }, endTime - startTime);
+            }).catch((err) => {
+                console.error("Couldn't create a poll: ", err);
+            });
         });
 
         return;
+    },
+    pollHandleMessageReactionAdd: async (client, reaction, user) => {
 
-        // Log activity and create channel if necessary
-        if (!message.guild.channels.cache.some(channel => channel.name === "polls")) {
-            if (!message.guild.me.hasPermission("MANAGE_CHANNELS")) {
-                message.channel.send("I couldn't post the poll to the correct channel and I don't have permissions to create it.");
-            } else {
-                await createChannel(message.guild, "polls", [{
-                    id: message.guild.id
-                }])
-                    .then(() => {
-                        const pollChannel = message.guild.channels.cache.find(channel => channel.name === "polls");
+    },
+    pollHandleMessageReactionRemove: async (client, reaction, user) => {
 
-                        try {
-                            pollChannel.send(promptEmbed).then(async msg => {
-                                message.reply(`Poll created! Check the ${pollChannel} channel to find it.`);
+    },
+    pollHandleFinish: async (client, poll) => {
+        const guild = client.guilds.cache.get(poll.guildID);
+        const channel = guild.channels.cache.get(poll.channelID);
+        const msg = channel.messages.cache.get(poll.messageID);
 
-                                const results = await waitPollResponse(msg, ms(duration.content) / 1000, emojisList);
-
-                                let participants = [];
-                                let resultsString = "";
-                                for (const [key, value] of results.entries()) {
-                                    resultsString += `${key}: ${value.count - 1}\n`;
-
-                                    for (const [userKey, userValue] of value.users.cache) {
-                                        if (userKey != message.author.id && !(userKey in participants)) {
-                                            participants.push(userKey);
-                                        }
-                                    }
-                                }
-
-                                const personalEmbed = new MessageEmbed()
-                                    .setColor("BLUE")
-                                    .setThumbnail(message.author.displayAvatarURL())
-                                    .setFooter(message.guild.name, message.guild.iconURL())
-                                    .setTimestamp()
-                                    .setTitle("Poll Results")
-                                    .setDescription(stripIndents`**${pollQuestion.content}**
-                                    
-                                    **Results:**
-                                    ${resultsString}
-                                    **Created by:** ${message.member}
-                                    **Poll started at:** ${formatDateLong(message.createdTimestamp)}`)
-
-                                // Let everyone who responded know the results
-                                for (user of participants) {
-                                    let respondent = await client.users.fetch(user);
-                                    if (respondent.bot) continue;
-
-                                    respondent.send("You recently responded to a poll. Here are the results!");
-                                    respondent.send(personalEmbed);
-                                }
-
-                                // Let the author know the results
-                                let pollCreator = await client.users.fetch(message.author.id);
-                                if (!pollCreator.bot) {
-                                    pollCreator.send("A poll you recently created has concluded. Here are the results!");
-                                    pollCreator.send(personalEmbed);
-                                }
-
-                                const resultsEmbed = new MessageEmbed()
-                                    .setColor("BLUE")
-                                    .setThumbnail(message.author.displayAvatarURL())
-                                    .setFooter(message.member.displayName, message.author.displayAvatarURL())
-                                    .setTimestamp()
-                                    .setTitle("Poll Results")
-                                    .setDescription(stripIndents`**${pollQuestion.content}**
-                                    
-                                    **Results:**
-                                    ${resultsString}
-                                    **Created by:** ${message.member}
-                                    **Poll started at:** ${formatDateLong(message.createdTimestamp)}`)
-
-                                return pollChannel.send(resultsEmbed);
-                            });
-                        } catch {
-                            return message.channel.send("There was an error with creating the poll. Please check your response emojis to make sure there are no other characters other than each emoji option separated by spaces.");
-                        }
-                    })
-                    .catch(err => {
-                        console.log(err);
-                    });
-            }
-        } else { // Channel already exists
-            const pollChannel = message.guild.channels.cache.find(channel => channel.name === "polls");
-
-            try {
-                pollChannel.send(promptEmbed).then(async msg => {
-                    message.reply(`Poll created! Check the ${pollChannel} channel to find it.`);
-
-                    const results = await waitPollResponse(msg, ms(duration.content) / 1000, emojisList);
-
-                    let participants = [];
-                    let resultsString = "";
-                    for (const [key, value] of results.entries()) {
-                        resultsString += `${key}: ${value.count - 1}\n`;
-
-                        for (const [userKey, userValue] of value.users.cache) {
-                            if (userKey != message.author.id && !(userKey in participants)) {
-                                participants.push(userKey);
-                            }
-                        }
+        let participants = [];
+        let resultsString = "";
+        for(emoji of poll.emojisList) {
+            const reactions = msg.reactions.cache.get(emoji);
+            if(reactions) {
+                await reactions.fetch();
+                if(reactions.me) { // if the bot has reacted with this emoji
+                    resultsString += `${emoji}: ${reactions.count - 1}\n`;
+                } else { // if someone removed the bot's own reactions
+                    resultsString += `${emoji}: ${reactions.count}\n`;
+                }
+                for (const [userKey, userValue] of reactions.users.cache) {
+                    if (userKey != msg.author.id && !(participants.includes(userKey))) {
+                        participants.push(userKey);
                     }
-
-                    const personalEmbed = new MessageEmbed()
-                        .setColor("BLUE")
-                        .setThumbnail(message.author.displayAvatarURL())
-                        .setFooter(message.guild.name, message.guild.iconURL())
-                        .setTimestamp()
-                        .setTitle("Poll Results")
-                        .setDescription(stripIndents`**${pollQuestion.content}**
-                        
-                        **Results:**
-                        ${resultsString}
-                        **Created by:** ${message.member}
-                        **Poll started at:** ${formatDateLong(message.createdTimestamp)}`)
-
-                    // Let everyone who responded know the results
-                    for (user of participants) {
-                        let respondent = await client.users.fetch(user);
-                        if (respondent.bot) continue;
-
-                        respondent.send("A poll you recently participated in has concluded. Here are the results!");
-                        respondent.send(personalEmbed);
-                    }
-
-                    // Let the author know the results
-                    let pollCreator = await client.users.fetch(message.author.id);
-                    if (!pollCreator.bot) {
-                        pollCreator.send("A poll you recently created has concluded. Here are the results!");
-                        pollCreator.send(personalEmbed);
-                    }
-
-                    const resultsEmbed = new MessageEmbed()
-                        .setColor("BLUE")
-                        .setThumbnail(message.author.displayAvatarURL())
-                        .setFooter(message.member.displayName, message.author.displayAvatarURL())
-                        .setTimestamp()
-                        .setTitle("Poll Results")
-                        .setDescription(stripIndents`**${pollQuestion.content}**
-                        
-                        **Results:**
-                        ${resultsString}
-                        **Created by:** ${message.member}
-                        **Poll started at:** ${formatDateLong(message.createdTimestamp)}`)
-
-                    return pollChannel.send(resultsEmbed);
-                });
-            } catch {
-                return message.channel.send("There was an error with creating the poll. Please check your response emojis to make sure there are no other characters other than each emoji option separated by spaces.");
+                }
+            } else { // there were no reactions left of the specified emoji
+                resultsString += `${emoji}: 0\n`;
             }
         }
 
-        return;
+        const pollCreatorMember = guild.members.cache.get(poll.creatorID);
+
+        const personalEmbed = new MessageEmbed()
+            .setColor("BLUE")
+            .setFooter(`From the server: ${guild.name}`, guild.iconURL())
+            .setTitle("Poll Results")
+            .addField("Question", poll.pollQuestion)
+            .addField("Results", resultsString)
+            .addField("Created by", pollCreatorMember);
+
+        // Let everyone who responded know the results
+        for (user of participants) {
+            if(user == poll.creatorID) continue;
+            let respondent = await client.users.fetch(user);
+            if (respondent.bot) continue;
+
+            respondent.send("You recently responded to a poll. Here are the results!", personalEmbed);
+        }
+
+        // Let the author know the results
+        let pollCreator = await client.users.fetch(poll.creatorID);
+        if (!pollCreator.bot) {
+            pollCreator.send("A poll you recently created has concluded. Here are the results!", personalEmbed);
+        }
+
+        const resultsEmbed = new MessageEmbed()
+            .setColor("BLUE")
+            .setFooter("Poll ended")
+            .setTimestamp()
+            .setTitle("Poll Results")
+            .addField("Question", poll.pollQuestion)
+            .addField("Results", resultsString)
+            .addField("Created by", pollCreatorMember);
+
+        return msg.edit(resultsEmbed);
     }
 };

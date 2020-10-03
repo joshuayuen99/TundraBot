@@ -1,15 +1,14 @@
 const mongoose = require("mongoose");
 
 const messageSchema = mongoose.Schema({
-    _id: mongoose.Schema.Types.ObjectId,
+    messageID: String,
     text: { type: String, required: true },
     editedText: [{ type: String }],
     command: String,
     userID: String,
     username: String,
-    guildID: { type: mongoose.Schema.Types.ObjectId, ref: "Guild" },
-    channelID: { type: mongoose.Schema.Types.ObjectId, ref: "Channel" },
-    messageID: String,
+    guildID: String,
+    channelID: String,
     deleted: { type: Boolean, default: false }
 },
     {
