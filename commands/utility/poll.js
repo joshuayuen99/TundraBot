@@ -101,7 +101,7 @@ module.exports = {
                 client.createPoll(pollObject);
                 setTimeout(() => {
                     module.exports.pollHandleFinish(client, pollObject);
-                    Poll.deleteOne(poll).catch((err) => {
+                    Poll.deleteOne(pollObject).catch((err) => {
                         console.error("Couldn't delete poll from database: ", err);
                     });
                 }, endTime - startTime);
