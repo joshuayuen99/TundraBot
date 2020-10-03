@@ -101,6 +101,9 @@ module.exports = {
                 client.createPoll(pollObject);
                 setTimeout(() => {
                     module.exports.pollHandleFinish(client, pollObject);
+                    Poll.deleteOne(poll).catch((err) => {
+                        console.error("Couldn't delete poll from database: ", err);
+                    });
                 }, endTime - startTime);
             }).catch((err) => {
                 console.error("Couldn't create a poll: ", err);
@@ -125,7 +128,7 @@ module.exports = {
         for(emoji of poll.emojisList) {
             const reactions = msg.reactions.cache.get(emoji);
             if(reactions) {
-                await reactions.fetch();
+                await reactions.users.fetch();
                 if(reactions.me) { // if the bot has reacted with this emoji
                     resultsString += `${emoji}: ${reactions.count - 1}\n`;
                 } else { // if someone removed the bot's own reactions
