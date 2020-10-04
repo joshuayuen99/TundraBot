@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { Guild, User, Channel, Message, Poll } = require("../models");
+const { Guild, User, Channel, Message, Event, Poll } = require("../models");
 
 module.exports = (client) => {
     client.getGuild = async (guild) => {
@@ -217,6 +217,41 @@ module.exports = (client) => {
             console.error("Error creating new user in database: ", err);
         });
     };
+
+    client.getEvent = async (messageID) => {
+        return Event.findOne({ messageID: messageID })
+            .then((event, err) => {
+                if (err) console.error(err);
+
+                if (event) return event.toObject();
+                else return null;
+            });
+    };
+    
+    client.updateEvent = async (messageID, participantObject) => {
+        // we want to add new participants
+        if(participantObject.add) {
+            return await Event.findOneAndUpdate({ messageID: messageID }, {
+                        $addToSet: { participants: participantObject.participant }
+                    }).catch((err) => {
+                        console.error(`Error adding participant to event (messageID: ${event.messageID}) in database: `, err);
+                    });
+        } else { // we want to remove old participants
+            return await Event.findOneAndUpdate({ messageID: messageID }, {
+                $pull: { participants: participantObject.participant }
+            }).catch((err) => {
+                console.error(`Error removing participant from event (messageID: ${event.messageID}) in database: `, err);
+            });
+        }
+    };
+
+    client.createEvent = async (event) => {
+        const newEvent = await new Event(event);
+
+        return await newEvent.save().catch((err) => {
+            console.error("Error creating new event in database: ", err);
+        });
+    }
 
     client.createPoll = async (poll) => {
         const newPoll = await new Poll(poll);

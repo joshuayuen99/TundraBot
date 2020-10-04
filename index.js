@@ -3,6 +3,7 @@ const { config } = require("dotenv");
 const fs = require("fs");
 
 const checkPolls = require("./helpers/checkPolls");
+const checkEvents = require("./helpers/checkEvents");
 
 function setup() {
     const client = new Client({
@@ -35,11 +36,12 @@ function setup() {
     client.mongoose.init();
 
     client.databaseCache = {};
-    client.databaseCache.polls = new Collection();
+    client.databaseCache.events = new Collection();
 
     client.login(process.env.DISCORDTOKEN);
 
     checkPolls.init(client);
+    checkEvents.init(client);
 }
 
 // if there is an unhandledRejection, log them
