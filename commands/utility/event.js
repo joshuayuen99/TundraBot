@@ -262,9 +262,11 @@ module.exports = {
     },
     eventHandleMessageReactionAdd: async (client, reaction, user) => {
         // it was our own reaction
-        if(user.id == client.user.id) return;
+        if (user.id == client.user.id) return;
         // not an event message
         if (!client.databaseCache.events.has(reaction.message.id)) return;
+
+        if (reaction.emoji.name != HAND_EMOJI) return;
 
         let cachedEvent = client.databaseCache.events.get(reaction.message.id);
 
@@ -309,9 +311,11 @@ module.exports = {
     },
     eventHandleMessageReactionRemove: async (client, reaction, user) => {
         // it was our own reaction
-        if(user.id == client.user.id) return;
+        if (user.id == client.user.id) return;
         // not an event message
         if (!client.databaseCache.events.has(reaction.message.id)) return;
+
+        if (reaction.emoji.name != HAND_EMOJI) return;
 
         let cachedEvent = client.databaseCache.events.get(reaction.message.id);
 
