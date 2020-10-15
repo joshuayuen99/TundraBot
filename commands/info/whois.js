@@ -37,9 +37,32 @@ module.exports = {
             **\\> Discord Tag:** ${member.user.tag}
             **\\> Created account:** ${created}`, true)
 
-        // If the user is currently playing a game
-        if (member.user.presence.game) {
-            embedMsg.addField("Currently playing", stripIndents`**\\>** ${member.user.presence.game.name}`);
+        // User activities
+        for (let activity of member.user.presence.activities) {
+            switch(activity.type) {
+                case "PLAYING":
+                    embedMsg.addField("Playing", stripIndents`**\\>** ${activity.name}`);
+                    break;
+                case "STREAMING":
+                    embedMsg.addField(`Streaming on ${activity.name}`, stripIndents`**\\>** ${activity.state}
+                    **\\>** [${activity.details}](${activity.url})`);
+                    break;
+                case "LISTENING":
+                    embedMsg.addField(`Listening to ${activity.name}`, stripIndents`**\\>** ${activity.details}
+                    **\\>** ${activity.state}`);
+                    break;
+                case "WATCHING":
+                    embedMsg.addField("Watching", stripIndents`**\\>** ${activity.name}`);
+                    break;
+                case "CUSTOM_STATUS":
+                    let statusString = "";
+                    if(activity.emoji) statusString += activity.emoji.name;
+                    if(activity.name !== "Custom Status") statusString += ` ${activity.name}`;
+                    embedMsg.addField("Custom status", stripIndents`**\\>** ${statusString}`);
+                    break;
+                default:
+                    break;
+            }
         }
 
         return message.channel.send(embedMsg);
