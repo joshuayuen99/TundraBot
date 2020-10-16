@@ -101,6 +101,9 @@ module.exports = {
         const startTime = message.createdAt.getTime();
         const endTime = momentEventDate;
 
+        // If the time is in the past
+        if (endTime < Date.now()) return message.reply("That time already passed! Cancelling event.");
+
         const baseEmbed = new MessageEmbed()
             .setColor("PURPLE")
             .setFooter("Event starts")
