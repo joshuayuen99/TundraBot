@@ -26,23 +26,23 @@
     "ascii-table": "0.0.9",
     "assert": "^2.0.0",
     "common-tags": "^1.8.0",
-    "discord.js": "^12.3.1",
+    "discord.js": "^12.4.0",
     "dotenv": "^8.2.0",
     "ffmpeg": "0.0.4",
     "grapheme-splitter": "^1.0.4",
     "he": "^1.2.0",
-    "moment": "^2.27.0",
+    "moment": "^2.29.1",
     "moment-timezone": "^0.5.31",
-    "mongoose": "^5.10.6",
+    "mongoose": "^5.10.9",
     "node-gyp": "^5.1.1",
     "node-opus": "^0.3.3",
     "youtube-search": "^1.1.4",
-    "ytdl-core": "^2.0.0"
+    "ytdl-core": "^2.1.7"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "mocha": "^7.2.0",
-    "nodemon": "^2.0.0",
-    "sinon": "^9.0.2"
+    "nodemon": "^2.0.6",
+    "sinon": "^9.2.0"
   }
 }
