@@ -159,13 +159,11 @@ module.exports = {
                 .setColor("BLUE")
                 .setDescription(`🎵 [${song.title}](${song.url}) has been added to the queue! There are currently \`${serverQueue.songs.length}\` songs in queue.`);
             return message.channel.send(embedMsg);
-            return message.channel.send(`[${song.title}](${song.url}) has been added to the queue! There are currently \`${serverQueue.songs.length}\` songs in queue.`);
         } else {
             const embedMsg = new MessageEmbed()
             .setColor("BLUE")
             .setDescription(`🎵 [${song.title}](${song.url}) has been added to the queue! There is currently \`${serverQueue.songs.length}\` song in queue.`);
             return message.channel.send(embedMsg);
-            return message.channel.send(`[${song.title}](${song.url}) has been added to the queue! There is currently \`${serverQueue.songs.length}\` song in queue.`);
         }
     }
 }
