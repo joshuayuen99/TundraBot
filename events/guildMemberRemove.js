@@ -1,6 +1,10 @@
 const { MessageEmbed } = require("discord.js");
 const { createChannel, formatDateLong } = require("../functions.js");
 
+/**
+ * @param {import("discord.js").Client} client Discord Client instance
+ * @param {import("discord.js").GuildMember} member Discord Member
+*/
 module.exports = async (client, member) => {
     const guild = member.guild;
     const micon = member.user.displayAvatarURL();

@@ -1,3 +1,4 @@
+const { Client } = require("discord.js");
 const { Poll } = require("../models");
 const { pollHandleFinish } = require("../commands/utility/poll");
 
@@ -5,7 +6,7 @@ module.exports = {
     
 	/**
      * Starts checking...
-     * @param {object} client The Discord Client instance
+     * @param {Client} client Discord Client instance
      */
 	async init(client){
         Poll.find().then(async (polls) => {

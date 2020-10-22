@@ -9,6 +9,12 @@ module.exports = {
     description: "Changes a user's timezone. Used for time specific commands such as \`event\`.",
     usage: stripIndents`settimezone [timezone]
     eg. settimezone America/New_York`,
+    /**
+     * @param {import("discord.js").Client} client Discord Client instance
+     * @param {import("discord.js").Message} message Discord Message object
+     * @param {String[]} args command arguments
+     * @param {Object} settings guild settings
+    */
     run: async (client, message, args, settings) => {
         // Get saved user settings
         let userSettings = await client.getUser(message.author);

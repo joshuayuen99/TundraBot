@@ -3,6 +3,10 @@ const { stripIndents } = require("common-tags");
 const { formatDate, formatDateLong } = require("../functions");
 const { Guild } = require("../models");
 
+/**
+ * @param {import("discord.js").Client} client Discord Client instance
+ * @param {import("discord.js").Guild} guild Discord Guild
+*/
 module.exports = async (client, guild) => {
     try {
         await Guild.findOneAndDelete({ guildID: guild.id });

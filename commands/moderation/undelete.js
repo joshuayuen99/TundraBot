@@ -10,6 +10,12 @@ module.exports = {
     description: "Displays the user's last \`n\` (default 10) deleted messages in the specified channel. The \`all\`, \`id\`, and \`mention\` options can only be used by members with the \`Manage Messages\` permission and will display the last \`n\`deleted messages of the specified member(s) in that channel.",
     usage: `undelete [all | id | mention] [-c channel] [-n number of messages]
     ex. undelete @TundraBot -c #general`,
+    /**
+     * @param {import("discord.js").Client} client Discord Client instance
+     * @param {import("discord.js").Message} message Discord Message object
+     * @param {String[]} args command arguments
+     * @param {Object} settings guild settings
+    */
     run: async (client, message, args, settings) => {
         // Check if the user specified a channel
         let targetChannelName;

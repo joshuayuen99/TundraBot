@@ -2,6 +2,10 @@ const { MessageEmbed } = require("discord.js");
 const { stripIndents } = require("common-tags");
 const { formatDate } = require("../functions");
 
+/**
+ * @param {import("discord.js").Client} client Discord Client instance
+ * @param {import("discord.js").Message} message Discord Message
+*/
 module.exports = async (client, message) => {
     if (message.author.bot) return;  // if a bot sent the message
 
@@ -59,7 +63,7 @@ module.exports = async (client, message) => {
 
         owner.send(embedMsg);
 
-        return message.channel.send("Message my master TundraBuddy#4650 instead!");
+        return message.channel.send(`Message my master ${process.env.OWNERNAME}${process.env.OWNERTAG} instead!`);
     }
 
     let settings;

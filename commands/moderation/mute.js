@@ -9,7 +9,13 @@ module.exports = {
     category: "moderation",
     description: "Temporarily mutes the member for the specified duration so they can't talk or type.",
     usage: `mute <mention | id> <duration (#s/m/h)>
-	eg. mute @TundraBot 10m`,
+    eg. mute @TundraBot 10m`,
+    /**
+     * @param {import("discord.js").Client} client Discord Client instance
+     * @param {import("discord.js").Message} message Discord Message object
+     * @param {String[]} args command arguments
+     * @param {Object} settings guild settings
+    */
     run: async (client, message, args, settings) => {
         const CONFIRM = "💯";
         const CANCEL = "\u274c";    // red "X" emoji

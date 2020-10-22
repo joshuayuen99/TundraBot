@@ -8,6 +8,12 @@ module.exports = {
     category: "info",
     description: "Returns user information. If no one is specified, it will return user information about the person who used this command.",
     usage: "whois [username | id | mention]",
+    /**
+     * @param {import("discord.js").Client} client Discord Client instance
+     * @param {import("discord.js").Message} message Discord Message object
+     * @param {String[]} args command arguments
+     * @param {Object} settings guild settings
+    */
     run: async (client, message, args, settings) => {
         const member = getMember(message, args.join(" "));
 

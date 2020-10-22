@@ -7,6 +7,12 @@ module.exports = {
     category: "info",
     description: "Returns all commands, or one specific command info.",
     usage: "help [command | alias]",
+    /**
+     * @param {import("discord.js").Client} client Discord Client instance
+     * @param {import("discord.js").Message} message Discord Message object
+     * @param {String[]} args command arguments
+     * @param {Object} settings guild settings
+    */
     run: async (client, message, args, settings) => {
         if (args[0]) {
             return getCommand(client, message, args[0]);

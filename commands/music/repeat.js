@@ -3,6 +3,12 @@ module.exports = {
     category: "music",
     description: "Toggles repeating the current song.",
     usage: "repeat",
+    /**
+     * @param {import("discord.js").Client} client Discord Client instance
+     * @param {import("discord.js").Message} message Discord Message object
+     * @param {String[]} args command arguments
+     * @param {Object} settings guild settings
+    */
     run: async (client, message, args, settings) => {
         const serverQueue = client.musicGuilds.get(message.guild.id);
         if (!serverQueue) {

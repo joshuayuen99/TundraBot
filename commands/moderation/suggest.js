@@ -8,6 +8,12 @@ module.exports = {
     category: "moderation",
     description: "Suggests a feature to implement.",
     usage: "suggest <suggestion>",
+    /**
+     * @param {import("discord.js").Client} client Discord Client instance
+     * @param {import("discord.js").Message} message Discord Message object
+     * @param {String[]} args command arguments
+     * @param {Object} settings guild settings
+    */
     run: async (client, message, args, settings) => {
         // If there was no suggestion specified
         if (!args[0]) {

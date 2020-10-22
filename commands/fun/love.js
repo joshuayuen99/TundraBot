@@ -11,6 +11,12 @@ module.exports = {
     category: "fun",
     description: "Calculates the love affinity you have with another user.",
     usage: "love [mention | id | username]",
+    /**
+     * @param {import("discord.js").Client} client Discord Client instance
+     * @param {import("discord.js").Message} message Discord Message object
+     * @param {String[]} args command arguments
+     * @param {Object} settings guild settings
+    */
     run: async (client, message, args, settings) => {
         let person = getMember(message, args[0]);
 

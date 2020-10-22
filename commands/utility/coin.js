@@ -6,6 +6,12 @@ module.exports = {
     category: "utility",
     description: "Flips a coin!",
     usage: "coin",
+    /**
+     * @param {import("discord.js").Client} client Discord Client instance
+     * @param {import("discord.js").Message} message Discord Message object
+     * @param {String[]} args command arguments
+     * @param {Object} settings guild settings
+    */
     run: async (client, message, args, settings) => {
         const result = Math.round(Math.random());
 

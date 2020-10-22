@@ -7,6 +7,12 @@ module.exports = {
     category: "moderation",
     description: "Reports a member.",
     usage: "report <mention | id> <reason>",
+    /**
+     * @param {import("discord.js").Client} client Discord Client instance
+     * @param {import("discord.js").Message} message Discord Message object
+     * @param {String[]} args command arguments
+     * @param {Object} settings guild settings
+    */
     run: async (client, message, args, settings) => {
         // No user specified
         if (!args[0]) {

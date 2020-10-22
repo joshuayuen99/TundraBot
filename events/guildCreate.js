@@ -2,6 +2,10 @@ const { MessageEmbed } = require("discord.js");
 const { stripIndents } = require("common-tags");
 const { formatDate, formatDateLong } = require("../functions");
 
+/**
+ * @param {import("discord.js").Client} client Discord Client instance
+ * @param {import("discord.js").Guild} guild Discord Guild
+*/
 module.exports = async (client, guild) => {
     try {
         let clientMember = await guild.members.cache.get(client.user.id);

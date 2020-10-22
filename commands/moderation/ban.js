@@ -6,7 +6,13 @@ module.exports = {
 	name: "ban",
 	category: "moderation",
 	description: "Bans the member.",
-	usage: "ban <mention | id> <reason>",
+    usage: "ban <mention | id> <reason>",
+    /**
+     * @param {import("discord.js").Client} client Discord Client instance
+     * @param {import("discord.js").Message} message Discord Message object
+     * @param {String[]} args command arguments
+     * @param {Object} settings guild settings
+    */
     run: async (client, message, args, settings) => {
 		const CONFIRM = "💯";
 		//const CONFIRM = "\u1f4af";  // "100" emoji

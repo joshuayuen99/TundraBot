@@ -13,6 +13,12 @@ module.exports = {
     category: "fun",
     description: "Rock paper scissors game. React to one of the emojis to play.",
     usage: "rps",
+    /**
+     * @param {import("discord.js").Client} client Discord Client instance
+     * @param {import("discord.js").Message} message Discord Message object
+     * @param {String[]} args command arguments
+     * @param {Object} settings guild settings
+    */
     run: async (client, message, args, settings) => {
         const embedMsg = new MessageEmbed()
             .setColor("#ffffff")

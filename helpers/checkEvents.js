@@ -1,3 +1,4 @@
+const { Client } = require("discord.js");
 const { Event } = require("../models");
 const { eventHandleFinish } = require("../commands/utility/event");
 
@@ -5,7 +6,7 @@ module.exports = {
     
 	/**
      * Starts checking...
-     * @param {object} client The Discord Client instance
+     * @param {Client} client Discord Client instance
      */
 	async init(client){
         Event.find().then(async (events) => {

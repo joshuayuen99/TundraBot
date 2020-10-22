@@ -8,6 +8,12 @@ module.exports = {
     category: "utility",
     description: "Provides a random number from <min> to <max> or from 0-100 by default.",
     usage: "rng [<min max>]",
+    /**
+     * @param {import("discord.js").Client} client Discord Client instance
+     * @param {import("discord.js").Message} message Discord Message object
+     * @param {String[]} args command arguments
+     * @param {Object} settings guild settings
+    */
     run: async (client, message, args, settings) => {
         let min, max;
         if (args[0] && args[1]) {

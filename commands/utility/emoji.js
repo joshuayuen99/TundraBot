@@ -1,4 +1,3 @@
-const { MessageEmbed } = require("discord.js");
 const { stripIndents } = require("common-tags");
 
 module.exports = {
@@ -7,6 +6,12 @@ module.exports = {
     category: "utility",
     description: "Gives the unicode for the entered emoji(s).",
     usage: "emoji <emoji> [...emoji]",
+    /**
+     * @param {import("discord.js").Client} client Discord Client instance
+     * @param {import("discord.js").Message} message Discord Message object
+     * @param {String[]} args command arguments
+     * @param {Object} settings guild settings
+    */
     run: async (client, message, args, settings) => {
         if (!args[0]) return message.reply("Please enter an emoji");
 

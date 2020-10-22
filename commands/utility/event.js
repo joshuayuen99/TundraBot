@@ -12,6 +12,12 @@ module.exports = {
     category: "utility",
     description: "Starts an interactive wizard to schedule an event to begin at a given time. Anyone who would like to participate in the event can respond to be notified when it begins.",
     usage: "event",
+    /**
+     * @param {import("discord.js").Client} client Discord Client instance
+     * @param {import("discord.js").Message} message Discord Message object
+     * @param {String[]} args command arguments
+     * @param {Object} settings guild settings
+    */
     run: async (client, message, args, settings) => {
         message.channel.send("What channel should I post the event in? eg. #general (type `here` for the current one)");
         let postChannelMessage = await waitResponse(client, message, message.author, 120);

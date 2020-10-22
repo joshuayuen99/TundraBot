@@ -5,6 +5,12 @@ module.exports = {
     category: "music",
     description: "Shuffles the current queue, or toggles shuffling of the queue with the [toggle] or [t] option. This will cause the queue to be shuffled whenever a new song is added to it.",
     usage: "shuffle [toggle | t]",
+    /**
+     * @param {import("discord.js").Client} client Discord Client instance
+     * @param {import("discord.js").Message} message Discord Message object
+     * @param {String[]} args command arguments
+     * @param {Object} settings guild settings
+    */
     run: async (client, message, args, settings) => {
         const serverQueue = client.musicGuilds.get(message.guild.id);
         if (!serverQueue) {

@@ -7,6 +7,12 @@ module.exports = {
     category: "info",
     description: "Returns information about the server and when the user who requsted it joined.",
     usage: "serverinfo",
+    /**
+     * @param {import("discord.js").Client} client Discord Client instance
+     * @param {import("discord.js").Message} message Discord Message object
+     * @param {String[]} args command arguments
+     * @param {Object} settings guild settings
+    */
     run: async (client, message, args, settings) => {
         const guild = message.guild;
         const sicon = guild.iconURL();

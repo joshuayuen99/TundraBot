@@ -12,6 +12,12 @@ module.exports = {
     category: "utility",
     description: "Starts a poll for a given duration. Responses are given by responding to the poll with emojis. The creator and anyone who participates in the poll will be notified of the results when it finishes.",
     usage: "poll",
+    /**
+     * @param {import("discord.js").Client} client Discord Client instance
+     * @param {import("discord.js").Message} message Discord Message object
+     * @param {String[]} args command arguments
+     * @param {Object} settings guild settings
+    */
     run: async (client, message, args, settings) => {
         message.channel.send("What channel should I post the poll in? (type `here` for the current one)");
         let postChannelMessage = await waitResponse(client, message, message.author, 120);
@@ -118,6 +124,10 @@ module.exports = {
     pollHandleMessageReactionRemove: async (client, reaction, user) => {
 
     },
+    /**
+     * @param {import("discord.js").Client} client Discord Client instance
+     * @param {Document} poll poll object
+    */
     pollHandleFinish: async (client, poll) => {
         const guild = client.guilds.cache.get(poll.guildID);
         const channel = guild.channels.cache.get(poll.channelID);

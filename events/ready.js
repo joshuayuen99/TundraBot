@@ -1,3 +1,6 @@
+/**
+ * @param {import("discord.js").Client} client Discord Client instance
+*/
 module.exports = (client) => {
     client.user.setPresence({
         status: "online",

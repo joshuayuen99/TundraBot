@@ -10,6 +10,12 @@ module.exports = {
     config <setting> will display the current value of that particular setting.
     config <setting> <new value> will change the value of that particular setting.`,
     usage: "config [setting] [new value]",
+    /**
+     * @param {import("discord.js").Client} client Discord Client instance
+     * @param {import("discord.js").Message} message Discord Message object
+     * @param {String[]} args command arguments
+     * @param {Object} settings guild settings
+    */
     run: async (client, message, args, settings) => {
         if (!message.member.hasPermission("MANAGE_GUILD")) {
             return message.reply("Sorry but you don't have the permissions to change the configs. You must have the \`Manage Server\` permission.");
