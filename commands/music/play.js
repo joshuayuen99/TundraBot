@@ -142,7 +142,7 @@ module.exports = {
             songInfo = await ytdl.getInfo(args[0]).catch((err) => {
                 console.error("ytdl.getInfo error: ", err);
 
-                return message.channel.send(`There was an error playing this song. Try again and if this issue persists, please contact my creator ${process.env.OWNERNAME}${process.env.OWNERTAG}`);
+                return message.channel.send(`There was an error playing this song. Try again and if this issue persists, please contact my creator ${process.env.OWNERNAME}${process.env.OWNERTAG}.`);
             });
         }
         const song = {
@@ -151,13 +151,21 @@ module.exports = {
             isLive: songInfo.player_response.videoDetails.isLiveContent
         };
         await queueSong(client, message, song).catch((err) => {
-            return message.channel.send(`There was an error playing this song. Try again and if this issue persists, please contact my creator ${process.env.OWNERNAME}${process.env.OWNERTAG}`);
+            return message.channel.send(`There was an error playing this song. Try again and if this issue persists, please contact my creator ${process.env.OWNERNAME}${process.env.OWNERTAG}.`);
         });
         serverQueue = client.musicGuilds.get(message.guild.id);
         if (serverQueue.songs.length > 1) {
-            return message.channel.send(`\`${song.title}\` has been added to the queue! There are currently \`${serverQueue.songs.length}\` songs in queue.`);
+            const embedMsg = new MessageEmbed()
+                .setColor("BLUE")
+                .setDescription(`🎵 [${song.title}](${song.url}) has been added to the queue! There are currently \`${serverQueue.songs.length}\` songs in queue.`);
+            return message.channel.send(embedMsg);
+            return message.channel.send(`[${song.title}](${song.url}) has been added to the queue! There are currently \`${serverQueue.songs.length}\` songs in queue.`);
         } else {
-            return message.channel.send(`\`${song.title}\` has been added to the queue! There is currently \`${serverQueue.songs.length}\` song in queue.`);
+            const embedMsg = new MessageEmbed()
+            .setColor("BLUE")
+            .setDescription(`🎵 [${song.title}](${song.url}) has been added to the queue! There is currently \`${serverQueue.songs.length}\` song in queue.`);
+            return message.channel.send(embedMsg);
+            return message.channel.send(`[${song.title}](${song.url}) has been added to the queue! There is currently \`${serverQueue.songs.length}\` song in queue.`);
         }
     }
 }
