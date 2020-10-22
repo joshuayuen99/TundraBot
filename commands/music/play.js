@@ -18,6 +18,12 @@ module.exports = {
     category: "music",
     description: "Plays music in the current channel.",
     usage: "play <youtube link | search phrase>",
+    /**
+     * @param {import("discord.js").Client} client Discord Client instance
+     * @param {import("discord.js").Message} message Discord Message object
+     * @param {String[]} args command arguments
+     * @param {Object} settings guild settings
+    */
     run: async (client, message, args, settings) => {
         // No link provided
         if (!args[0]) {
@@ -133,11 +139,16 @@ module.exports = {
         }
 
         if (!songInfo) { // User entered a regular video link
-            songInfo = await ytdl.getInfo(args[0]);
+            songInfo = await ytdl.getInfo(args[0]).catch((err) => {
+                console.error("ytdl.getInfo error: ", err);
+
+                return message.channel.send(`There was an error playing this song. Try again and if this issue persists, please contact my creator ${process.env.OWNERNAME}${process.env.OWNERTAG}`);
+            });
         }
         const song = {
             title: songInfo.title,
             url: songInfo.video_url,
+            isLive: songInfo.player_response.videoDetails.isLiveContent
         };
         await queueSong(client, message, song).catch((err) => {
             return message.channel.send(`There was an error playing this song. Try again and if this issue persists, please contact my creator ${process.env.OWNERNAME}${process.env.OWNERTAG}`);
@@ -193,12 +204,20 @@ function play(client, guild) {
         return serverQueue.textChannel.send("Queue empty, leaving now.");
     }
 
-    // Create dispatcher to play song
-    const dispatcher = serverQueue.connection.play(ytdl(song.url,
-        {
+    let options;
+    if (song.isLive) {
+        options = {
+            begin: Date.now()
+        };
+    } else {
+        options = {
             filter: "audioonly",
             highWaterMark: 1 << 25
-        }))
+        };
+    }
+
+    // Create dispatcher to play song
+    const dispatcher = serverQueue.connection.play(ytdl(song.url, options))
         .on("finish", () => {
             if (!serverQueue.repeat) serverQueue.songs.shift();
             play(client, guild);
