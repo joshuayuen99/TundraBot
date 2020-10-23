@@ -25,7 +25,8 @@ module.exports = {
         for (i = 0; i < serverQueue.songs.length && i < 5; i++) {
             queue = queue.concat(`**${i + 1}:** [${serverQueue.songs[i].title}](${serverQueue.songs[i].url})\n\n`);
         }
-        embedMsg.addField(`Current queue (${serverQueue.songs.length} songs):`, stripIndents`${queue}`);
+        if (serverQueue.songs.length > 1) embedMsg.addField(`Current queue (${serverQueue.songs.length} songs):`, stripIndents`${queue}`);
+        else embedMsg.addField(`Current queue (${serverQueue.songs.length} song):`, stripIndents`${queue}`);
 
         message.channel.send(embedMsg);
     }
