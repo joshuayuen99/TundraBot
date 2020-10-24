@@ -4,5 +4,6 @@ module.exports = {
     Channel: require("./Channel"),
     Message: require("./Message"),
     Event: require("./Event"),
-    Poll: require("./Poll")
+    Poll: require("./Poll"),
+    RoleMenu: require("./RoleMenu")
 };

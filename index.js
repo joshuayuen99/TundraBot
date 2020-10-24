@@ -4,6 +4,7 @@ const fs = require("fs");
 
 const checkPolls = require("./helpers/checkPolls");
 const checkEvents = require("./helpers/checkEvents");
+const loadRoleMenus = require("./helpers/loadRoleMenus");
 
 function setup() {
     const client = new Client({
@@ -37,11 +38,13 @@ function setup() {
 
     client.databaseCache = {};
     client.databaseCache.events = new Collection();
+    client.databaseCache.roleMenus = new Collection();
 
     client.login(process.env.DISCORDTOKEN);
 
     checkPolls.init(client);
     checkEvents.init(client);
+    loadRoleMenus.init(client);
 }
 
 // if there is an unhandledRejection, log them

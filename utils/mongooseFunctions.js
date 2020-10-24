@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { Guild, User, Channel, Message, Event, Poll } = require("../models");
+const { Guild, User, Channel, Message, Event, Poll, RoleMenu } = require("../models");
 
 module.exports = (client) => {
     client.getGuild = async (guild) => {
@@ -101,7 +101,7 @@ module.exports = (client) => {
                 if (message) return message.toObject();
                 else return null;
             });
-    }
+    };
 
     client.updateMessage = async (message, newMessage, settings) => {
         // The message was edited (check to make sure it wasn't just an embed being added onto the message)
@@ -129,7 +129,7 @@ module.exports = (client) => {
                 console.error("Error updating message in database: ", err);
             });
         return data;
-    }
+    };
 
     client.createMessage = async (message, settings) => {
         let command;
@@ -205,7 +205,7 @@ module.exports = (client) => {
         //     });
         // }
         return client.getUser(user);
-    }
+    };
 
     client.createUser = async (user) => {
         const newUser = await new User({
@@ -251,7 +251,7 @@ module.exports = (client) => {
         return await newEvent.save().catch((err) => {
             console.error("Error creating new event in database: ", err);
         });
-    }
+    };
 
     client.createPoll = async (poll) => {
         const newPoll = await new Poll(poll);
@@ -259,7 +259,21 @@ module.exports = (client) => {
         return await newPoll.save().catch((err) => {
             console.error("Error creating new poll in database: ", err);
         });
-    }
+    };
+
+    client.createRoleMenu = async (roleMenu) => {
+        const newRoleMenu = await new RoleMenu(roleMenu);
+
+        return await newRoleMenu.save().catch((err) => {
+            console.error("Error creating new role menu in database: ", err);
+        })
+    };
+
+    client.updateRoleMenu = async (messageID, roleMenu) => {
+        return await RoleMenu.findOneAndUpdate({ messageID: messageID }, roleMenu).catch((err) => {
+            console.error(`Error updating role menu (messageID: ${roleMenu.messageID}) in database: `, err);
+        });
+    };
 
     client.clean = async (client, text) => {
         if (typeof (text) === "string") {
