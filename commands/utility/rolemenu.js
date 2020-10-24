@@ -44,8 +44,8 @@ module.exports = {
         if (!client.databaseCache.roleMenus.has(reaction.message.id)) return;
 
         let cachedRoleMenu = client.databaseCache.roleMenus.get(reaction.message.id);
-        for (option of cachedRoleMenu.roleOptions) {
-            if (option.emoji == reaction.emoji.name) {
+        for (let option of cachedRoleMenu.roleOptions) {
+            if (option.emoji == reaction.emoji.toString()) {
                 let member = reaction.message.guild.members.cache.get(user.id);
                 if (!member.roles.cache.has(option.roleID)) { // give member the role
                     member.roles.add(option.roleID);
@@ -67,8 +67,8 @@ module.exports = {
         if (!client.databaseCache.roleMenus.has(reaction.message.id)) return;
 
         let cachedRoleMenu = client.databaseCache.roleMenus.get(reaction.message.id);
-        for (option of cachedRoleMenu.roleOptions) {
-            if (option.emoji == reaction.emoji.name) {
+        for (let option of cachedRoleMenu.roleOptions) {
+            if (option.emoji == reaction.emoji.toString()) {
                 reaction.message.guild.members.fetch(user.id);
                 let member = reaction.message.guild.members.cache.get(user.id);
                 if (member.roles.cache.has(option.roleID)) { // remove the role
