@@ -154,6 +154,9 @@ module.exports = {
             }
         }
 
+        await guild.members.fetch(poll.creatorID).catch((err) => {
+            console.error("Poll creator left the server: ", err);
+        });
         const pollCreatorMember = guild.members.cache.get(poll.creatorID);
 
         const personalEmbed = new MessageEmbed()
