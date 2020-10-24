@@ -4,7 +4,7 @@
 
 A personal Discord bot made in my free time and used by me and my friends. I've been developing it in chunks ever since November 2019, and still plan to continue improving it and adding new features moving forward. Updated for Discord.js v12.
 
-Main features include playing music, server moderation, organizing events and polls, and general info commands about the server and its members.
+Main features include playing music, server moderation, organizing events and polls, configurable role menus, and general info commands about the server and its members.
 
 To add me to your server click [here](https://discord.com/api/oauth2/authorize?client_id=647196546492006423&permissions=309587062&scope=bot)!
 
@@ -193,6 +193,7 @@ My bot will automatically log whenever someone joins and leaves the server, alon
 
 - `Event` Creates an event that members of the server can sign up for, just provide the date and time! It gets updated in real-time whenever someone signs up for it, and automatically DM's each participant when the event starts. It allows you to set a limit for how many people can sign up, and keeps track of a waitlist of who is next in line in case someone drops out.
 - `Poll` Creates a poll that members of the server can respond to! Input is given by reacting to the poll with emojis that the poll creator specifies (👍 and 👎 for example). The creator just needs to provide how long the poll should last and when the time comes, the poll will be automatically updated to show what the final results were. Each participant in the poll will also be DM'd with the final results.
+- `Rolemenu` Creates a role menu that members of the server can simply react to in order to get roles! Allows for editing/updating the role menu by adding or removing roles on the fly without needing to create an entire new one. Useful uses for this could be allowing members to assign name colors to themselves, or to assign roles for games that they're interested in getting @'d for.
 - `RNG [min max]` Randomly picks a number between [min] and [max] if provided, or 0-100 otherwise.
 - `Emoji <emoji> [...emoji]` Gives the unicode for the entered emoji(s).
 
