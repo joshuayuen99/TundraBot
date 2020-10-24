@@ -139,7 +139,7 @@ async function createRoleMenu(client, message, args, settings) {
             .setColor("YELLOW");
 
         let queryMessage = await message.channel.send(emojiQueryEmbed);
-        let responseEmojiMessage = await waitResponse(client, message, message.author, 120);
+        let responseEmojiMessage = await waitResponse(client, message, message.author, 5 * 60);
         if (!responseEmojiMessage) {
             queryMessage.delete();
             message.reply("Cancelling rolemenu.");
@@ -202,7 +202,7 @@ async function createRoleMenu(client, message, args, settings) {
                 .setColor("YELLOW");
 
             queryMessage = await message.channel.send(roleQueryEmbed);
-            let roleMessage = await waitResponse(client, message, message.author, 120);
+            let roleMessage = await waitResponse(client, message, message.author, 5 * 60);
             if (!roleMessage) {
                 queryMessage.delete();
                 message.reply("Cancelling rolemenu.");
@@ -291,7 +291,7 @@ async function updateRoleMenu(client, message, args, settings) {
                     case ONE_EMOJI: {
                         updateEmbed.setDescription("Please enter the new title.");
                         let updateEmbedMessage = await message.channel.send(updateEmbed);
-                        let newTitleMessage = await waitResponse(client, message, message.author, 120);
+                        let newTitleMessage = await waitResponse(client, message, message.author, 5 * 60);
 
                         roleMenuEmbed
                             .setTitle(newTitleMessage.content)
@@ -318,7 +318,7 @@ async function updateRoleMenu(client, message, args, settings) {
                                 .setColor("YELLOW");
 
                             let queryMessage = await message.channel.send(emojiQueryEmbed);
-                            let responseEmojiMessage = await waitResponse(client, message, message.author, 120);
+                            let responseEmojiMessage = await waitResponse(client, message, message.author, 5 * 60);
                             if (!responseEmojiMessage) {
                                 queryMessage.delete();
                                 message.reply("Cancelling rolemenu update.");
@@ -374,7 +374,7 @@ async function updateRoleMenu(client, message, args, settings) {
                                     .setColor("YELLOW");
 
                                 queryMessage = await message.channel.send(roleQueryEmbed);
-                                let roleMessage = await waitResponse(client, message, message.author, 120);
+                                let roleMessage = await waitResponse(client, message, message.author, 5 * 60);
                                 if (!roleMessage) {
                                     queryMessage.delete();
                                     message.reply("Cancelling rolemenu update.");
@@ -439,7 +439,7 @@ async function updateRoleMenu(client, message, args, settings) {
                                 .setColor("YELLOW");
 
                             let queryMessage = await message.channel.send(emojiQueryEmbed);
-                            let responseEmojiMessage = await waitResponse(client, message, message.author, 120);
+                            let responseEmojiMessage = await waitResponse(client, message, message.author, 5 * 60);
                             if (!responseEmojiMessage) {
                                 queryMessage.delete();
                                 message.reply("Cancelling rolemenu update.");
