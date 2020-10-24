@@ -8,7 +8,7 @@ module.exports = {
     aliases: ["rm"],
     category: "utility",
     description: "Starts an interactive wizard to create a rolemenu. Using the update flag allows you to update a pre-existing role menu by providing the message ID. Delete or remove will delete a role menu.",
-    usage: "rolemenu [update \`messageID\` [delete/remove \`messageID\`]]",
+    usage: "rolemenu [update/edit \`messageID\` [delete/remove \`messageID\`]]",
     /**
      * @param {import("discord.js").Client} client Discord Client instance
      * @param {import("discord.js").Message} message Discord Message object
@@ -24,7 +24,7 @@ module.exports = {
         }
 
         if (!args[0]) createRoleMenu(client, message, args, settings);
-        else if (args.includes("update")) {
+        else if (args.includes("update") || args.includes("edit")) {
             updateRoleMenu(client, message, args, settings);
         } else if (args.includes("delete") || args.includes("remove")) {
             removeRoleMenu(client, message, args, settings);
@@ -253,269 +253,536 @@ async function createRoleMenu(client, message, args, settings) {
 }
 
 async function updateRoleMenu(client, message, args, settings) {
-    if (args[args.indexOf("update") + 1]) { // argument after "update"
-        if (client.databaseCache.roleMenus.has(args[args.indexOf("update") + 1])) { // message ID is for a role menu
-            let cachedRoleMenu = client.databaseCache.roleMenus.get(args[args.indexOf("update") + 1]);
-            const roleMenuMessage = client.channels.cache.get(cachedRoleMenu.channelID).messages.cache.get(cachedRoleMenu.messageID);
+    if (args.includes("update")) {
+        if (args[args.indexOf("update") + 1]) { // argument after "update"
+            if (client.databaseCache.roleMenus.has(args[args.indexOf("update") + 1])) { // message ID is for a role menu
+                let cachedRoleMenu = client.databaseCache.roleMenus.get(args[args.indexOf("update") + 1]);
+                const roleMenuMessage = client.channels.cache.get(cachedRoleMenu.channelID).messages.cache.get(cachedRoleMenu.messageID);
 
-            let roleMenuString = "";
-            for (option of cachedRoleMenu.roleOptions) {
-                roleMenuString += `${option.emoji}: <@&${option.roleID}>\n`;
-            }
+                let roleMenuString = "";
+                for (option of cachedRoleMenu.roleOptions) {
+                    roleMenuString += `${option.emoji}: <@&${option.roleID}>\n`;
+                }
 
-            const roleMenuEmbed = new MessageEmbed()
-                .setTitle(cachedRoleMenu.roleMenuTitle)
-                .setDescription(roleMenuString)
-                .setColor("YELLOW")
-                .setFooter("React with one of the above emojis to receive the specified role!");
+                const roleMenuEmbed = new MessageEmbed()
+                    .setTitle(cachedRoleMenu.roleMenuTitle)
+                    .setDescription(roleMenuString)
+                    .setColor("YELLOW")
+                    .setFooter("React with one of the above emojis to receive the specified role!");
 
-            await roleMenuMessage.edit(roleMenuEmbed);
+                await roleMenuMessage.edit(roleMenuEmbed);
 
-            const updateEmbed = new MessageEmbed()
-                .setTitle("Update Role Menu")
-                .setDescription(stripIndents`Please select an option from below:
+                const updateEmbed = new MessageEmbed()
+                    .setTitle("Update Role Menu")
+                    .setDescription(stripIndents`Please select an option from below:
                 1) \`Update title\`
                 2) \`Add role option\`
                 3) \`Remove role option\``)
-                .setColor("PURPLE");
+                    .setColor("PURPLE");
 
-            message.channel.send(updateEmbed).then(async msg => {
-                const ONE_EMOJI = "1️⃣";
-                const TWO_EMOJI = "2️⃣";
-                const THREE_EMOJI = "3️⃣";
+                message.channel.send(updateEmbed).then(async msg => {
+                    const ONE_EMOJI = "1️⃣";
+                    const TWO_EMOJI = "2️⃣";
+                    const THREE_EMOJI = "3️⃣";
 
-                const emoji = await promptMessage(msg, message.author, 30, [ONE_EMOJI, TWO_EMOJI, THREE_EMOJI]);
-                await msg.delete();
+                    const emoji = await promptMessage(msg, message.author, 30, [ONE_EMOJI, TWO_EMOJI, THREE_EMOJI]);
+                    await msg.delete();
 
-                switch (emoji) {
-                    case ONE_EMOJI: {
-                        updateEmbed.setDescription("Please enter the new title.");
-                        let updateEmbedMessage = await message.channel.send(updateEmbed);
-                        let newTitleMessage = await waitResponse(client, message, message.author, 5 * 60);
+                    switch (emoji) {
+                        case ONE_EMOJI: {
+                            updateEmbed.setDescription("Please enter the new title.");
+                            let updateEmbedMessage = await message.channel.send(updateEmbed);
+                            let newTitleMessage = await waitResponse(client, message, message.author, 5 * 60);
 
-                        roleMenuEmbed
-                            .setTitle(newTitleMessage.content)
-                            .setColor("BLUE");
-                        await roleMenuMessage.edit(roleMenuEmbed);
-                        updateEmbedMessage.delete();
-                        newTitleMessage.delete();
-                        await message.reply("Rolemenu updated!");
+                            roleMenuEmbed
+                                .setTitle(newTitleMessage.content)
+                                .setColor("BLUE");
+                            await roleMenuMessage.edit(roleMenuEmbed);
+                            updateEmbedMessage.delete();
+                            newTitleMessage.delete();
+                            await message.reply("Rolemenu updated!");
 
-                        // Update cache and database
-                        cachedRoleMenu.roleMenuTitle = newTitleMessage.content;
-                        client.updateRoleMenu(cachedRoleMenu.messageID, cachedRoleMenu);
-                        break;
-                    }
-                    case TWO_EMOJI: {
-                        let roleOptions = cachedRoleMenu.roleOptions.toObject();
+                            // Update cache and database
+                            cachedRoleMenu.roleMenuTitle = newTitleMessage.content;
+                            client.updateRoleMenu(cachedRoleMenu.messageID, cachedRoleMenu);
+                            break;
+                        }
+                        case TWO_EMOJI: {
+                            let roleOptions = cachedRoleMenu.roleOptions.toObject();
 
-                        let isDone = false;
-                        while (!isDone) {
-                            let retry = false;
-                            const emojiQueryEmbed = new MessageEmbed()
-                                .setTitle("Update Role Menu")
-                                .setDescription("What's the emoji to use? Type \`done\` to finish.")
-                                .setColor("YELLOW");
-
-                            let queryMessage = await message.channel.send(emojiQueryEmbed);
-                            let responseEmojiMessage = await waitResponse(client, message, message.author, 5 * 60);
-                            if (!responseEmojiMessage) {
-                                queryMessage.delete();
-                                message.reply("Cancelling rolemenu update.");
-                                await roleMenuMessage.edit(roleMenuEmbed.setColor("BLUE"));
-                                isDone = true;
-                                continue;
-                            } else if (responseEmojiMessage.content.toLowerCase() == "done") {
-                                await queryMessage.delete();
-                                await responseEmojiMessage.delete();
-                                await roleMenuMessage.edit(roleMenuEmbed
-                                    .setDescription(roleMenuString)
-                                    .setColor("BLUE"));
-                                await message.reply("Rolemenu updated!");
-
-                                // Update cache and database
-                                cachedRoleMenu.roleOptions = roleOptions;
-                                client.updateRoleMenu(cachedRoleMenu.messageID, cachedRoleMenu);
-
-                                isDone = true;
-                                continue;
-                            }
-
-                            for (let option of roleOptions) {
-                                if (option.emoji === responseEmojiMessage.content) {
-                                    message.channel.send("That emoji is already being used!");
-                                    retry = true;
-                                    break;
-                                }
-                            }
-                            if (retry) continue;
-
-                            await roleMenuMessage.react(responseEmojiMessage.content)
-                                .catch((err) => {
-                                    message.channel.send("I had trouble reacting with that emoji...");
-                                    console.error("roleMenu react error: ", err);
-                                    retry = true;
-                                });
-                            if (retry) continue;
-
-                            roleMenuString += `${responseEmojiMessage.content}: \`none\``;
-                            roleMenuEmbed.setDescription(roleMenuString);
-                            roleMenuMessage.edit(roleMenuEmbed);
-
-                            queryMessage.delete();
-                            let responseEmoji = responseEmojiMessage.content;
-                            responseEmojiMessage.delete();
-
-                            let roleFound = false;
-                            while (!roleFound) {
-                                const roleQueryEmbed = new MessageEmbed()
+                            let isDone = false;
+                            while (!isDone) {
+                                let retry = false;
+                                const emojiQueryEmbed = new MessageEmbed()
                                     .setTitle("Update Role Menu")
-                                    .setDescription(`What role should ${responseEmoji} assign? eg. @everyone`)
+                                    .setDescription("What's the emoji to use? Type \`done\` to finish.")
                                     .setColor("YELLOW");
 
-                                queryMessage = await message.channel.send(roleQueryEmbed);
-                                let roleMessage = await waitResponse(client, message, message.author, 5 * 60);
-                                if (!roleMessage) {
+                                let queryMessage = await message.channel.send(emojiQueryEmbed);
+                                let responseEmojiMessage = await waitResponse(client, message, message.author, 5 * 60);
+                                if (!responseEmojiMessage) {
                                     queryMessage.delete();
                                     message.reply("Cancelling rolemenu update.");
                                     await roleMenuMessage.edit(roleMenuEmbed.setColor("BLUE"));
                                     isDone = true;
                                     continue;
-                                }
+                                } else if (responseEmojiMessage.content.toLowerCase() == "done") {
+                                    await queryMessage.delete();
+                                    await responseEmojiMessage.delete();
+                                    await roleMenuMessage.edit(roleMenuEmbed
+                                        .setDescription(roleMenuString)
+                                        .setColor("BLUE"));
+                                    await message.reply("Rolemenu updated!");
 
-                                // Check that the role exists
-                                let roleName;
-                                if (message.guild.roles.cache.some(role => `<@&${role.id}>` === roleMessage.content)) {
-                                    roleName = message.guild.roles.cache.find(role => `<@&${role.id}>` === roleMessage.content).name;
-                                    roleFound = true;
-                                }
+                                    // Update cache and database
+                                    cachedRoleMenu.roleOptions = roleOptions;
+                                    client.updateRoleMenu(cachedRoleMenu.messageID, cachedRoleMenu);
 
-                                if (!roleFound) {
-                                    message.channel.send("I couldn't find that role.");
+                                    isDone = true;
                                     continue;
                                 }
 
-                                let role = message.guild.roles.cache.find(role => role.name === roleName);
-
-                                // Check that we have permission to assign that role
-                                const botHighestRole = message.guild.members.cache.find(member => member.id === client.user.id).roles.highest;
-                                if (botHighestRole.comparePositionTo(role) < 0) {
-                                    await message.reply("I can't assign that role to people! My role in the server's role list must be above any roles that you want me to assign.");
-                                    roleFound = false;
-                                    continue;
+                                for (let option of roleOptions) {
+                                    if (option.emoji === responseEmojiMessage.content) {
+                                        message.channel.send("That emoji is already being used!");
+                                        retry = true;
+                                        break;
+                                    }
                                 }
+                                if (retry) continue;
 
-                                // Add to roleOptions
-                                roleOptions.push({
-                                    emoji: responseEmoji,
-                                    roleID: role.id
-                                });
+                                await roleMenuMessage.react(responseEmojiMessage.content)
+                                    .catch((err) => {
+                                        message.channel.send("I had trouble reacting with that emoji...");
+                                        console.error("roleMenu react error: ", err);
+                                        retry = true;
+                                    });
+                                if (retry) continue;
 
-                                // Edit rolemenu text
-                                roleMenuString = roleMenuString.slice(0, roleMenuString.length - 6);
-                                roleMenuString += `${role}\n`;
+                                roleMenuString += `${responseEmojiMessage.content}: \`none\``;
                                 roleMenuEmbed.setDescription(roleMenuString);
                                 roleMenuMessage.edit(roleMenuEmbed);
 
                                 queryMessage.delete();
-                                roleMessage.delete();
+                                let responseEmoji = responseEmojiMessage.content;
+                                responseEmojiMessage.delete();
 
-                                await message.channel.send(`${responseEmoji} added to role menu!`);
-                            }
-                        }
+                                let roleFound = false;
+                                while (!roleFound) {
+                                    const roleQueryEmbed = new MessageEmbed()
+                                        .setTitle("Update Role Menu")
+                                        .setDescription(`What role should ${responseEmoji} assign? eg. @everyone`)
+                                        .setColor("YELLOW");
 
-                        await roleMenuMessage.edit(roleMenuEmbed.setColor("BLUE"));
-                        break;
-                    }
-                    case THREE_EMOJI: {
-                        let roleOptions = cachedRoleMenu.roleOptions.toObject();
+                                    queryMessage = await message.channel.send(roleQueryEmbed);
+                                    let roleMessage = await waitResponse(client, message, message.author, 5 * 60);
+                                    if (!roleMessage) {
+                                        queryMessage.delete();
+                                        message.reply("Cancelling rolemenu update.");
+                                        await roleMenuMessage.edit(roleMenuEmbed.setColor("BLUE"));
+                                        isDone = true;
+                                        continue;
+                                    }
 
-                        let isDone = false;
-                        while (!isDone) {
-                            let retry = false;
-                            const emojiQueryEmbed = new MessageEmbed()
-                                .setTitle("Update Role Menu")
-                                .setDescription("What's the emoji to remove? Type \`done\` to finish.")
-                                .setColor("YELLOW");
+                                    // Check that the role exists
+                                    let roleName;
+                                    if (message.guild.roles.cache.some(role => `<@&${role.id}>` === roleMessage.content)) {
+                                        roleName = message.guild.roles.cache.find(role => `<@&${role.id}>` === roleMessage.content).name;
+                                        roleFound = true;
+                                    }
 
-                            let queryMessage = await message.channel.send(emojiQueryEmbed);
-                            let responseEmojiMessage = await waitResponse(client, message, message.author, 5 * 60);
-                            if (!responseEmojiMessage) {
-                                queryMessage.delete();
-                                message.reply("Cancelling rolemenu update.");
-                                await roleMenuMessage.edit(roleMenuEmbed.setColor("BLUE"));
-                                isDone = true;
-                                continue;
-                            } else if (responseEmojiMessage.content.toLowerCase() == "done") {
-                                await queryMessage.delete();
-                                await responseEmojiMessage.delete();
-                                await roleMenuMessage.edit(roleMenuEmbed
-                                    .setDescription(roleMenuString)
-                                    .setColor("BLUE"));
-                                await message.reply("Rolemenu updated!");
+                                    if (!roleFound) {
+                                        message.channel.send("I couldn't find that role.");
+                                        continue;
+                                    }
 
-                                // Update cache and database
-                                cachedRoleMenu.roleOptions = roleOptions;
-                                client.updateRoleMenu(cachedRoleMenu.messageID, cachedRoleMenu);
+                                    let role = message.guild.roles.cache.find(role => role.name === roleName);
 
-                                isDone = true;
-                                continue;
-                            }
+                                    // Check that we have permission to assign that role
+                                    const botHighestRole = message.guild.members.cache.find(member => member.id === client.user.id).roles.highest;
+                                    if (botHighestRole.comparePositionTo(role) < 0) {
+                                        await message.reply("I can't assign that role to people! My role in the server's role list must be above any roles that you want me to assign.");
+                                        roleFound = false;
+                                        continue;
+                                    }
 
-                            let removedEmoji = false;
-                            for (let option of roleOptions) {
-                                if (option.emoji === responseEmojiMessage.content) {
-                                    removedEmoji = true;
-                                    break;
+                                    // Add to roleOptions
+                                    roleOptions.push({
+                                        emoji: responseEmoji,
+                                        roleID: role.id
+                                    });
+
+                                    // Edit rolemenu text
+                                    roleMenuString = roleMenuString.slice(0, roleMenuString.length - 6);
+                                    roleMenuString += `${role}\n`;
+                                    roleMenuEmbed.setDescription(roleMenuString);
+                                    roleMenuMessage.edit(roleMenuEmbed);
+
+                                    queryMessage.delete();
+                                    roleMessage.delete();
+
+                                    await message.channel.send(`${responseEmoji} added to role menu!`);
                                 }
                             }
 
-                            roleOptions = await roleOptions.filter(option => option.emoji !== responseEmojiMessage.content);
-
-                            if (!removedEmoji) {
-                                message.channel.send("That emoji isn't an option to choose from!");
-                                continue;
-                            }
-
-                            if (roleMenuMessage.reactions.cache.has(responseEmojiMessage.content)) {
-                                roleMenuMessage.reactions.cache.get(responseEmojiMessage.content).remove().catch((err) => {
-                                    console.error("roleMenu remove reaction error: ", err);
-                                });
-                            }
-
-                            roleMenuString = "";
-                            for (option of roleOptions) {
-                                roleMenuString += `${option.emoji}: <@&${option.roleID}>\n`;
-                            }
-
-                            roleMenuEmbed.setDescription(roleMenuString);
-                            roleMenuMessage.edit(roleMenuEmbed);
-
-                            queryMessage.delete();
-                            let responseEmoji = responseEmojiMessage.content;
-                            responseEmojiMessage.delete();
-
-                            await message.channel.send(`${responseEmoji} removed from role menu!`);
+                            await roleMenuMessage.edit(roleMenuEmbed.setColor("BLUE"));
+                            break;
                         }
+                        case THREE_EMOJI: {
+                            let roleOptions = cachedRoleMenu.roleOptions.toObject();
 
-                        await roleMenuMessage.edit(roleMenuEmbed.setColor("BLUE"));
+                            let isDone = false;
+                            while (!isDone) {
+                                let retry = false;
+                                const emojiQueryEmbed = new MessageEmbed()
+                                    .setTitle("Update Role Menu")
+                                    .setDescription("What's the emoji to remove? Type \`done\` to finish.")
+                                    .setColor("YELLOW");
 
-                        break;
+                                let queryMessage = await message.channel.send(emojiQueryEmbed);
+                                let responseEmojiMessage = await waitResponse(client, message, message.author, 5 * 60);
+                                if (!responseEmojiMessage) {
+                                    queryMessage.delete();
+                                    message.reply("Cancelling rolemenu update.");
+                                    await roleMenuMessage.edit(roleMenuEmbed.setColor("BLUE"));
+                                    isDone = true;
+                                    continue;
+                                } else if (responseEmojiMessage.content.toLowerCase() == "done") {
+                                    await queryMessage.delete();
+                                    await responseEmojiMessage.delete();
+                                    await roleMenuMessage.edit(roleMenuEmbed
+                                        .setDescription(roleMenuString)
+                                        .setColor("BLUE"));
+                                    await message.reply("Rolemenu updated!");
+
+                                    // Update cache and database
+                                    cachedRoleMenu.roleOptions = roleOptions;
+                                    client.updateRoleMenu(cachedRoleMenu.messageID, cachedRoleMenu);
+
+                                    isDone = true;
+                                    continue;
+                                }
+
+                                let removedEmoji = false;
+                                for (let option of roleOptions) {
+                                    if (option.emoji === responseEmojiMessage.content) {
+                                        removedEmoji = true;
+                                        break;
+                                    }
+                                }
+
+                                roleOptions = await roleOptions.filter(option => option.emoji !== responseEmojiMessage.content);
+
+                                if (!removedEmoji) {
+                                    message.channel.send("That emoji isn't an option to choose from!");
+                                    continue;
+                                }
+
+                                if (roleMenuMessage.reactions.cache.has(responseEmojiMessage.content)) {
+                                    roleMenuMessage.reactions.cache.get(responseEmojiMessage.content).remove().catch((err) => {
+                                        console.error("roleMenu remove reaction error: ", err);
+                                    });
+                                }
+
+                                roleMenuString = "";
+                                for (option of roleOptions) {
+                                    roleMenuString += `${option.emoji}: <@&${option.roleID}>\n`;
+                                }
+
+                                roleMenuEmbed.setDescription(roleMenuString);
+                                roleMenuMessage.edit(roleMenuEmbed);
+
+                                queryMessage.delete();
+                                let responseEmoji = responseEmojiMessage.content;
+                                responseEmojiMessage.delete();
+
+                                await message.channel.send(`${responseEmoji} removed from role menu!`);
+                            }
+
+                            await roleMenuMessage.edit(roleMenuEmbed.setColor("BLUE"));
+
+                            break;
+                        }
+                        default: { // user didn't react in time
+                            message.reply("Cancelling role menu update.");
+                        }
                     }
-                    default: { // user didn't react in time
-                        message.reply("Cancelling role menu update.");
-                    }
-                }
-            });
-        } else { // message ID isn't a role menu
-            message.channel.send("I couldn't find a role menu with that message ID.");
+                });
+            } else { // message ID isn't a role menu
+                message.channel.send("I couldn't find a role menu with that message ID.");
+
+                return;
+            }
+        } else { // no argument after "update"
+            message.channel.send("Please specify a message ID after \`update\`.");
 
             return;
         }
-    } else { // no argument after "update"
-        message.channel.send("Please specify a message ID after \`update\`.");
+    } else if (args.includes("edit")) {
+        if (args[args.indexOf("edit") + 1]) { // argument after "edit"
+            if (client.databaseCache.roleMenus.has(args[args.indexOf("edit") + 1])) { // message ID is for a role menu
+                let cachedRoleMenu = client.databaseCache.roleMenus.get(args[args.indexOf("edit") + 1]);
+                const roleMenuMessage = client.channels.cache.get(cachedRoleMenu.channelID).messages.cache.get(cachedRoleMenu.messageID);
 
-        return;
+                let roleMenuString = "";
+                for (option of cachedRoleMenu.roleOptions) {
+                    roleMenuString += `${option.emoji}: <@&${option.roleID}>\n`;
+                }
+
+                const roleMenuEmbed = new MessageEmbed()
+                    .setTitle(cachedRoleMenu.roleMenuTitle)
+                    .setDescription(roleMenuString)
+                    .setColor("YELLOW")
+                    .setFooter("React with one of the above emojis to receive the specified role!");
+
+                await roleMenuMessage.edit(roleMenuEmbed);
+
+                const updateEmbed = new MessageEmbed()
+                    .setTitle("Update Role Menu")
+                    .setDescription(stripIndents`Please select an option from below:
+            1) \`Update title\`
+            2) \`Add role option\`
+            3) \`Remove role option\``)
+                    .setColor("PURPLE");
+
+                message.channel.send(updateEmbed).then(async msg => {
+                    const ONE_EMOJI = "1️⃣";
+                    const TWO_EMOJI = "2️⃣";
+                    const THREE_EMOJI = "3️⃣";
+
+                    const emoji = await promptMessage(msg, message.author, 30, [ONE_EMOJI, TWO_EMOJI, THREE_EMOJI]);
+                    await msg.delete();
+
+                    switch (emoji) {
+                        case ONE_EMOJI: {
+                            updateEmbed.setDescription("Please enter the new title.");
+                            let updateEmbedMessage = await message.channel.send(updateEmbed);
+                            let newTitleMessage = await waitResponse(client, message, message.author, 5 * 60);
+
+                            roleMenuEmbed
+                                .setTitle(newTitleMessage.content)
+                                .setColor("BLUE");
+                            await roleMenuMessage.edit(roleMenuEmbed);
+                            updateEmbedMessage.delete();
+                            newTitleMessage.delete();
+                            await message.reply("Rolemenu updated!");
+
+                            // Update cache and database
+                            cachedRoleMenu.roleMenuTitle = newTitleMessage.content;
+                            client.updateRoleMenu(cachedRoleMenu.messageID, cachedRoleMenu);
+                            break;
+                        }
+                        case TWO_EMOJI: {
+                            let roleOptions = cachedRoleMenu.roleOptions.toObject();
+
+                            let isDone = false;
+                            while (!isDone) {
+                                let retry = false;
+                                const emojiQueryEmbed = new MessageEmbed()
+                                    .setTitle("Update Role Menu")
+                                    .setDescription("What's the emoji to use? Type \`done\` to finish.")
+                                    .setColor("YELLOW");
+
+                                let queryMessage = await message.channel.send(emojiQueryEmbed);
+                                let responseEmojiMessage = await waitResponse(client, message, message.author, 5 * 60);
+                                if (!responseEmojiMessage) {
+                                    queryMessage.delete();
+                                    message.reply("Cancelling rolemenu update.");
+                                    await roleMenuMessage.edit(roleMenuEmbed.setColor("BLUE"));
+                                    isDone = true;
+                                    continue;
+                                } else if (responseEmojiMessage.content.toLowerCase() == "done") {
+                                    await queryMessage.delete();
+                                    await responseEmojiMessage.delete();
+                                    await roleMenuMessage.edit(roleMenuEmbed
+                                        .setDescription(roleMenuString)
+                                        .setColor("BLUE"));
+                                    await message.reply("Rolemenu updated!");
+
+                                    // Update cache and database
+                                    cachedRoleMenu.roleOptions = roleOptions;
+                                    client.updateRoleMenu(cachedRoleMenu.messageID, cachedRoleMenu);
+
+                                    isDone = true;
+                                    continue;
+                                }
+
+                                for (let option of roleOptions) {
+                                    if (option.emoji === responseEmojiMessage.content) {
+                                        message.channel.send("That emoji is already being used!");
+                                        retry = true;
+                                        break;
+                                    }
+                                }
+                                if (retry) continue;
+
+                                await roleMenuMessage.react(responseEmojiMessage.content)
+                                    .catch((err) => {
+                                        message.channel.send("I had trouble reacting with that emoji...");
+                                        console.error("roleMenu react error: ", err);
+                                        retry = true;
+                                    });
+                                if (retry) continue;
+
+                                roleMenuString += `${responseEmojiMessage.content}: \`none\``;
+                                roleMenuEmbed.setDescription(roleMenuString);
+                                roleMenuMessage.edit(roleMenuEmbed);
+
+                                queryMessage.delete();
+                                let responseEmoji = responseEmojiMessage.content;
+                                responseEmojiMessage.delete();
+
+                                let roleFound = false;
+                                while (!roleFound) {
+                                    const roleQueryEmbed = new MessageEmbed()
+                                        .setTitle("Update Role Menu")
+                                        .setDescription(`What role should ${responseEmoji} assign? eg. @everyone`)
+                                        .setColor("YELLOW");
+
+                                    queryMessage = await message.channel.send(roleQueryEmbed);
+                                    let roleMessage = await waitResponse(client, message, message.author, 5 * 60);
+                                    if (!roleMessage) {
+                                        queryMessage.delete();
+                                        message.reply("Cancelling rolemenu update.");
+                                        await roleMenuMessage.edit(roleMenuEmbed.setColor("BLUE"));
+                                        isDone = true;
+                                        continue;
+                                    }
+
+                                    // Check that the role exists
+                                    let roleName;
+                                    if (message.guild.roles.cache.some(role => `<@&${role.id}>` === roleMessage.content)) {
+                                        roleName = message.guild.roles.cache.find(role => `<@&${role.id}>` === roleMessage.content).name;
+                                        roleFound = true;
+                                    }
+
+                                    if (!roleFound) {
+                                        message.channel.send("I couldn't find that role.");
+                                        continue;
+                                    }
+
+                                    let role = message.guild.roles.cache.find(role => role.name === roleName);
+
+                                    // Check that we have permission to assign that role
+                                    const botHighestRole = message.guild.members.cache.find(member => member.id === client.user.id).roles.highest;
+                                    if (botHighestRole.comparePositionTo(role) < 0) {
+                                        await message.reply("I can't assign that role to people! My role in the server's role list must be above any roles that you want me to assign.");
+                                        roleFound = false;
+                                        continue;
+                                    }
+
+                                    // Add to roleOptions
+                                    roleOptions.push({
+                                        emoji: responseEmoji,
+                                        roleID: role.id
+                                    });
+
+                                    // Edit rolemenu text
+                                    roleMenuString = roleMenuString.slice(0, roleMenuString.length - 6);
+                                    roleMenuString += `${role}\n`;
+                                    roleMenuEmbed.setDescription(roleMenuString);
+                                    roleMenuMessage.edit(roleMenuEmbed);
+
+                                    queryMessage.delete();
+                                    roleMessage.delete();
+
+                                    await message.channel.send(`${responseEmoji} added to role menu!`);
+                                }
+                            }
+
+                            await roleMenuMessage.edit(roleMenuEmbed.setColor("BLUE"));
+                            break;
+                        }
+                        case THREE_EMOJI: {
+                            let roleOptions = cachedRoleMenu.roleOptions.toObject();
+
+                            let isDone = false;
+                            while (!isDone) {
+                                let retry = false;
+                                const emojiQueryEmbed = new MessageEmbed()
+                                    .setTitle("Update Role Menu")
+                                    .setDescription("What's the emoji to remove? Type \`done\` to finish.")
+                                    .setColor("YELLOW");
+
+                                let queryMessage = await message.channel.send(emojiQueryEmbed);
+                                let responseEmojiMessage = await waitResponse(client, message, message.author, 5 * 60);
+                                if (!responseEmojiMessage) {
+                                    queryMessage.delete();
+                                    message.reply("Cancelling rolemenu update.");
+                                    await roleMenuMessage.edit(roleMenuEmbed.setColor("BLUE"));
+                                    isDone = true;
+                                    continue;
+                                } else if (responseEmojiMessage.content.toLowerCase() == "done") {
+                                    await queryMessage.delete();
+                                    await responseEmojiMessage.delete();
+                                    await roleMenuMessage.edit(roleMenuEmbed
+                                        .setDescription(roleMenuString)
+                                        .setColor("BLUE"));
+                                    await message.reply("Rolemenu updated!");
+
+                                    // Update cache and database
+                                    cachedRoleMenu.roleOptions = roleOptions;
+                                    client.updateRoleMenu(cachedRoleMenu.messageID, cachedRoleMenu);
+
+                                    isDone = true;
+                                    continue;
+                                }
+
+                                let removedEmoji = false;
+                                for (let option of roleOptions) {
+                                    if (option.emoji === responseEmojiMessage.content) {
+                                        removedEmoji = true;
+                                        break;
+                                    }
+                                }
+
+                                roleOptions = await roleOptions.filter(option => option.emoji !== responseEmojiMessage.content);
+
+                                if (!removedEmoji) {
+                                    message.channel.send("That emoji isn't an option to choose from!");
+                                    continue;
+                                }
+
+                                if (roleMenuMessage.reactions.cache.has(responseEmojiMessage.content)) {
+                                    roleMenuMessage.reactions.cache.get(responseEmojiMessage.content).remove().catch((err) => {
+                                        console.error("roleMenu remove reaction error: ", err);
+                                    });
+                                }
+
+                                roleMenuString = "";
+                                for (option of roleOptions) {
+                                    roleMenuString += `${option.emoji}: <@&${option.roleID}>\n`;
+                                }
+
+                                roleMenuEmbed.setDescription(roleMenuString);
+                                roleMenuMessage.edit(roleMenuEmbed);
+
+                                queryMessage.delete();
+                                let responseEmoji = responseEmojiMessage.content;
+                                responseEmojiMessage.delete();
+
+                                await message.channel.send(`${responseEmoji} removed from role menu!`);
+                            }
+
+                            await roleMenuMessage.edit(roleMenuEmbed.setColor("BLUE"));
+
+                            break;
+                        }
+                        default: { // user didn't react in time
+                            message.reply("Cancelling role menu update.");
+                        }
+                    }
+                });
+            } else { // message ID isn't a role menu
+                message.channel.send("I couldn't find a role menu with that message ID.");
+
+                return;
+            }
+        } else { // no argument after "edit"
+            message.channel.send("Please specify a message ID after \`edit\`.");
+
+            return;
+        }
     }
 }
 
