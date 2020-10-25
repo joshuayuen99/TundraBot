@@ -28,6 +28,7 @@ module.exports = {
                     });
                 });
             }
+            console.log(`Loaded ${roleMenus.length} rolemenus`)
         })
     }
 };

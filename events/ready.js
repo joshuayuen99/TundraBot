@@ -10,5 +10,5 @@ module.exports = (client) => {
         }
     });
 
-    console.log(`I'm now online, my name is ${client.user.username}`);
+    console.log(`I'm now online, my name is ${client.user.tag}`);
 };
