@@ -28,7 +28,7 @@ module.exports = {
                     });
                 });
             }
-            console.log(`Loaded ${roleMenus.length} rolemenus`)
+            console.log(`Loaded ${roleMenus.length} rolemenus`);
         })
     }
 };

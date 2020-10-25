@@ -43,7 +43,7 @@ module.exports = {
                     });
                 });
             }
-            console.log(`Loaded ${polls.length} polls`)
+            console.log(`Loaded ${polls.length} polls`);
         })
     }
 };
