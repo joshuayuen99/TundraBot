@@ -40,6 +40,6 @@ module.exports = {
                 });
             }
             console.log(`Loaded ${events.length} events`);
-        })
+        });
     }
 };

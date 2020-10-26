@@ -199,14 +199,14 @@ async function createQueue(client, message, song) {
     }
 }
 
-function play(client, guild) {
-    const serverQueue = client.musicGuilds.get(guild);
+function play(client, guildID) {
+    const serverQueue = client.musicGuilds.get(guildID);
     const song = serverQueue.songs[0];
 
     // No more songs left in queue
     if (!song) {
         serverQueue.voiceChannel.leave();
-        client.musicGuilds.delete(guild);
+        client.musicGuilds.delete(guildID);
         return serverQueue.textChannel.send("Queue empty, leaving now.");
     }
 
@@ -226,7 +226,7 @@ function play(client, guild) {
     const dispatcher = serverQueue.connection.play(ytdl(song.url, options))
         .on("finish", () => {
             if (!serverQueue.repeat) serverQueue.songs.shift();
-            play(client, guild);
+            play(client, guildID);
         })
         .on("error", (err) => {
             console.error("Error playing song: ", err);

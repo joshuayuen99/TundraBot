@@ -48,7 +48,7 @@ module.exports = {
                 break;
             }
             case "logchannel": {
-                let logChannel = await message.guild.channels.cache.find(channel => channel.name === settings.logChannel);
+                let logChannel = message.guild.channels.cache.find(channel => channel.name === settings.logChannel);
 
                 if (!newSetting) {
                     return message.channel.send(`Current channel for logging: \`${settings.logChannel}\``);
@@ -57,7 +57,7 @@ module.exports = {
                 let newLogChannelName;
                 if (message.guild.channels.cache.some(channel => `<#${channel.id}>` === newSetting)) {
                     newLogChannelName = message.guild.channels.cache.find(channel => `<#${channel.id}>` === newSetting).name;
-                } else if (await message.guild.channels.cache.some(channel => channel.name === newSetting)) {
+                } else if (message.guild.channels.cache.some(channel => channel.name === newSetting)) {
                     newLogChannelName = newSetting;
                 }
 
@@ -77,8 +77,42 @@ module.exports = {
                 }
                 break;
             }
+            case "soundboardrole": {
+                let soundboardRole = message.guild.roles.cache.find(role => role.name === settings.soundboardRole);
+
+                if (!newSetting) {
+                    return message.channel.send(`Current role for using most soundboard commands: \`${settings.soundboardRole}\``);
+                }
+
+                let newRole;
+                if (message.guild.roles.cache.some(role => role.name === newSetting)) {
+                    newRole = message.guild.roles.cache.find(role => role.name === newSetting);
+                } else if (message.guild.roles.cache.some(role => role.toString() === newSetting)) {
+                    newRole = message.guild.roles.cache.find(role => role.toString() === newSetting);
+                }
+
+                if (!newRole) {
+                    message.channel.send("Sorry, I couldn't find that role. Please try again and make sure you entered it correctly.");
+
+                    return;
+                }
+
+                try {
+                    await client.updateGuild(message.guild, {
+                        soundboardRole: newRole.name
+                    });
+
+                    const updatedSettings = await client.getGuild(message.guild);
+
+                    message.channel.send(`Soundboard role updated to: ${newRole}`);
+                } catch (err) {
+                    message.reply(`An error occurred: **${err.message}**`)
+                    console.error(err);
+                }
+                break;
+            }
             default:
-                const editableSettings = ["prefix", "logChannel"];
+                const editableSettings = ["prefix", "logChannel", "soundboardRole"];
                 let settingsString = "";
                 for (let setting in settings) {
                     if (!editableSettings.includes(setting)) continue;

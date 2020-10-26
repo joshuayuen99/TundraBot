@@ -17,6 +17,10 @@ const guildSchema = mongoose.Schema({
         type: String,
         default: defaults.welcomeMessage
     },
+    soundboardRole: {
+        type: String,
+        default: defaults.soundboardRole
+    },
     modRole: {
         type: String,
         default: defaults.modRole

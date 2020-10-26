@@ -34,6 +34,17 @@ module.exports = {
         });
     },
 
+    createRole: async function (guild, name, permissions) {
+        if (guild.roles.cache.some(role => role.name === name)) return;
+
+        await guild.roles.create({
+            data: {
+                name: name,
+                permissions: permissions
+            }
+        });
+    },
+
     formatDate: function (date) {
         return new Intl.DateTimeFormat("en-US").format(date);
     },

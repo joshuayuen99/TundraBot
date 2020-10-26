@@ -5,6 +5,7 @@ const fs = require("fs");
 const checkPolls = require("./helpers/checkPolls");
 const checkEvents = require("./helpers/checkEvents");
 const loadRoleMenus = require("./helpers/loadRoleMenus");
+const loadMemberSoundEffects = require("./helpers/loadMemberSoundEffects");
 
 function setup() {
     const client = new Client({
@@ -31,6 +32,9 @@ function setup() {
     // Map with guilds playing music ?
     client.musicGuilds = new Map();
 
+    // Map with guilds playing soundboard effects
+    client.soundboardGuilds = new Map();
+
     // Set of people we are currently waiting on a response from so that we can ignore any further commands until we get it
     client.waitingResponse = new Set();
 
@@ -39,12 +43,15 @@ function setup() {
     client.databaseCache = {};
     client.databaseCache.events = new Collection();
     client.databaseCache.roleMenus = new Collection();
+    client.databaseCache.soundEffects = new Collection();
+    client.databaseCache.memberSoundEffects = new Collection();
 
     client.login(process.env.DISCORDTOKEN);
 
     checkPolls.init(client);
     checkEvents.init(client);
     loadRoleMenus.init(client);
+    loadMemberSoundEffects.init(client);
 }
 
 // if there is an unhandledRejection, log them

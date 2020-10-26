@@ -1,6 +1,7 @@
 const { MessageEmbed } = require("discord.js");
 const { stripIndents } = require("common-tags");
-const { formatDate, formatDateLong } = require("../functions");
+const { createRole, formatDate, formatDateLong } = require("../functions");
+const { defaultGuildSettings: defaults } = require("../config");
 
 /**
  * @param {import("discord.js").Client} client Discord Client instance
@@ -40,4 +41,11 @@ module.exports = async (client, guild) => {
 				**\\> Created account:** ${formatDate(guild.owner.user.createdAt)}`, true);
 
     owner.send(embedMsg);
+
+    // Create necessary roles for soundboard commands
+    try {
+        createRole(guild, defaults.soundboardRole, null);
+    } catch {
+        console.error("Couldn't create soundboard role: ", err);
+    }
 };

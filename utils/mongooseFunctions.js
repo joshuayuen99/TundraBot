@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { Guild, User, Channel, Message, Event, Poll, RoleMenu } = require("../models");
+const { Guild, User, Member, Channel, Message, Event, Poll, RoleMenu, SoundEffect } = require("../models");
 
 module.exports = (client) => {
     client.getGuild = async (guild) => {
@@ -175,7 +175,8 @@ module.exports = (client) => {
     };
 
     client.updateUser = async (user, settings) => {
-        let data = await client.getUser(user).settings;
+        let data = await client.getUser(user)
+        data = data.settings;
 
         if (typeof data !== "object") data = {};
         for (const key in settings) {
@@ -215,6 +216,52 @@ module.exports = (client) => {
 
         return await newUser.save().catch((err) => {
             console.error("Error creating new user in database: ", err);
+        });
+    };
+
+    client.updateMember = async (member, settings) => {
+        let data = await client.getMember(member)
+        data = data.settings;
+
+        if (typeof data !== "object") data = {};
+        for (const key in settings) {
+            if (data[key] !== settings[key]) data[key] = settings[key];
+            else return;
+        }
+
+        return await Member.findOneAndUpdate({
+            userID: member.user.id,
+            guildID: member.guild.id
+        }, {
+            settings: data,
+        }).catch((err) => {
+            console.error("Error updating user settings in database: ", err);
+        });
+    };
+
+    client.getMember = async (member) => {
+        return Member.findOne({
+            userID: member.user.id,
+            guildID: member.guild.id
+        }).then((member, err) => {
+                if (err) console.error(err);
+
+                if (member) return member.toObject();
+                else return null;
+            });
+    };
+
+
+
+    client.createMember = async (member) => {
+        const newMember = await new Member({
+            userID: member.user.id,
+            guildID: member.guild.id,
+            username: member.user.username
+        });
+
+        return await newMember.save().catch((err) => {
+            console.error("Error creating new member in database: ", err);
         });
     };
 
@@ -273,6 +320,14 @@ module.exports = (client) => {
         return await RoleMenu.findOneAndUpdate({ messageID: messageID }, roleMenu).catch((err) => {
             console.error(`Error updating role menu (messageID: ${roleMenu.messageID}) in database: `, err);
         });
+    };
+
+    client.createSoundEffect = async (soundEffect) => {
+        const newSoundEffect = await new SoundEffect(soundEffect);
+
+        return await newSoundEffect.save().catch((err) => {
+            console.error("Error creating new sound effect in database: ", err);
+        })
     };
 
     client.clean = async (client, text) => {
