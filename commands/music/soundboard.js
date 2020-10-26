@@ -332,7 +332,7 @@ async function addEffect(client, message, args, settings) {
 
     client.createSoundEffect(soundEffect);
 
-    message.channel.send(`Sound effect saved as \`${soundEffect.name}\``);
+    message.channel.send(`Successfully saved sound effect as \`${soundEffect.name}\`!`);
 }
 
 /**
