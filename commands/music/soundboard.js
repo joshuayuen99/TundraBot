@@ -25,7 +25,7 @@ module.exports = {
     run: async (client, message, args, settings) => {
         if (!args[0] || args.includes("list")) { // no arguments default
             listEffects(client, message, args, settings);
-        } else if (!message.member.roles.cache.some(role => role.name === settings.soundboardRole)      ){//&& !message.member.hasPermission("MANAGE_GUILD")) {
+        } else if (!message.member.roles.cache.some(role => role.name === settings.soundboardRole) && !message.member.hasPermission("MANAGE_GUILD")) {
             // The server doesn't have the soundboardRole
             if (!message.guild.roles.cache.some(role => role.name === settings.soundboardRole)) {
                 message.channel.send(`Sorry, you need the \`${settings.soundboardRole}\` role or \`MANAGE_GUILD\` permission to use most soundboard commands, and I couldn't find that in this server. Contact your server administrators to make the role, or change my config with the \`${settings.prefix}config\` command.`);
