@@ -4,7 +4,7 @@
 
 A personal Discord bot made in my free time and used by me and my friends. I've been developing it in chunks ever since November 2019, and still plan to continue improving it and adding new features moving forward. Updated for Discord.js v12.
 
-Main features include playing music, server moderation, organizing events and polls, configurable role menus, and general info commands about the server and its members.
+Main features include playing music, server moderation, organizing events and polls, configurable role menus, configurable soundboard effects, and general info commands about the server and its members.
 
 To add me to your server click [here](https://discord.com/api/oauth2/authorize?client_id=647196546492006423&permissions=309587062&scope=bot)!
 
@@ -169,7 +169,16 @@ You're done! All you need now is to copy the link at the bottom of the "Scopes" 
 
 My bot can play music or other YouTube links directly through Discord via a voice channel in a server. It's able to serve multiple servers at the same time such that music playing in one server has no effect on music playing in another server. I've also implemented a dynamic queuing system so that you can not only add new songs to the queue while music is already playing, but you can also shuffle, pause, and skip songs at any point as well.
 
+Soundboard commands are locked behind a configurable role (`config` command) to prevent just anyone from using them. The soundboard is customizable and you can add or remove any sound effects you wish from your server. These sound effects can be played at will with the `Soundboard play` command, or even set specific sound effects to be played when a specific user joins and/or leaves a voice channel!
+
 - `Play <YouTube link | search phrase>` Plays music from YouTube! Accepts either a YouTube link (playlists included) or a search phrase. If given a search phrase, it will search YouTube directly and give you the option to choose from the top 5 results.
+- `Soundboard [list]` Lists all the soundboard effects available in the server.
+- `Soundboard play <effect name>` Plays the given sound effect in the user's voice channel.
+- `Soundboard add <effect name> <link | file attachment>` Adds the given sound effect to the server. It works with direct links to audio/video files (eg. www.example.com/soundeffect.mp3), YouTube links, and even lets you directly upload files for it to use. To upload a file, you must send `Soundboard add <effect name>` as the comment sent alongside the file.
+- `Soundboard delete <effect name>` Deletes the given sound effect from the server.
+- `Soundboard rename <effect name> <new effect name>` Renames the given sound effect.
+- `Soundboard join <effect name>` Sets a sound effect to be played whenever the user joins a voice channel.
+- `Soundboard leave <effect name>` Sets a sound effect to be played whenever the user leaves a voice channel.
 - `Skip` Skips the currently playing song and moves on to the next one in queue.
 - `Stop` Stops playing music, clears the queue of songs, and leaves the voice channel.
 - `Playing` Displays and links the currently playing song.
