@@ -8,6 +8,6 @@ module.exports = {
         soundboardRole: "Soundboard DJ",
         modRole: "Moderator",
         adminRole: "Administrator",
-        logChannel: "admin"
+        logChannel: "tundra-logs"
     }
 }
