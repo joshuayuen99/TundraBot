@@ -1,5 +1,5 @@
 const { Client, Collection } = require("discord.js");
-const { config } = require("dotenv");
+const dotenv = require("dotenv");
 const fs = require("fs");
 
 const checkPolls = require("./helpers/checkPolls");
@@ -8,16 +8,33 @@ const loadRoleMenus = require("./helpers/loadRoleMenus");
 const loadMemberSoundEffects = require("./helpers/loadMemberSoundEffects");
 
 function setup() {
+    const result = dotenv.config({
+        path: __dirname + "/.env"
+    });
+    if (result.error) {
+        console.error(result.error);
+    }
+
     const client = new Client({
         disableEveryone: false
     });
 
-    config({
-        path: __dirname + "/.env"
-    });
-
+    // Config
+    client.config = module.exports = {
+        owner: process.env.OWNERID,
+        prefix: process.env.PREFIX,
+        defaultGuildSettings: {
+            prefix: process.env.PREFIX,
+            welcomeChannel: "welcome",
+            welcomeMessage: "Welcome **{{user}}** to **{{guild}}**!",
+            soundboardRole: "Soundboard DJ",
+            modRole: "Moderator",
+            adminRole: "Administrator",
+            logChannel: "tundra-logs"
+        }
+    }
+    
     client.mongoose = require("./utils/mongoose");
-    client.config = require("./config");
     require("./utils/mongooseFunctions")(client);
 
     client.commands = new Collection();

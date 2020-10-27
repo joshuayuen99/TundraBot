@@ -31,21 +31,21 @@ module.exports = async (client, guild) => {
         .setFooter(guild.name, guild.iconURL())
         .setAuthor("Joined server :)", guild.iconURL())
         .addField("Guild information", stripIndents`**\\> ID:** ${guild.id}
-				**\\> Name:** ${guild.name}
-				**\\> Member count:** ${guild.memberCount}
-				**\\> Created at:** ${formatDateLong(guild.createdTimestamp)}
-				**\\> Joined at:** ${formatDateLong(guild.joinedTimestamp)}`)
-        .addField("Server owner information", stripIndents`**\\> ID:** ${guild.owner.user.id}
-				**\\> Username:** ${guild.owner.user.username}
-				**\\> Discord Tag:** ${guild.owner.user.tag}
-				**\\> Created account:** ${formatDate(guild.owner.user.createdAt)}`, true);
+            **\\> Name:** ${guild.name}
+            **\\> Member count:** ${guild.memberCount}
+            **\\> Created at:** ${formatDateLong(guild.createdTimestamp)}
+            **\\> Joined at:** ${formatDateLong(guild.joinedTimestamp)}`);   
+    if (guild.owner) {
+        embedMsg.addField("Server owner information", stripIndents`**\\> ID:** ${guild.owner.user.id}
+            **\\> Username:** ${guild.owner.user.username}
+            **\\> Discord Tag:** ${guild.owner.user.tag}
+            **\\> Created account:** ${formatDate(guild.owner.user.createdAt)}`, true);
+    }
 
     owner.send(embedMsg);
 
     // Create necessary roles for soundboard commands
-    try {
-        createRole(guild, defaults.soundboardRole, null);
-    } catch {
+    createRole(guild, defaults.soundboardRole, null).catch((err) => {
         console.error("Couldn't create soundboard role: ", err);
-    }
+    });
 };

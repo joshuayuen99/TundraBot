@@ -27,11 +27,13 @@ module.exports = async (client, guild) => {
             **\\> Name:** ${guild.name}
             **\\> Member count:** ${guild.memberCount}
             **\\> Created at:** ${formatDateLong(guild.createdTimestamp)}
-            **\\> Joined at:** ${formatDateLong(guild.joinedTimestamp)}`)
-        .addField("Server owner information", stripIndents`**\\> ID:** ${guild.owner.user.id}
+            **\\> Joined at:** ${formatDateLong(guild.joinedTimestamp)}`);
+    if (guild.owner) {
+        embedMsg.addField("Server owner information", stripIndents`**\\> ID:** ${guild.owner.user.id}
             **\\> Username:** ${guild.owner.user.username}
             **\\> Discord Tag:** ${guild.owner.user.tag}
             **\\> Created account:** ${formatDate(guild.owner.user.createdAt)}`, true);
+    }
 
     owner.send(embedMsg);
 };
