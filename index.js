@@ -22,9 +22,9 @@ function setup() {
     // Config
     client.config = module.exports = {
         owner: process.env.OWNERID,
-        prefix: process.env.PREFIX,
+        prefix: process.env.COMMAND_PREFIX,
         defaultGuildSettings: {
-            prefix: process.env.PREFIX,
+            prefix: process.env.COMMAND_PREFIX,
             welcomeChannel: "welcome",
             welcomeMessage: "Welcome **{{user}}** to **{{guild}}**!",
             soundboardRole: "Soundboard DJ",
@@ -33,7 +33,7 @@ function setup() {
             logChannel: "tundra-logs"
         }
     }
-    
+
     client.mongoose = require("./utils/mongoose");
     require("./utils/mongooseFunctions")(client);
 
