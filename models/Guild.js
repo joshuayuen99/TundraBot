@@ -2,7 +2,10 @@ const mongoose = require("mongoose");
 const { defaultGuildSettings: defaults } = require("../config");
 
 const guildSchema = mongoose.Schema({
-    guildID: String,
+    guildID: {
+        type: String,
+        unique: true
+    },
     guildName: String,
     timeJoined: Date,
     prefix: {

@@ -1,7 +1,10 @@
 const mongoose = require("mongoose");
 
 const messageSchema = mongoose.Schema({
-    messageID: String,
+    messageID: {
+        type: String,
+        unique: true
+    },
     text: { type: String, required: true },
     editedText: [{ type: String }],
     command: String,

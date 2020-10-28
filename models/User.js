@@ -1,7 +1,10 @@
 const mongoose = require("mongoose");
 
 const userSchema = mongoose.Schema({
-    userID: String,
+    userID: {
+        type: String,
+        unique: true
+    },
     username: String,
     settings: {
         timezone: { type: String, default: null }
