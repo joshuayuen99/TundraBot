@@ -6,6 +6,8 @@ A personal Discord bot made in my free time and used by me and my friends. I've 
 
 Main features include playing music, server moderation, organizing events and polls, configurable role menus, configurable soundboard effects, and general info commands about the server and its members.
 
+[Check out my official website and dashboard!](https://tundrabot.herokuapp.com/)
+
 To add me to your server click [here](https://discord.com/api/oauth2/authorize?client_id=647196546492006423&permissions=309587062&scope=bot)!
 
 # Table of Contents
