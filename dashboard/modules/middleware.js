@@ -23,7 +23,11 @@ module.exports = {
             const key = res.cookies.get("key");
             if (key) {
                 const { authGuilds } = await sessions.get(key);
-                res.locals.guilds = authGuilds;
+                res.locals.guilds = authGuilds.sort((a, b) => {
+                    if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+                    else if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
+                    return 0;
+                });
                 for (const guild of authGuilds) {
                     guild.members.fetch(guild.ownerID);
                 }
