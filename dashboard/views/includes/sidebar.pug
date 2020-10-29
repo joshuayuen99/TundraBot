@@ -1,0 +1,28 @@
+#sidebar.bg-light.text-center.css-transitions-only-after-page-load
+    a(href="/dashboard")
+        .icon.round.shadow
+            img.round(alt=user.username, src=user.avatarUrl(64))
+    hr
+
+    //- list of guilds
+        if it has icon
+            show icon
+        else
+            show short name (Test Server -> TS)
+    each guild in guilds
+        a(href="/servers/" + guild.id)
+            .icon.round.shadow.my-2.text-center(data-toggle="tooltip" data-placement="right" title=guild.name)
+                if guild.icon
+                    img.round(alt=guild.name, src=guild.iconURL({ size: 64, dynamic: true }))
+                else
+                    span(style="display: inline-block")
+                        p.abbr.text-center(style="text-decoration: none") #{guild.nameAcronym}
+
+    a(href="/invite")
+        .icon.round.shadow(data-toggle="tooltip" data-placement="right" title="Add server")
+            p.abbr.text-primary.text-center
+                i.fas.fa-plus
+
+    .hamburger
+        .icon.text-center
+            .custom-toggler

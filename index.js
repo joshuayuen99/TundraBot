@@ -46,6 +46,9 @@ function setup() {
         require(`./handlers/${handler}`)(client);
     });
 
+    module.exports.client = client;
+    module.exports.commands = client.commands;
+
     // Map with guilds playing music ?
     client.musicGuilds = new Map();
 
@@ -64,6 +67,9 @@ function setup() {
     client.databaseCache.memberSoundEffects = new Collection();
 
     client.login(process.env.DISCORDTOKEN);
+
+    // Start dashboard server
+    require("./dashboard/server");
 
     checkPolls.init(client);
     checkEvents.init(client);

@@ -1,0 +1,38 @@
+include includes/mixins.pug
+
+doctype html
+html(lang="en")
+    head
+        include includes/header.pug
+        script(src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.2", defer)
+        script(src="/js/commands.js", defer)
+        script(defer).
+            let commands = !{commandsString};
+        link(rel="stylesheet", href="/css/commands.css")
+    body
+        include includes/navbar.pug
+        .container
+            .jumbotron.bg-transparent
+                h1.display-3 Commands
+                p.lead View TundraBot's wide range of commands
+                hr
+            section#commandsSection
+                .d-flex.justify-content-center
+                    #search.form-group
+                        input.form-control(type="search" placeholder="Search Commands")
+                    button.btn.btn-info.mb-3.ml-1 #[i.fas.fa-search]
+                .row.px-4
+                    #categories.col-sm-3
+                        ul.list-group.mb-2
+                            each category in categories
+                                +category(category)
+                    #commands.col-sm-9
+                        ul.list-group
+                            - commands.sort((a, b) => {
+                            -   if (a.name < b.name) return -1;
+                            -   else if (a.name > b.name) return 1;
+                            -   return 0;
+                            - });
+                            each command in commands
+                                +command(command)
+                            p#commandError

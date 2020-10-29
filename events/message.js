@@ -79,7 +79,11 @@ module.exports = async (client, message) => {
     }
 
     // Sent in a guild
-    if (!message.content.startsWith(settings.prefix)) return; // if the message did not contain the command prefix
+
+    // Sent in a blacklisted channel
+    if (settings.blacklistedChannelIDs.includes(message.channel.id)) return;
+    // Did not contain the command prefix
+    if (!message.content.startsWith(settings.prefix)) return;
     if (!message.member) message.member = await message.guild.members.fetch(message.member);
 
     // If we are waiting on a response from this member, skip the regular command handler

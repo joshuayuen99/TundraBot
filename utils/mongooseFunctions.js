@@ -18,7 +18,7 @@ module.exports = (client) => {
         if (typeof data !== "object") data = {};
         for (const key in settings) {
             if (data[key] !== settings[key]) data[key] = settings[key];
-            else return;
+            else continue;
         }
 
         await Guild.findOneAndUpdate({ guildID: guild.id }, data)
@@ -60,7 +60,7 @@ module.exports = (client) => {
         if (typeof data !== "object") data = {};
         for (const key in settings) {
             if (data[key] !== settings[key]) data[key] = settings[key];
-            else return;
+            else continue;
         }
 
         await Channel.findOneAndUpdate({ channelID: channel.id }, data)
@@ -121,7 +121,7 @@ module.exports = (client) => {
         if (typeof data !== "object") data = {};
         for (const key in settings) {
             if (data[key] !== settings[key]) data[key] = settings[key];
-            else return;
+            else continue;
         }
 
         await Message.findOneAndUpdate({ messageID: message.id }, data)
@@ -181,7 +181,7 @@ module.exports = (client) => {
         if (typeof data !== "object") data = {};
         for (const key in settings) {
             if (data[key] !== settings[key]) data[key] = settings[key];
-            else return;
+            else continue;
         }
 
         return await User.findOneAndUpdate({ userID: user.id }, {
@@ -226,7 +226,7 @@ module.exports = (client) => {
         if (typeof data !== "object") data = {};
         for (const key in settings) {
             if (data[key] !== settings[key]) data[key] = settings[key];
-            else return;
+            else continue;
         }
 
         return await Member.findOneAndUpdate({

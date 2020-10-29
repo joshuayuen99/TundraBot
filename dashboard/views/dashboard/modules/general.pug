@@ -1,0 +1,21 @@
+section#generalModule.module.dashboardItem.navbarExtended.css-transitions-only-after-page-load
+    form(action=`/servers/${guild.id}/general?_method=PUT`, method="POST")
+        .jumbotron.bg-transparent.pb-0
+            h1.display-4.text-center General
+        .form-group.mt-5
+            .row.px-5.justify-content-center
+                .col-4
+                    label Prefix
+                    input.form-control(type="text", name="prefix", value=savedGuild.prefix, maxlength="5", required)
+                    .invalid-feedback Please enter a prefix!
+                .col-4
+                    label Blacklisted Channels
+                    select.form-control(name="blacklistedChannelIDs", multiple)
+                        each channel of Array.from(guild.channels.cache.filter(c => c.type === "text").values())
+                            if savedGuild.blacklistedChannelIDs.includes(channel.id)
+                                option(value=channel.id, selected) ##{channel.name}
+                            else
+                                option(value=channel.id) ##{channel.name}
+                .col-4
+        .d-flex.justify-content-center.my-5
+            button.submitButton.btn.btn-primary #[i.fas.fa-rocket] Save

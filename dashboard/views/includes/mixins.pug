@@ -1,0 +1,19 @@
+mixin category(category)
+    li.list-group-item(id=category.name) #[i(class=category.icon)] #{ category.name }
+
+mixin command(command)
+    li(id=`${command.name}Command` class=command.category data-toggle="collapse" href=`#${command.name}Collapse` role="button" aria-expanded="false" aria-controls=`${command.name}Collapse`).list-group-item
+        strong #{ command.name }
+        div(id=`${command.name}Collapse` class="collapse")
+            br
+            if command.aliases
+                strong Aliases: 
+                each alias of command.aliases.slice(0, command.aliases.length - 1)
+                    span #{alias}, 
+                span #{command.aliases[command.aliases.length - 1]}
+                br
+            strong Usage: 
+            span(style="color: rgb(0, 123, 255);") #{command.usage}
+            br
+            strong Description: 
+            span #{command.description}

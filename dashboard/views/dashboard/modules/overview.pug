@@ -1,0 +1,41 @@
+section#overviewModule.module.dashboardItem.navbarExtended.css-transitions-only-after-page-load
+    .form-group.mt-5
+        .row.text-center
+            .col-lg-3.col-md-6
+                .border.rounded.m-3.p-3
+                    p.uppercase
+                        i.fas.fa-user-ninja
+                        strong.ml-1 Owner
+                    if guild.owner
+                        p.mb-0 #{guild.owner.user.tag}
+                    else
+                        p.mb-0 None
+            .col-lg-3.col-md-6
+                .border.rounded.m-3.p-3
+                    p.uppercase
+                        i.fas.fa-user-alt
+                        strong.ml-1 Members
+                    p.mb-0 #{guild.memberCount}
+            .col-lg-3.col-md-6
+                .border.rounded.m-3.p-3
+                    p.uppercase
+                        i.fas.fa-at
+                        strong.ml-1 Roles
+                    p.mb-0 #{guild.roles.cache.size}
+            .col-lg-3.col-md-6
+                .border.rounded.m-3.p-3
+                    p.uppercase
+                        i.fas.fa-hashtag
+                        strong.ml-1 Channels
+                    p.mb-0 #{guild.channels.cache.filter(c => c.type === "text" || c.type === "voice").size}
+        .row.text-center
+            .col-lg-3.col-md-6
+                .border.rounded.m-3.p-3
+                    p.uppercase
+                        i.fas.fa-code
+                        strong.ml-1 Commands Run
+                    - var commandsTotal = 0;
+                    - for (let command of commandCounts) {
+                    -   commandsTotal += command.count;
+                    - }
+                    p.mb-0 #{commandsTotal}

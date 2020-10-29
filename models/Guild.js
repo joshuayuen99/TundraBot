@@ -35,7 +35,8 @@ const guildSchema = mongoose.Schema({
     logChannel: {
         type: String,
         default: defaults.logChannel
-    }
+    },
+    blacklistedChannelIDs: [{ type: String }]
 });
 
 module.exports = mongoose.model("Guild", guildSchema);
