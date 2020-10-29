@@ -17,8 +17,7 @@ router.get("/commands", (req, res) => {
             { name: "Info", icon: "fas fa-question-circle" },
             { name: "Moderation", icon: "fas fa-gavel" },
             { name: "Utility", icon: "fas fa-tools" },
-            { name: "Fun", icon: "fas fa-star" },
-            { name: "General", icon: "fas fa-star" }],
+            { name: "Fun", icon: "fas fa-star" }],
         commands: commands.array(),
         commandsString: JSON.stringify(commands.array())
     });
