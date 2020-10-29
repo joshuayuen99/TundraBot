@@ -43,7 +43,6 @@ router.put("/servers/:id/:module", validateGuild, async (req, res) => {
             if (!req.body.blacklistedChannelIDs) {
                 req.body.blacklistedChannelIDs = [];
             }
-            console.log(req.body);
             await client.updateGuild({ id: id }, req.body)
         }
 
