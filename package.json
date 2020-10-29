@@ -40,6 +40,7 @@
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.31",
     "mongoose": "^5.10.9",
+    "node-fetch": "^2.6.1",
     "node-gyp": "^5.1.1",
     "node-opus": "^0.3.3",
     "pug": "^3.0.0",

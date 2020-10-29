@@ -71,6 +71,12 @@ function setup() {
     // Start dashboard server
     require("./dashboard/server");
 
+    // Keep Heroku dyno alive
+    setInterval(() => {
+        require("node-fetch")(process.env.DASHBOARD_URL);
+        console.log("Reviving");
+    }, 25 * 60 * 1000);
+
     checkPolls.init(client);
     checkEvents.init(client);
     loadRoleMenus.init(client);
