@@ -22,6 +22,7 @@ module.exports = {
             .setThumbnail(bicon)
             .addField("Bot name", client.user.username)
             .addField("My owner", `${process.env.OWNERNAME}${process.env.OWNERTAG}`)
+            .addField("Dashboard", `[Check out my dashboard!](${process.env.DASHBOARD_URL})`)
             .addField("Invite link", `[Invite me to your server!](${process.env.BOT_INVITE_LINK})`)
             .addField("Official Discord server", `[Join my official Discord server!](${process.env.SUPPORT_SERVER_INVITE_LINK})`)
             .addField("Source code", "https://github.com/joshuayuen99/discordbot")
