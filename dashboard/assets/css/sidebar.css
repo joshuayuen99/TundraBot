@@ -14,7 +14,7 @@
 }
 
 .abbr {
-    padding-top: 7.5px;
+    padding-top: 8px;
 }
 
 .hamburger {
@@ -43,6 +43,7 @@
 #sidebar, #sidebarExtension {
     height: 100vh;
     float: left;
+    max-width: 40vw
 }
 
 /* extension */

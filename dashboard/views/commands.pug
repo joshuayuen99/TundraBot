@@ -7,7 +7,7 @@ html(lang="en")
         script(src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.2", defer)
         script(src="/js/commands.js", defer)
         script(defer).
-            let commands = !{commandsString};
+            var commands = !{commandsString};
         link(rel="stylesheet", href="/css/commands.css")
     body
         include includes/navbar.pug

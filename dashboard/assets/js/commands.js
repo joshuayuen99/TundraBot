@@ -51,7 +51,6 @@ $("#search + button").on("click", function() {
     }
 
     updateResultsText(results);
-    console.log(results);
 })
 
 function blank() {

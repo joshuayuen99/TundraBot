@@ -1,0 +1,18 @@
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  stroke-width: 1.5px;
+  shape-rendering: crispEdges;
+}
+
+.line {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 1px;
+  }
+
+.area {
+    fill: lightsteelblue;
+    stroke-width: 0;
+}

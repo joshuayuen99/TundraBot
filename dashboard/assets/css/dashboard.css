@@ -1,10 +1,6 @@
-.dashboardItem {
-    padding: 0 10vw 0 10vw;
-    margin: 0 0 0 52px;
-    transition: 0.3s;
-}
-
-.dashboardItem.navbarExtended {
-    padding: 0 10vw 0 10vw;
-    margin: 0 0 0 calc(52px + 275px);
+.chart-container {
+    resize: 'horizontal';
+    overflow: 'hidden';
+    width: '1000px';
+    height: 'auto';
 }
