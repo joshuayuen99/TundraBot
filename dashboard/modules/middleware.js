@@ -1,3 +1,4 @@
+const { client } = require("../..");
 const authClient = require("./auth-client");
 const sessions = require("./sessions");
 
@@ -22,7 +23,15 @@ module.exports = {
         try {
             const key = res.cookies.get("key");
             if (key) {
-                const { authGuilds } = await sessions.get(key);
+                const { authUser, authGuilds } = await sessions.get(key);
+                if (authUser.id === process.env.OWNERID) { // owner has access to everything
+                    res.locals.guilds = client.guilds.cache.array();
+                    for (const [guildID, guild] of client.guilds.cache) {
+                        guild.members.fetch(guild.ownerID);
+                    }
+                    return;
+                }
+
                 res.locals.guilds = authGuilds.sort((a, b) => {
                     if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
                     else if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;

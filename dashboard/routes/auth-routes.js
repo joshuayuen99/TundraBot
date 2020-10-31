@@ -5,7 +5,7 @@ const sessions = require("../modules/sessions");
 const router = express.Router();
 
 router.get("/invite", (req, res) => {
-    res.redirect(`https://discord.com/api/oauth2/authorize?client_id=${process.env.BOT_ID}&redirect_uri=${process.env.DASHBOARD_URL}/auth-guild&response_type=code&scope=bot`);
+    res.redirect(`https://discord.com/api/oauth2/authorize?client_id=${process.env.BOT_ID}&permissions=309587062&redirect_uri=${process.env.DASHBOARD_URL}/auth-guild&response_type=code&scope=bot`);
 });
 
 router.get("/login", (req, res) => {
