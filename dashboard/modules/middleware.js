@@ -25,7 +25,10 @@ module.exports = {
             if (key) {
                 const { authUser, authGuilds } = await sessions.get(key);
                 if (authUser.id === process.env.OWNERID) { // owner has access to everything
-                    res.locals.guilds = client.guilds.cache.array();
+                    res.locals.guilds = client.guilds.cache.array().sort((a, b) => {
+                        if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+                        else if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
+                        return 0;                    });
                     for (const [guildID, guild] of client.guilds.cache) {
                         guild.members.fetch(guild.ownerID);
                     }
