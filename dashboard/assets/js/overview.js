@@ -348,7 +348,7 @@ function updateWeeklyMessageChart(data) {
 
         // recover coordinate we need
         var x0 = x.invert(d3.pointer(event)[0]);
-        var i = bisect(parsedData, x0, 1);
+        var i = bisect(parsedData, x0, 1, parsedData.length - 1);
         var leftDate = x0 - parsedData[i - 1].date;
         var rightDate = parsedData[i].date - x0;
         selectedData = x0 - parsedData[i - 1].date < parsedData[i].date - x0 ? parsedData[i - 1] : parsedData[i];

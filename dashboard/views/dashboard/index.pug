@@ -4,23 +4,26 @@ html(lang="en")
         include ../includes/header.pug
         script(src="/js/sidebar.js", defer)
         link(rel="stylesheet", href="/css/sidebar.css")
+        link(rel="stylesheet", href="/css/modules.css")
         link(rel="stylesheet", href="/css/dashboard.css")
     body
-        include ../includes/sidebar.pug
+        .container-fluid.d-flex.flex-column.flow-grow-1.vh-100.overflow-hidden.px-0.mx-0
+            include ../includes/navbar.pug
 
-        #sidebarExtension.bg-light
-            header.text-center.pt-4
-                .large-icon.bg-white.round
-                    img.round(src=user.avatarUrl(128), alt=user.username)
-                h4.pt-2 #{user.username}
-                    span.text-muted #{`#${user.discriminator.toString().padStart(4, "0")}`}
+            .row.flex-grow-1.overflow-hidden
+                #sidebar.d-flex.flex-column.overflow-hidden.mh-100.bg-light.pr-0
+                    include ../includes/sidebar.pug
 
-        include ../includes/navbar.pug
+                #sidebarExtension.d-flex.flex-column.overflow-hidden.mh-100.bg-light.pb-4
+                    header.text-center.pt-4
+                        .large-icon.bg-white.round
+                            img.round(src=user.avatarUrl(128), alt=user.username)
+                        h4.pt-2 #{user.username}
+                            span.text-muted #{`#${user.discriminator.toString().padStart(4, "0")}`}
 
-        section
-            .flex
-                .row.justify-content-center
-                    .jumbotron.text-center.bg-transparent
-                        h1.display-3 Dashboard
-                        hr
-                        p.lead Manage your servers with the TundraBot dashboard.
+                .col.mh-100.overflow-auto.pl-0
+                    .row.module.justify-content-center
+                        .jumbotron.text-center.bg-transparent
+                            h1.display-3 Dashboard
+                            hr
+                            p.lead Manage your servers with the TundraBot dashboard.

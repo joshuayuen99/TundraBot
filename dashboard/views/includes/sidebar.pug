@@ -1,9 +1,10 @@
-#sidebar.sticky-top.bg-light.text-center.css-transitions-only-after-page-load
-    a(href="/dashboard")
-        .icon.round.shadow
-            img.round(alt=user.username, src=user.avatarUrl(64))
-    hr
-
+.row.flex-shrink-0.justify-content-center(style="padding-left: 5px")
+    .text-center.flex-shrink-0
+        a(href="/dashboard")
+            .icon.round.shadow
+                img.round(alt=user.username, src=user.avatarUrl(64))
+        hr
+#server-list.col.flex-column.flex-grow-1.overflow-auto
     //- list of guilds
         if it has icon
             show icon
@@ -15,14 +16,15 @@
                 if guild.icon
                     img.round.align-center(alt=guild.name, src=guild.iconURL({ size: 64, dynamic: true }))
                 else
-                    span(style="display: inline-block")
-                        p.abbr(style="text-decoration: none") #{guild.nameAcronym}
+                    span
+                        p.abbr.text-center #{guild.nameAcronym}
+
 
     a(href="/invite")
         .icon.round.shadow(data-toggle="tooltip" data-placement="right" title="Add server")
             p.abbr.text-primary.text-center
                 i.fas.fa-plus
-
-    .hamburger
-        .icon.text-center
+#hamburger-container.row.flex-shrink-0.justify-content-center(style="padding-left: 5px")
+    .hamburger.text-center
+        .icon.d-flex.align-items-end
             .custom-toggler

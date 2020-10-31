@@ -5,3 +5,7 @@
     -ms-transition: none !important;
     -o-transition: none !important;
 }
+
+.tooltip {
+    pointer-events: none;
+}

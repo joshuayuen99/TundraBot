@@ -5,7 +5,7 @@
 
     height: 52px;
     width: 52px;
-    margin: .25rem 0;
+    margin: auto auto;
 }
 .icon:hover, .icon img:hover {
     border-radius: 15% !important;
@@ -13,37 +13,44 @@
     color: rgb(0, 123, 255);
 }
 
+a:hover {
+    text-decoration: none !important;
+}
 .abbr {
     padding-top: 8px;
 }
 
+#server-list {
+    padding-right: 10px;
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+}
+#server-list::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+}
+
+#hamburger-container {
+    margin-top: auto;
+}
 .hamburger {
     cursor: pointer;
-    
-    bottom: 0;
-    position: absolute;
 }
 
 .custom-toggler {
     background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(0, 0, 0, 0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
 
-    height: 30px;
-    width: 30px;
+    height: 32px;
+    width: 32px;
 
-    position: absolute;
-    bottom: 0;
-    left: 25%;
-
-    margin: 0 0 0.75rem 0;
+    margin: 0 auto;
 }
 
 #sidebar {
     padding: 10px;
+    width: 100px;
 }
 #sidebar, #sidebarExtension {
-    height: 100vh;
-    float: left;
-    max-width: 40vw
+    background-color: gray;
 }
 
 /* extension */

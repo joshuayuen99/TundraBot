@@ -9,31 +9,37 @@ html(lang="en")
             var messages = !{JSON.stringify(messageCounts)};
             var hourlyMessages = !{JSON.stringify(hourlyMessages)};
         link(rel="stylesheet", href="/css/sidebar.css")
+        link(rel="stylesheet", href="/css/modules.css")
         link(rel="stylesheet", href="/css/dashboard.css")
     body
-        include ../includes/sidebar.pug
+        .container-fluid.d-flex.flex-column.flow-grow-1.vh-100.overflow-hidden.px-0.mx-0
+            include ../includes/navbar.pug
 
-        #sidebarExtension.sticky-top.bg-light
-            header.text-center.pt-4
-                .large-icon.bg-white.round
-                    if guild.icon
-                        img.round(src=guild.iconURL({ size: 128, dynamic: true }), alt=guild.name)
-                    else
-                        span(style="display: inline-block")
-                            p.abbr.text-center(style="text-decoration: none") #{guild.nameAcronym}
-                h4#overview.pt-2.cursor-pointer #{guild.name}
+            .row.flex-grow-1.overflow-hidden
+                #sidebar.d-flex.flex-column.overflow-hidden.mh-100.bg-light.pr-0
+                    include ../includes/sidebar.pug
 
-            .tabs.navbar-nav
-                .category Modules
-                a#autoMod.cursor-pointer #[i.fas.fa-gavel.pr-1] Auto-mod
-                a#general.cursor-pointer #[i.fas.fa-star.pr-1] General
-                a#music.cursor-pointer #[i.fas.fa-music.pr-1] Music
-                a#soundboard.cursor-pointer #[i.fas.fa-headphones-alt.pr-1] Soundboard
+                #sidebarExtension.d-flex.flex-column.overflow-hidden.mh-100.bg-light.pb-4
+                    header.text-center.pt-4
+                        .large-icon.bg-white.round
+                            if guild.icon
+                                img.round(src=guild.iconURL({ size: 128, dynamic: true }), alt=guild.name)
+                            else
+                                span(style="display: inline-block")
+                                    p.abbr.text-center(style="text-decoration: none") #{guild.nameAcronym}
+                        h4#overview.pt-2.cursor-pointer #{guild.name}
 
-        include ../includes/navbar.pug
+                    .tabs.navbar-nav
+                        .category Modules
+                        a#autoMod.cursor-pointer #[i.fas.fa-gavel.pr-1] Auto-mod
+                        a#general.cursor-pointer #[i.fas.fa-star.pr-1] General
+                        a#music.cursor-pointer #[i.fas.fa-music.pr-1] Music
+                        a#soundboard.cursor-pointer #[i.fas.fa-headphones-alt.pr-1] Soundboard
 
-        include modules/overview
-        include modules/auto-mod
-        include modules/music
-        include modules/general
-        include modules/soundboard
+                .col.mh-100.overflow-auto.pl-0
+
+                    include modules/overview
+                    include modules/auto-mod
+                    include modules/music
+                    include modules/general
+                    include modules/soundboard
