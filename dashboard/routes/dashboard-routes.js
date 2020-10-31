@@ -19,7 +19,7 @@ router.get("/servers/:id", validateGuild, async (req, res) => {
                 '$match': {
                     guildID: req.params.id,
                     'createdAt': {
-                    '$gte': moment(Date.now()).subtract(14, "days").toDate()
+                    '$gte': moment(Date.now()).subtract(7, "days").toDate()
                     }
                 }
             },
