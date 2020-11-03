@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/joshuayuen99/discordbot#readme",
   "dependencies": {
-    "@discordjs/opus": "^0.3.2",
+    "@discordjs/opus": "^0.3.3",
     "ascii-table": "0.0.9",
     "assert": "^2.0.0",
     "body-parser": "^1.19.0",
@@ -31,28 +31,28 @@
     "css-element-queries": "^1.2.3",
     "d3": "^6.2.0",
     "disco-oauth": "^4.2.7",
-    "discord.js": "^12.4.0",
+    "discord.js": "^12.4.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "ffmpeg": "0.0.4",
-    "fuse.js": "^6.4.2",
+    "fuse.js": "^6.4.3",
     "grapheme-splitter": "^1.0.4",
     "he": "^1.2.0",
     "method-override": "^3.0.0",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.31",
-    "mongoose": "^5.10.9",
+    "mongoose": "^5.10.11",
     "node-fetch": "^2.6.1",
     "node-gyp": "^5.1.1",
     "node-opus": "^0.3.3",
     "pug": "^3.0.0",
     "youtube-search": "^1.1.4",
-    "ytdl-core": "^2.1.7"
+    "ytdl-core": "^4.0.2"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "mocha": "^7.2.0",
     "nodemon": "^2.0.6",
-    "sinon": "^9.2.0"
+    "sinon": "^9.2.1"
   }
 }
