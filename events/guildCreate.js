@@ -1,6 +1,6 @@
 const { MessageEmbed } = require("discord.js");
 const { stripIndents } = require("common-tags");
-const { createRole, formatDate, formatDateLong } = require("../functions");
+const { createRole, formatDate, formatDateLong, createChannel } = require("../functions");
 const { defaultGuildSettings: defaults } = require("../config");
 
 /**
@@ -45,8 +45,39 @@ module.exports = async (client, guild) => {
 
     owner.send(embedMsg);
 
+    // Create default channels
+    createChannel(guild, defaults.logChannel, null).then((channel) => {
+        client.updateGuild(guild, {
+            logMessages: {
+                enabled: true,
+                channelID: channel.id
+            }
+        }).catch((err) => {
+            console.error("Database error when adding logChannel: ", err);
+        });
+    }).catch((err) => {
+        console.error("Couldn't create log channel: ", err);
+
+        client.updateGuild(guild, {
+            logMessages: {
+                enabled: false,
+                channelID: null
+            }
+        });
+    });
+
     // Create necessary roles for soundboard commands
-    createRole(guild, defaults.soundboardRole, null).catch((err) => {
+    createRole(guild, defaults.soundboardRole, null).then((role) => {
+        client.updateGuild(guild, {
+            soundboardRoleID: role.id
+        }).catch((err) => {
+            console.error("Database error when adding soundboardRole: ", err);
+        });
+    }).catch((err) => {
         console.error("Couldn't create soundboard role: ", err);
+
+        client.updateGuild(guild, {
+            soundboardRoleID: guild.roles.cache.find(role => role.name === "@everyone").id
+        });
     });
 };

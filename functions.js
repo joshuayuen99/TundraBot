@@ -25,19 +25,35 @@ module.exports = {
         return target;
     },
 
+    /**
+     * @param {import("discord.js").Guild} guild Discord Guild
+     * @param {String} name Name of the new channel
+     * @param {import("discord.js").GuildCreateChannelOptions} permissions Permissions for the new channel
+     * @returns {Promise<import("discord.js").TextChannel>} Guild text channel
+    */
     createChannel: async function (guild, name, permissions) {
-        if (guild.channels.cache.some(channel => channel.name === name)) return;
+        if (guild.channels.cache.some(channel => channel.name === name)) {
+            return guild.channels.cache.find(channel => channel.name === name);
+        }
 
-        await guild.channels.create(name, {
+        return guild.channels.create(name, {
             type: "text",
             permissionOverwrites: permissions,
         });
     },
 
+    /**
+     * @param {import("discord.js").Guild} guild Discord Guild
+     * @param {String} name Name of the new role
+     * @param {import("discord.js").GuildCreateChannelOptions} permissions Permissions for the new role
+     * @returns {Promise<import("discord.js").Role>} Guild role
+    */
     createRole: async function (guild, name, permissions) {
-        if (guild.roles.cache.some(role => role.name === name)) return;
+        if (guild.roles.cache.some(role => role.name === name)) {
+            return guild.roles.cache.find(role => role.name === name);
+        }
 
-        await guild.roles.create({
+        return guild.roles.create({
             data: {
                 name: name,
                 permissions: permissions

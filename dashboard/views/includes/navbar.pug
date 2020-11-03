@@ -4,13 +4,12 @@ nav.navbar.navbar-expand-md.navbar-light.bg-light.flex-shrink-0
     span.navbar-toggler-icon
   #nav.collapse.navbar-collapse
     .navbar-nav
+        a.nav-link(href=user ? "/dashboard" : "/login")
+                i.fas.fa-chalkboard
+                span.pl-1 Dashboard
         a.nav-link(href='/commands')
             i.fas.fa-code
             span.pl-1 Commands
-        if user
-            a.nav-link(href="/dashboard")
-                i.fas.fa-chalkboard
-                span.pl-1 Dashboard
         a.nav-link(href="https://www.github.com/joshuayuen99/discordbot")
             i.fab.fa-github
         a.nav-link(href="/invite")
@@ -19,7 +18,7 @@ nav.navbar.navbar-expand-md.navbar-light.bg-light.flex-shrink-0
         if user
             .dropdown
                 #dropdownMenuButton.dropdown-toggle.bg-transparent(type='button', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
-                    img.user-avatar.round(src=user.avatarUrl(32))
+                    img.user-avatar.round(src=user.avatarUrl(32) width=32 height=32)
                     span.pl-2 #{user.username}
                 .dropdown-menu(aria-labelledby='dropdownMenuButton')
                     a.dropdown-item(href="/dashboard") #[i.fas.fa-chalkboard] Dashboard

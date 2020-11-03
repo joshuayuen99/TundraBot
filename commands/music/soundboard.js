@@ -2,6 +2,7 @@ const { stripIndents } = require("common-tags");
 const { SoundEffect } = require("../../models");
 const ytdl = require("ytdl-core");
 const { MessageEmbed } = require("discord.js");
+const { defaultGuildSettings } = require("../../config");
 
 module.exports = {
     name: "soundboard",
@@ -25,14 +26,14 @@ module.exports = {
     run: async (client, message, args, settings) => {
         if (!args[0] || args.includes("list")) { // no arguments default
             listEffects(client, message, args, settings);
-        } else if (!message.member.roles.cache.some(role => role.name === settings.soundboardRole) && !message.member.hasPermission("MANAGE_GUILD")) {
+        } else if (!message.member.roles.cache.some(role => role.id === settings.soundboardRoleID) && !message.member.hasPermission("MANAGE_GUILD")) {
             // The server doesn't have the soundboardRole
-            if (!message.guild.roles.cache.some(role => role.name === settings.soundboardRole)) {
-                message.channel.send(`Sorry, you need the \`${settings.soundboardRole}\` role or \`MANAGE_GUILD\` permission to use most soundboard commands, and I couldn't find that in this server. Contact your server administrators to make the role, or change my config with the \`${settings.prefix}config\` command.`);
+            if (!message.guild.roles.cache.some(role => role.id === settings.soundboardRoleID)) {
+                message.channel.send(`Sorry, you need the \`${defaultGuildSettings.soundboardRole}\` role or \`MANAGE_GUILD\` permission to use most soundboard commands, and I couldn't find that in this server. Contact your server administrators to make the role, or change my config with the \`${settings.prefix}config\` command.`);
                 
                 return;
             } else {
-                const formattedRole = message.guild.roles.cache.find(role => role.name === settings.soundboardRole);
+                const formattedRole = message.guild.roles.cache.find(role => role.id === settings.soundboardRoleID);
                 message.channel.send(`Sorry, you need the ${formattedRole} role or \`MANAGE_GUILD\` permission to use most soundboard commands.`);
 
                 return;

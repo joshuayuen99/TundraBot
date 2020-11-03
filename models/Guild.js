@@ -12,17 +12,22 @@ const guildSchema = mongoose.Schema({
         type: String,
         default: defaults.prefix
     },
-    welcomeChannel: {
-        type: String,
-        default: defaults.welcomeChannel
-    },
     welcomeMessage: {
-        type: String,
-        default: defaults.welcomeMessage
+        enabled: { type: Boolean, default: false },
+        welcomeMessage: { type: String, default: defaults.welcomeMessage.welcomeMessage },
+        channelID: { type: String, default: null },
     },
-    soundboardRole: {
+    joinMessages: {
+        enabled: { type: Boolean, default: false },
+        channelID: { type: String, default: null }
+    },
+    leaveMessages: {
+        enabled: { type: Boolean, default: false },
+        channelID: { type: String, default: null }
+    },
+    soundboardRoleID: {
         type: String,
-        default: defaults.soundboardRole
+        default: null
     },
     modRole: {
         type: String,
@@ -32,9 +37,9 @@ const guildSchema = mongoose.Schema({
         type: String,
         default: defaults.adminRole
     },
-    logChannel: {
-        type: String,
-        default: defaults.logChannel
+    logMessages: {
+        enabled: { type: Boolean, default: false },
+        channelID: { type: String, default: null },
     },
     blacklistedChannelIDs: [{ type: String }]
 });

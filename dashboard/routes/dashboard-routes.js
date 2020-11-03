@@ -99,10 +99,56 @@ router.put("/servers/:id/:module", validateGuild, async (req, res) => {
         const { id, module } = req.params;
 
         if (module == "general") {
-            if (!req.body.blacklistedChannelIDs) {
-                req.body.blacklistedChannelIDs = [];
+            let settings = {};
+            
+            // Prefix
+            settings.prefix = req.body.prefix;
+            
+            // Blacklisted channels
+            if (req.body.blacklistedChannelIDs) {
+                settings.blacklistedChannelIDs = req.body.blacklistedChannelIDs;
+            } else {
+                settings.blacklistedChannelIDs = [];
             }
-            await client.updateGuild({ id: id }, req.body)
+
+            // Log channel
+            settings.logChannel = {};
+            if (req.body.logChannelEnabled) {
+                settings.logChannel.enabled = true;
+                settings.logChannel.channelID = req.body.logChannelChannel;
+            } else {
+                settings.logChannel.enabled = false;
+            }
+
+            // Welcome message
+            settings.welcomeMessage = {};
+            if (req.body.welcomeMessageEnabled == "on") {
+                settings.welcomeMessage.enabled = true;
+                settings.welcomeMessage.welcomeMessage = req.body.welcomeMessage;
+                settings.welcomeMessage.channelID = req.body.welcomeMessageChannel;
+            } else {
+                settings.welcomeMessage.enabled = false;
+            }
+
+            // Join messages
+            settings.joinMessages = {};
+            if (req.body.joinMessagesEnabled == "on") {
+                settings.joinMessages.enabled = true;
+                settings.joinMessages.channelID = req.body.joinMessagesChannel;
+            } else {
+                settings.joinMessages.enabled = false;
+            }
+
+            // Leave messages
+            settings.leaveMessages = {};
+            if (req.body.joinMessagesEnabled == "on") {
+                settings.leaveMessages.enabled = true;
+                settings.leaveMessages.channelID = req.body.leaveMessagesChannel;
+            } else {
+                settings.leaveMessages.enabled = false;
+            }
+
+            await client.updateGuild({ id: id }, settings)
         }
 
         res.redirect(`/servers/${id}`);

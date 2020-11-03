@@ -48,29 +48,37 @@ module.exports = {
                 break;
             }
             case "logchannel": {
-                let logChannel = message.guild.channels.cache.find(channel => channel.name === settings.logChannel);
+                let logChannel = message.guild.channels.cache.find(channel => channel.id === settings.logChannel.channelID);
 
                 if (!newSetting) {
-                    return message.channel.send(`Current channel for logging: \`${settings.logChannel}\``);
+                    if (!settings.logChannel.enabled || !logChannel) { // disabled
+                        message.channel.send(`Current channel for logging: \`None\`.`);
+                    } else {
+                        message.channel.send(`Current channel for logging: ${logChannel}`);
+                    }
+                    return;
                 }
 
-                let newLogChannelName;
+                let newLogChannel;
                 if (message.guild.channels.cache.some(channel => `<#${channel.id}>` === newSetting)) {
-                    newLogChannelName = message.guild.channels.cache.find(channel => `<#${channel.id}>` === newSetting).name;
+                    newLogChannel = message.guild.channels.cache.find(channel => `<#${channel.id}>` === newSetting);
                 } else if (message.guild.channels.cache.some(channel => channel.name === newSetting)) {
-                    newLogChannelName = newSetting;
+                    newLogChannel = message.guild.channels.cache.find(channel => channel.name === newSetting);
                 }
 
-                if (!newLogChannelName) return message.channel.send("Sorry, I couldn't find that channel. Please try again and make sure you entered it correctly.");
+                if (!newLogChannel) return message.channel.send("Sorry, I couldn't find that channel. Please try again and make sure you entered it correctly.");
 
                 try {
                     await client.updateGuild(message.guild, {
-                        logChannel: newLogChannelName
+                        logChannel: {
+                            enabled: true,
+                            channelID: newLogChannel.id
+                        }
                     });
 
                     const updatedSettings = await client.getGuild(message.guild);
 
-                    message.channel.send(`Log channel updated to: \`${updatedSettings.logChannel}\``);
+                    message.channel.send(`Log channel updated to: <#${updatedSettings.logChannel.channelID}>`);
                 } catch (err) {
                     message.reply(`An error occurred: **${err.message}**`)
                     console.error(err);
@@ -78,10 +86,10 @@ module.exports = {
                 break;
             }
             case "soundboardrole": {
-                let soundboardRole = message.guild.roles.cache.find(role => role.name === settings.soundboardRole);
+                let soundboardRole = message.guild.roles.cache.find(role => role.id === settings.soundboardRoleID);
 
                 if (!newSetting) {
-                    return message.channel.send(`Current role for using most soundboard commands: \`${settings.soundboardRole}\``);
+                    return message.channel.send(`Current role for using most soundboard commands: <@&${settings.soundboardRoleID}>`);
                 }
 
                 let newRole;
@@ -99,7 +107,7 @@ module.exports = {
 
                 try {
                     await client.updateGuild(message.guild, {
-                        soundboardRole: newRole.name
+                        soundboardRoleID: newRole.id
                     });
 
                     const updatedSettings = await client.getGuild(message.guild);

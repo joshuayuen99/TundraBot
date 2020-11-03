@@ -6,6 +6,7 @@ const checkPolls = require("./helpers/checkPolls");
 const checkEvents = require("./helpers/checkEvents");
 const loadRoleMenus = require("./helpers/loadRoleMenus");
 const loadMemberSoundEffects = require("./helpers/loadMemberSoundEffects");
+const cacheMembers = require("./helpers/cacheMembers");
 
 function setup() {
     const result = dotenv.config({
@@ -16,7 +17,8 @@ function setup() {
     }
 
     const client = new Client({
-        disableEveryone: false
+        disableEveryone: false,
+        fetchAllMembers: true
     });
 
     // Config
@@ -25,8 +27,11 @@ function setup() {
         prefix: process.env.COMMAND_PREFIX,
         defaultGuildSettings: {
             prefix: process.env.COMMAND_PREFIX,
-            welcomeChannel: "welcome",
-            welcomeMessage: "Welcome **{{user}}** to **{{guild}}**!",
+            welcomeMessage: {
+                enabled: false,
+                welcomeMessage: "Welcome **{{member}}** to **{{server}}**!",
+                channelID: null
+            },
             soundboardRole: "Soundboard DJ",
             modRole: "Moderator",
             adminRole: "Administrator",
@@ -81,6 +86,7 @@ function setup() {
     checkEvents.init(client);
     loadRoleMenus.init(client);
     loadMemberSoundEffects.init(client);
+    cacheMembers.init(client);
 }
 
 // if there is an unhandledRejection, log them

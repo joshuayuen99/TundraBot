@@ -21,11 +21,11 @@ module.exports = (client) => {
             else continue;
         }
 
-        await Guild.findOneAndUpdate({ guildID: guild.id }, data)
-            .catch((err) => {
+        data = await Guild.findOneAndUpdate({ guildID: guild.id }, data).then(() => {
+            console.log(`Guild "${data.guildName}" updated settings: ${Object.keys(settings)}`);
+        }).catch((err) => {
                 console.error("Error updating guild in database: ", err);
             });
-        console.log(`Guild "${data.guildName}" updated settings: ${Object.keys(settings)}`);
         return data;
     };
 

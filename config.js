@@ -3,8 +3,11 @@ module.exports = {
     prefix: process.env.COMMAND_PREFIX,
     defaultGuildSettings: {
         prefix: process.env.COMMAND_PREFIX,
-        welcomeChannel: "welcome",
-        welcomeMessage: "Welcome **{{user}}** to **{{guild}}**!",
+        welcomeMessage: {
+            enabled: false,
+            welcomeMessage: "Welcome **{{member}}** to **{{server}}**!",
+            channelID: null
+        },
         soundboardRole: "Soundboard DJ",
         modRole: "Moderator",
         adminRole: "Administrator",

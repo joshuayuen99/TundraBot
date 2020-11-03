@@ -55,7 +55,7 @@ a:hover {
 
 /* extension */
 #sidebarExtension {
-    width: 275px;
+    width: 225px;
     transition: all 0.3s, opacity 0.15s;
     opacity: 1;
     border-left: 1px solid lightgray;

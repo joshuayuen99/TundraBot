@@ -807,59 +807,40 @@ async function removeRoleMenu(client, message, args, settings) {
                     msg.delete();
                     switch (emoji) {
                         case CONFIRM: {
-                            const logEmbed = new MessageEmbed()
-                                .setColor("RED")
-                                .setFooter(message.member.displayName, message.author.displayAvatarURL())
-                                .setTimestamp()
-                                .setTitle("Removed Role Menu")
-                                .setDescription(stripIndents`**\\> Removed by: ${message.member}**`);
+                            if (roleMenuMessage.deletable) roleMenuMessage.delete();
 
-                            // Log activity and create channel if necessary
-                            if (!message.guild.channels.cache.some(channel => channel.name === settings.logChannel)) {
-                                if (!message.guild.me.hasPermission("MANAGE_CHANNELS")) {
-                                    message.channel.send("I couldn't send the log to the correct channel and I don't have permissions to create it.");
-                                } else {
-                                    await createChannel(message.guild, settings.logChannel, [{
-                                        id: message.guild.id,
-                                        deny: ["VIEW_CHANNEL"],
-                                    }, {
-                                        id: client.user.id,
-                                        allow: ["VIEW_CHANNEL"]
-                                    }]).then(() => {
-                                        const logChannel = message.guild.channels.cache.find(channel => channel.name === settings.logChannel);
+                            // remove role menu from database and cache
+                            RoleMenu.deleteOne({ messageID: cachedRoleMenu.messageID }).catch((err) => {
+                                console.error("Couldn't delete role menu from database: ", err);
+                            });
+                            client.databaseCache.roleMenus.delete(cachedRoleMenu.messageID);
 
-                                        logChannel.send(logEmbed);
-                                        if (message.deletable) message.delete();
-                                        if (roleMenuMessage.deletable) roleMenuMessage.delete();
+                            message.channel.send("Successfully deleted role menu.");
 
-                                        // remove role menu from database and cache
-                                        RoleMenu.deleteOne({ messageID: cachedRoleMenu.messageID }).catch((err) => {
-                                            console.error("Couldn't delete role menu from database: ", err);
-                                        });
-                                        client.databaseCache.roleMenus.delete(cachedRoleMenu.messageID);
-                                    }).catch(err => {
-                                        console.error("rolemenu remove command create log channel error: ", err);
-                                        if (message.deletable) message.delete();
-                                        if (roleMenuMessage.deletable) roleMenuMessage.delete();
+                            if (settings.logChannel.enabled) {
+                                // Log activity
+                                if (message.guild.channels.cache.some(channel => channel.id === settings.logChannel.channelID)) {
+                                    const logEmbed = new MessageEmbed()
+                                        .setColor("RED")
+                                        .setFooter(message.member.displayName, message.author.displayAvatarURL())
+                                        .setTimestamp()
+                                        .setTitle("Removed Role Menu")
+                                        .setDescription(stripIndents`**\\> Removed by: ${message.member}**`);
 
-                                        // remove role menu from database and cache
-                                        RoleMenu.deleteOne({ messageID: cachedRoleMenu.messageID }).catch((err) => {
-                                            console.error("Couldn't delete role menu from database: ", err);
-                                        });
-                                        client.databaseCache.roleMenus.delete(cachedRoleMenu.messageID);
-                                    });;
+                                    const logChannel = message.guild.channels.cache.find(channel => channel.id === settings.logChannel.channelID);
+
+                                    logChannel.send(logEmbed).catch((err) => {
+                                        // Most likely don't have permissions to type
+                                        message.channel.send(`I don't have permission to log this in the configured log channel. Please give me permission to write messages there, or use \`${settings.prefix}config logChannel\` to change it.`);
+                                    });
+                                } else { // channel was removed, disable logging in settings
+                                    client.updateGuild(message.guild, {
+                                        logChannel: {
+                                            enabled: false,
+                                            channelID: null
+                                        }
+                                    });
                                 }
-                            } else { // Channel already exists
-                                const logChannel = message.guild.channels.cache.find(channel => channel.name === settings.logChannel);
-
-                                logChannel.send(logEmbed);
-                                if (message.deletable) message.delete();
-                                if (roleMenuMessage.deletable) roleMenuMessage.delete();
-                                // remove role menu from database and cache
-                                RoleMenu.deleteOne({ messageID: cachedRoleMenu.messageID }).catch((err) => {
-                                    console.error("Couldn't delete role menu from database: ", err);
-                                });
-                                client.databaseCache.roleMenus.delete(cachedRoleMenu.messageID);
                             }
                             break;
                         } case CANCEL: {
@@ -893,59 +874,40 @@ async function removeRoleMenu(client, message, args, settings) {
                     msg.delete();
                     switch (emoji) {
                         case CONFIRM: {
-                            const logEmbed = new MessageEmbed()
-                                .setColor("RED")
-                                .setFooter(message.member.displayName, message.author.displayAvatarURL())
-                                .setTimestamp()
-                                .setTitle("Removed Role Menu")
-                                .setDescription(stripIndents`**\\> Removed by: ${message.member}**`);
+                            if (roleMenuMessage.deletable) roleMenuMessage.delete();
 
-                            // Log activity and create channel if necessary
-                            if (!message.guild.channels.cache.some(channel => channel.name === settings.logChannel)) {
-                                if (!message.guild.me.hasPermission("MANAGE_CHANNELS")) {
-                                    message.channel.send("I couldn't send the log to the correct channel and I don't have permissions to create it.");
-                                } else {
-                                    await createChannel(message.guild, settings.logChannel, [{
-                                        id: message.guild.id,
-                                        deny: ["VIEW_CHANNEL"],
-                                    }, {
-                                        id: client.user.id,
-                                        allow: ["VIEW_CHANNEL"]
-                                    }]).then(() => {
-                                        const logChannel = message.guild.channels.cache.find(channel => channel.name === settings.logChannel);
+                            // remove role menu from database and cache
+                            RoleMenu.deleteOne({ messageID: cachedRoleMenu.messageID }).catch((err) => {
+                                console.error("Couldn't delete role menu from database: ", err);
+                            });
+                            client.databaseCache.roleMenus.delete(cachedRoleMenu.messageID);
 
-                                        logChannel.send(logEmbed);
-                                        if (message.deletable) message.delete();
-                                        if (roleMenuMessage.deletable) roleMenuMessage.delete();
+                            message.channel.send("Successfully deleted role menu.");
 
-                                        // remove role menu from database and cache
-                                        RoleMenu.deleteOne({ messageID: cachedRoleMenu.messageID }).catch((err) => {
-                                            console.error("Couldn't delete role menu from database: ", err);
-                                        });
-                                        client.databaseCache.roleMenus.delete(cachedRoleMenu.messageID);
-                                    }).catch(err => {
-                                        console.error("rolemenu remove command create log channel error: ", err);
-                                        if (message.deletable) message.delete();
-                                        if (roleMenuMessage.deletable) roleMenuMessage.delete();
+                            if (settings.logChannel.enabled) {
+                                // Log activity
+                                if (message.guild.channels.cache.some(channel => channel.id === settings.logChannel.channelID)) {
+                                    const logEmbed = new MessageEmbed()
+                                        .setColor("RED")
+                                        .setFooter(message.member.displayName, message.author.displayAvatarURL())
+                                        .setTimestamp()
+                                        .setTitle("Removed Role Menu")
+                                        .setDescription(stripIndents`**\\> Removed by: ${message.member}**`);
 
-                                        // remove role menu from database and cache
-                                        RoleMenu.deleteOne({ messageID: cachedRoleMenu.messageID }).catch((err) => {
-                                            console.error("Couldn't delete role menu from database: ", err);
-                                        });
-                                        client.databaseCache.roleMenus.delete(cachedRoleMenu.messageID);
-                                    });;
+                                    const logChannel = message.guild.channels.cache.find(channel => channel.id === settings.logChannel.channelID);
+
+                                    logChannel.send(logEmbed).catch((err) => {
+                                        // Most likely don't have permissions to type
+                                        message.channel.send(`I don't have permission to log this in the configured log channel. Please give me permission to write messages there, or use \`${settings.prefix}config logChannel\` to change it.`);
+                                    });
+                                } else { // channel was removed, disable logging in settings
+                                    client.updateGuild(message.guild, {
+                                        logChannel: {
+                                            enabled: false,
+                                            channelID: null
+                                        }
+                                    });
                                 }
-                            } else { // Channel already exists
-                                const logChannel = message.guild.channels.cache.find(channel => channel.name === settings.logChannel);
-
-                                logChannel.send(logEmbed);
-                                if (message.deletable) message.delete();
-                                if (roleMenuMessage.deletable) roleMenuMessage.delete();
-                                // remove role menu from database and cache
-                                RoleMenu.deleteOne({ messageID: cachedRoleMenu.messageID }).catch((err) => {
-                                    console.error("Couldn't delete role menu from database: ", err);
-                                });
-                                client.databaseCache.roleMenus.delete(cachedRoleMenu.messageID);
                             }
                             break;
                         } case CANCEL: {
