@@ -17,7 +17,7 @@
                     img.round.align-center(alt=guild.name, src=guild.iconURL({ size: 64, dynamic: true }))
                 else
                     span
-                        p.abbr.text-center #{guild.nameAcronym}
+                        p.abbr.text-center #{guild.nameAcronym.slice(0, 2)}
 
 
     a(href="/invite")
