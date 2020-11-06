@@ -64,7 +64,7 @@ section#generalModule.module.css-transitions-only-after-page-load
                                 label Welcome message
                                 textarea#welcomeMessage.form-control(type="text" name="welcomeMessage" maxlength="100" required disabled=!savedGuild.welcomeMessage.enabled) #{savedGuild.welcomeMessage.welcomeMessage}
                                 .invalid-feedback Please enter a welcome message!
-                                small Use {{member}} or {{server}} for variable messages!
+                                small Use #[strong {{member}}] or #[strong {{server}}] for variable messages!
                             div
                                 label Welcome channel
                                 select#welcomeMessageChannel.form-control(name="welcomeMessageChannel" required disabled=!savedGuild.welcomeMessage.enabled)
