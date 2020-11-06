@@ -138,18 +138,27 @@ module.exports = {
             if (!choice) return;
         }
 
+        let song;
         if (!songInfo) { // User entered a regular video link
             songInfo = await ytdl.getInfo(args[0]).catch((err) => {
                 console.error("ytdl.getInfo error: ", err);
 
                 return message.channel.send(`There was an error playing this song. Try again and if this issue persists, please contact my creator ${process.env.OWNERNAME}${process.env.OWNERTAG}.`);
             });
+            
+            song = {
+                title: songInfo.videoDetails.title,
+                url: songInfo.videoDetails.video_url,
+                isLive: songInfo.videoDetails.isLiveContent
+            };
+        } else {
+            song = {
+                title: songInfo.title,
+                url: songInfo.video_url,
+                isLive: false
+            };
         }
-        const song = {
-            title: songInfo.title,
-            url: songInfo.video_url,
-            isLive: songInfo.player_response.videoDetails.isLiveContent
-        };
+        
         await queueSong(client, message, song).catch((err) => {
             return message.channel.send(`There was an error playing this song. Try again and if this issue persists, please contact my creator ${process.env.OWNERNAME}${process.env.OWNERTAG}.`);
         });
