@@ -18,8 +18,8 @@ html(lang="en")
                     header.text-center.pt-4
                         .large-icon.bg-white.round
                             img.round(src=user.avatarUrl(128), alt=user.username)
-                        h4.pt-2 #{user.username}
-                            span.text-muted #{`#${user.discriminator.toString().padStart(4, "0")}`}
+                        h4.pt-2.mb-0(style="word-wrap: normal;") #{user.username}
+                        span.text-muted #{`#${user.discriminator.toString().padStart(4, "0")}`}
 
                 .col.mh-100.overflow-auto.pl-0
                     .row.module.justify-content-center

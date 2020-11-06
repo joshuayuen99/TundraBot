@@ -112,12 +112,12 @@ router.put("/servers/:id/:module", validateGuild, async (req, res) => {
             }
 
             // Log channel
-            settings.logChannel = {};
-            if (req.body.logChannelEnabled) {
-                settings.logChannel.enabled = true;
-                settings.logChannel.channelID = req.body.logChannelChannel;
+            settings.logMessages = {};
+            if (req.body.logMessagesEnabled) {
+                settings.logMessages.enabled = true;
+                settings.logMessages.channelID = req.body.logMessagesChannel;
             } else {
-                settings.logChannel.enabled = false;
+                settings.logMessages.enabled = false;
             }
 
             // Welcome message
