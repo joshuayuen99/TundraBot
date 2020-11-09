@@ -3,9 +3,9 @@ const { stripIndents } = require("common-tags");
 
 module.exports = {
     name: "help",
-    aliases: ["h"],
+    aliases: ["h, commands"],
     category: "info",
-    description: "Returns all commands, or one specific command info.",
+    description: "Returns all commands, or detailed info about a specific command.",
     usage: "help [command | alias]",
     /**
      * @param {import("discord.js").Client} client Discord Client instance
@@ -41,6 +41,15 @@ function getAll(client, message, settings) {
     
         return message.channel.send(embedMsg.setDescription(info));
         */
+    client.categories.sort((a, b) => {
+        const catgeoryOrder = ["info", "moderation", "music", "utility", "fun"];
+
+        if (!catgeoryOrder.includes(a)) return 1;
+        else if (!catgeoryOrder.includes(b)) return -1;
+
+        return catgeoryOrder.indexOf(a) - catgeoryOrder.indexOf(b);
+    });
+
     client.categories.forEach(category => {
         if (category != "ownerCommands") {
             embedMsg.addField(stripIndents`**${category[0].toUpperCase() + category.slice(1)}**`, commands(category), true);
@@ -48,7 +57,6 @@ function getAll(client, message, settings) {
     });
 
     embedMsg.addField("Detailed usage", `Type \`${settings.prefix}help <command>\` to get detailed information about the given command.`);
-
 
     return message.channel.send(embedMsg);
 }

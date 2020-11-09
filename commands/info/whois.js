@@ -54,16 +54,21 @@ module.exports = {
                     **\\>** [${activity.details}](${activity.url})`);
                     break;
                 case "LISTENING":
-                    embedMsg.addField(`Listening to ${activity.name}`, stripIndents`**\\>** ${activity.details}
-                    **\\>** ${activity.state}`);
+                    embedMsg.addField(`Listening to ${activity.name}`, stripIndents`**\\> Song:** ${activity.details}
+                    **\\> Artist:** ${activity.state}`);
                     break;
                 case "WATCHING":
                     embedMsg.addField("Watching", stripIndents`**\\>** ${activity.name}`);
                     break;
                 case "CUSTOM_STATUS":
                     let statusString = "";
-                    if(activity.emoji) statusString += activity.emoji.name;
-                    if(activity.name !== "Custom Status") statusString += ` ${activity.name}`;
+                    if(activity.emoji) {
+                        statusString += activity.emoji.name;
+                        if (activity.state) {
+                            statusString += ` ${activity.state}`;
+                        }
+                    }
+                    else statusString += activity.state;
                     embedMsg.addField("Custom status", stripIndents`**\\>** ${statusString}`);
                     break;
                 default:

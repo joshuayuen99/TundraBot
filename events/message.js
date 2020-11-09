@@ -83,13 +83,13 @@ module.exports = async (client, message) => {
     // Sent in a blacklisted channel
     if (settings.blacklistedChannelIDs.includes(message.channel.id)) return;
     // Did not contain the command prefix
-    if (!message.content.startsWith(settings.prefix)) return;
+    if (!message.content.trim().startsWith(settings.prefix)) return;
     if (!message.member) message.member = await message.guild.members.fetch(message.member);
 
     // If we are waiting on a response from this member, skip the regular command handler
     if (client.waitingResponse.has(message.author.id)) return;
 
-    const messageArray = message.content.split(" ");
+    const messageArray = message.content.replace(/\s\s+/g, " ").split(" ");
     const cmd = messageArray[0].slice(settings.prefix.length).toLowerCase();
     const args = messageArray.slice(1);
 
@@ -99,10 +99,9 @@ module.exports = async (client, message) => {
     if (!command) command = client.commands.get(client.aliases.get(cmd));    // If the command was not found, check aliases
 
     if (command) {
-        try {
-            command.run(client, message, args, settings);
-        } catch (err) {
-            console.error("Error running command: ", err);
-        }
+        command.run(client, message, args, settings)
+            .catch((err) => {
+                console.error("Error running command: ", err);
+            });
     }
 };
