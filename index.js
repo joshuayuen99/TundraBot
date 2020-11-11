@@ -2,12 +2,6 @@ const { Client, Collection } = require("discord.js");
 const dotenv = require("dotenv");
 const fs = require("fs");
 
-const checkPolls = require("./helpers/checkPolls");
-const checkEvents = require("./helpers/checkEvents");
-const loadRoleMenus = require("./helpers/loadRoleMenus");
-const loadMemberSoundEffects = require("./helpers/loadMemberSoundEffects");
-const cacheMembers = require("./helpers/cacheMembers");
-
 function setup() {
     const result = dotenv.config({
         path: __dirname + "/.env"
@@ -71,14 +65,7 @@ function setup() {
     client.databaseCache.soundEffects = new Collection();
     client.databaseCache.memberSoundEffects = new Collection();
 
-    client.login(process.env.DISCORDTOKEN)
-        .then(() => {
-            checkPolls.init(client);
-            checkEvents.init(client);
-            loadRoleMenus.init(client);
-            loadMemberSoundEffects.init(client);
-            cacheMembers.init(client);
-        });
+    client.login(process.env.DISCORDTOKEN);
 
     // Start dashboard server
     require("./dashboard/server");
