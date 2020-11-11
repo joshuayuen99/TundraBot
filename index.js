@@ -71,7 +71,14 @@ function setup() {
     client.databaseCache.soundEffects = new Collection();
     client.databaseCache.memberSoundEffects = new Collection();
 
-    client.login(process.env.DISCORDTOKEN);
+    client.login(process.env.DISCORDTOKEN)
+        .then(() => {
+            checkPolls.init(client);
+            checkEvents.init(client);
+            loadRoleMenus.init(client);
+            loadMemberSoundEffects.init(client);
+            cacheMembers.init(client);
+        });
 
     // Start dashboard server
     require("./dashboard/server");
@@ -81,17 +88,11 @@ function setup() {
         require("node-fetch")(process.env.DASHBOARD_URL);
         console.log("Reviving");
     }, 25 * 60 * 1000);
-
-    checkPolls.init(client);
-    checkEvents.init(client);
-    loadRoleMenus.init(client);
-    loadMemberSoundEffects.init(client);
-    cacheMembers.init(client);
 }
 
 // if there is an unhandledRejection, log them
 process.on("unhandledRejection", (err) => {
-	console.error("unhandledRejection:\n", err);
+    console.error("unhandledRejection:\n", err);
 });
 
 setup();
