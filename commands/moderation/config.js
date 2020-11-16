@@ -48,10 +48,10 @@ module.exports = {
                 break;
             }
             case "logchannel": {
-                let logChannel = message.guild.channels.cache.find(channel => channel.id === settings.logChannel.channelID);
+                let logChannel = message.guild.channels.cache.find(channel => channel.id === settings.logMessages.channelID);
 
                 if (!newSetting) {
-                    if (!settings.logChannel.enabled || !logChannel) { // disabled
+                    if (!settings.logMessages.enabled || !logChannel) { // disabled
                         message.channel.send(`Current channel for logging: \`None\`.`);
                     } else {
                         message.channel.send(`Current channel for logging: ${logChannel}`);
@@ -78,7 +78,7 @@ module.exports = {
 
                     const updatedSettings = await client.getGuild(message.guild);
 
-                    message.channel.send(`Log channel updated to: <#${updatedSettings.logChannel.channelID}>`);
+                    message.channel.send(`Log channel updated to: <#${updatedSettings.logMessages.channelID}>`);
                 } catch (err) {
                     message.reply(`An error occurred: **${err.message}**`)
                     console.error(err);

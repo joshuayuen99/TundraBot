@@ -817,9 +817,9 @@ async function removeRoleMenu(client, message, args, settings) {
 
                             message.channel.send("Successfully deleted role menu.");
 
-                            if (settings.logChannel.enabled) {
+                            if (settings.logMessages.enabled) {
                                 // Log activity
-                                if (message.guild.channels.cache.some(channel => channel.id === settings.logChannel.channelID)) {
+                                if (message.guild.channels.cache.some(channel => channel.id === settings.logMessages.channelID)) {
                                     const logEmbed = new MessageEmbed()
                                         .setColor("RED")
                                         .setFooter(message.member.displayName, message.author.displayAvatarURL())
@@ -827,7 +827,7 @@ async function removeRoleMenu(client, message, args, settings) {
                                         .setTitle("Removed Role Menu")
                                         .setDescription(stripIndents`**\\> Removed by: ${message.member}**`);
 
-                                    const logChannel = message.guild.channels.cache.find(channel => channel.id === settings.logChannel.channelID);
+                                    const logChannel = message.guild.channels.cache.find(channel => channel.id === settings.logMessages.channelID);
 
                                     logChannel.send(logEmbed).catch((err) => {
                                         // Most likely don't have permissions to type
@@ -884,9 +884,9 @@ async function removeRoleMenu(client, message, args, settings) {
 
                             message.channel.send("Successfully deleted role menu.");
 
-                            if (settings.logChannel.enabled) {
+                            if (settings.logMessages.enabled) {
                                 // Log activity
-                                if (message.guild.channels.cache.some(channel => channel.id === settings.logChannel.channelID)) {
+                                if (message.guild.channels.cache.some(channel => channel.id === settings.logMessages.channelID)) {
                                     const logEmbed = new MessageEmbed()
                                         .setColor("RED")
                                         .setFooter(message.member.displayName, message.author.displayAvatarURL())
@@ -894,7 +894,7 @@ async function removeRoleMenu(client, message, args, settings) {
                                         .setTitle("Removed Role Menu")
                                         .setDescription(stripIndents`**\\> Removed by: ${message.member}**`);
 
-                                    const logChannel = message.guild.channels.cache.find(channel => channel.id === settings.logChannel.channelID);
+                                    const logChannel = message.guild.channels.cache.find(channel => channel.id === settings.logMessages.channelID);
 
                                     logChannel.send(logEmbed).catch((err) => {
                                         // Most likely don't have permissions to type

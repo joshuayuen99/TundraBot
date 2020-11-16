@@ -129,10 +129,10 @@ module.exports = {
                 mMember.roles.add(role);
                 if (mMember.voice.channel) mMember.voice.setMute(true);
 
-                if (settings.logChannel.enabled) {
+                if (settings.logMessages.enabled) {
                     // Log activity
-                    if (message.guild.channels.cache.some(channel => channel.id === settings.logChannel.channelID)) {
-                        const logChannel = message.guild.channels.cache.find(channel => channel.id === settings.logChannel.channelID);
+                    if (message.guild.channels.cache.some(channel => channel.id === settings.logMessages.channelID)) {
+                        const logChannel = message.guild.channels.cache.find(channel => channel.id === settings.logMessages.channelID);
 
                         logChannel.send(embedMsg).catch((err) => {
                             // Most likely don't have permissions to type
