@@ -1,3 +1,7 @@
+const { MessageEmbed } = require("discord.js");
+const moment = require("moment");
+const ms = require("ms");
+
 module.exports = {
     name: "eval",
     category: "ownerCommands",
@@ -10,29 +14,72 @@ module.exports = {
      * @param {Object} settings guild settings
     */
     run: async (client, message, args, settings) => {
-        if (message.author.id !== client.config.owner) return;
+        if (message.author.id !== process.env.OWNERID) return;
 
+        const code = args.join(" ");
+
+        const startTime = moment();
+        
         try {
-            const code = args.join(" ");
             let evaled = await eval(code);
+
+            const endTime = moment();
+
+            const resultType = typeof evaled;
 
             if (typeof evaled !== "string") evaled = require("util").inspect(evaled);
 
             const clean = await client.clean(client, evaled);
-            // 6 graves, 2 characters for "js"
-            const messageLength = 3 + clean.length + 2 + 3;
-            if (messageLength > 2000) {
-                return message.channel.send("Output exceeded 2000 characters. Exported to the attached file", {
+
+            const description = `Input:\n\`\`\`js\n${code}\`\`\`\nOutput:\n\`\`\`js\n${clean}\`\`\`\nType: \`${resultType}\` | Took: \`${ms(endTime - startTime)}\``;
+
+            // Exceeds max embed message description length
+            if (description.length > 2048) {
+                message.channel.send("Output exceeded 2048 characters. Exported to the attached file.", {
                     files: [{
-                        attachment: Buffer.from(clean),
+                        attachment: Buffer.from(description),
                         name: "output.txt"
                     }]
                 });
-            }
+                return;
+            } else {
+                const embedMsg = new MessageEmbed()
+                    .setColor("GREEN")
+                    .setTitle("Eval Success!")
+                    .setDescription(description)
+                    .setTimestamp(endTime);
 
-            return message.channel.send(clean, { code: "js" });
+                message.channel.send(embedMsg);
+                return;
+            }
         } catch (err) {
-            message.channel.send(`ERROR\n\n${await client.clean(client, err)}\n`, { code: "bash" });
+            const endTime = moment();
+
+            const resultType = err.constructor.name;
+
+            const clean = await client.clean(client, err);
+
+            const description = `Input:\n\`\`\`js\n${code}\`\`\`\nOutput:\n\`\`\`js\n${clean}\`\`\`\nType: \`${resultType}\` | Took: \`${ms(endTime - startTime)}\``;
+
+            // Exceeds max embed message description length
+            if (description.length > 2048) {
+                message.channel.send("Output exceeded 2048 characters. Exported to the attached file.", {
+                    files: [{
+                        attachment: Buffer.from(description),
+                        name: "output.txt"
+                    }]
+                });
+                return;
+            } else {
+                const embedMsg = new MessageEmbed()
+                    .setColor("RED")
+                    .setTitle("Eval Error!")
+                    .setDescription(description)
+                    .setTimestamp(endTime);
+
+                message.channel.send(embedMsg);
+                return;
+            }
         }
     }
 };
