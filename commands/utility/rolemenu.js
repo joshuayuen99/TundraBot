@@ -835,7 +835,7 @@ async function removeRoleMenu(client, message, args, settings) {
                                     });
                                 } else { // channel was removed, disable logging in settings
                                     client.updateGuild(message.guild, {
-                                        logChannel: {
+                                        logMessages: {
                                             enabled: false,
                                             channelID: null
                                         }
@@ -902,7 +902,7 @@ async function removeRoleMenu(client, message, args, settings) {
                                     });
                                 } else { // channel was removed, disable logging in settings
                                     client.updateGuild(message.guild, {
-                                        logChannel: {
+                                        logMessages: {
                                             enabled: false,
                                             channelID: null
                                         }

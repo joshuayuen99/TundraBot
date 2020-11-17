@@ -70,7 +70,7 @@ module.exports = {
 
                 try {
                     await client.updateGuild(message.guild, {
-                        logChannel: {
+                        logMessages: {
                             enabled: true,
                             channelID: newLogChannel.id
                         }

@@ -140,7 +140,7 @@ module.exports = {
                         });
                     } else { // channel was removed, disable logging in settings
                         client.updateGuild(message.guild, {
-                            logChannel: {
+                            logMessages: {
                                 enabled: false,
                                 channelID: null
                             }
