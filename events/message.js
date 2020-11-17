@@ -101,7 +101,7 @@ module.exports = async (client, message) => {
     if (command) {
         command.run(client, message, args, settings)
             .catch((err) => {
-                console.error("Error running command: ", err);
+                console.error(`Error running command <${cmd}>: `, err);
             });
     }
 };

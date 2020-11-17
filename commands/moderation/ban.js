@@ -1,13 +1,14 @@
 const { MessageEmbed } = require("discord.js");
 const { stripIndents } = require("common-tags");
-const { createChannel, promptMessage } = require("../../functions.js");
-const { defaultGuildSettings: defaults } = require("../../config");
+const { promptMessage } = require("../../functions.js");
+const ms = require("ms");
+const Member = require("../../models/Member.js");
 
 module.exports = {
     name: "ban",
     category: "moderation",
-    description: "Bans the member.",
-    usage: "ban <mention | id> <reason>",
+    description: "Bans the member for an optional duration between 0-14 days.",
+    usage: "ban <mention | id> [duration] [reason]",
     /**
      * @param {import("discord.js").Client} client Discord Client instance
      * @param {import("discord.js").Message} message Discord Message object
@@ -21,24 +22,29 @@ module.exports = {
 
         // No user specified
         if (!args[0]) {
-            await message.reply("Please provide a user to ban.")
-                .then(m => m.delete({
-                    timeout: 5000
-                }));
-            if (message.deletable) message.delete();
+            await message.reply(`Usage: \`${module.exports.usage}\``);
             return;
         }
 
-        // No reason specified
-        if (!args[1]) {
-            await message.reply("Please provide a reason to ban.")
-                .then(m => m.delete({
-                    timeout: 5000
-                }));
-            if (message.deletable) message.delete();
-            return;
+        let duration;
+        let reason;
+        if (args[1]) {
+            if (ms(args[1])) { // duration specified
+                if (ms(args[1]) > 0 && ms(args[1]) <= ms("14 days")) {
+                    duration = ms(args[1]);
+                    reason = args.splice(2).join(" ");
+                } else { // outside range
+                    await message.reply("The duration must be between 0-14 days.");
+                    return;
+                }
+            } else { // duration not specified
+                duration = 0;
+                reason = args.splice(1).join(" ");
+            }
+        } else {
+            duration = 0;
+            reason = "";
         }
-        const reason = args.splice(1).join(" ");
 
         // No author permission
         if (!message.member.hasPermission("BAN_MEMBERS")) {
@@ -102,53 +108,24 @@ module.exports = {
             return;
         }
 
-        const embedMsg = new MessageEmbed()
-            .setColor("RED")
-            .setThumbnail(bMember.user.displayAvatarURL())
-            .setFooter(message.member.displayName, message.author.displayAvatarURL())
-            .setTimestamp()
-            .setDescription(stripIndents`**\\> Banned member:** ${bMember} (${bMember.id})
-            **\\> Banned by:** ${message.member}
-            **\\> Reason:** ${reason}`);
-
         const promptEmbed = new MessageEmbed()
             .setColor("GREEN")
-            .setAuthor("This verification becomes invalid after 30s")
-            .setDescription(`Do you want to ban ${bMember}?`)
+            .setFooter("This verification becomes invalid after 30s")
+            .setDescription(`Do you want to ban ${bMember} ${duration == 0 ? "permanently" : `for ${ms(duration, { long: true })}`}?`)
         message.channel.send(promptEmbed).then(async msg => {
             const emoji = await promptMessage(msg, message.author, 30, [CONFIRM, CANCEL]);
 
             if (emoji === CONFIRM) {
                 msg.delete();
 
-                if (settings.logMessages.enabled) {
-                    // Log activity
-                    if (message.guild.channels.cache.some(channel => channel.id === settings.logMessages.channelID)) {
-                        const logChannel = message.guild.channels.cache.find(channel => channel.id === settings.logMessages.channelID);
-
-                        logChannel.send(embedMsg).catch((err) => {
-                            // Most likely don't have permissions to type
-                            message.channel.send(`I don't have permission to log this in the configured log channel. Please give me permission to write messages there, or use \`${settings.prefix}config logChannel\` to change it.`);
-                        });
-                        if (message.deletable) message.delete();
-                    } else { // channel was removed, disable logging in settings
-                        client.updateGuild(message.guild, {
-                            logChannel: {
-                                enabled: false,
-                                channelID: null
-                            }
-                        });
-                    }
-                }
-
-                // Ban after logging
-                bMember.ban(reason)
-                    .catch(err => {
-                        if (err) {
-                            message.channel.send("Well... something went wrong?");
-                            if (message.deletable) message.delete();
-                        }
-                    });
+                await module.exports.ban(client, message.guild, settings, bMember, reason, duration, message.member).then(() => {
+                    if (message.deletable) message.delete();
+                }).catch((err) => {
+                    message.channel.send("Well... something went wrong?");
+                    console.error(err);
+                    if (message.deletable) message.delete();
+                });
+                return;
             } else if (emoji === CANCEL) {
                 msg.delete();
                 if (message.deletable) message.delete();
@@ -159,5 +136,154 @@ module.exports = {
                     }));
             }
         })
+    },
+    /**
+     * @param {import("discord.js").Client} client Discord Client instance
+     * @param {import("discord.js").Guild} guild Discord Guild object
+     * @param {Object} settings guild settings
+     * @param {import("discord.js").GuildMember} bMember Discord Guild member to ban
+     * @param {String} reason ban reason
+     * @param {Number} duration duration to ban for (0 for permanent)
+     * @param {import("discord.js").GuildMember} moderator Discord Guild member that issued the ban
+    */
+    ban: async (client, guild, settings, bMember, reason, duration, moderator) => {
+        bMember.ban({
+            reason: reason,
+        }).then(() => {
+            if (settings.logMessages.enabled) {
+                // Log activity
+                if (guild.channels.cache.some(channel => channel.id === settings.logMessages.channelID)) {
+                    const logChannel = guild.channels.cache.find(channel => channel.id === settings.logMessages.channelID);
+
+                    const embedMsg = new MessageEmbed()
+                        .setColor("RED")
+                        .setTitle("Ban")
+                        .setThumbnail(bMember.user.displayAvatarURL())
+                        .setTimestamp();
+
+                    if (moderator) {
+                        if (reason) {
+                            embedMsg.setDescription(stripIndents`**\\> Banned member:** ${bMember} (${bMember.id})
+                            **\\> Banned by:** ${moderator}
+                            **\\> Duration:** ${duration == 0 ? "Forever" : ms(duration, { long: true })}
+                            **\\> Reason:** ${reason}`);
+                        } else {
+                            embedMsg.setDescription(stripIndents`**\\> Banned member:** ${bMember} (${bMember.id})
+                            **\\> Banned by:** ${moderator}
+                            **\\> Duration:** ${duration == 0 ? "Forever" : ms(duration, { long: true })}
+                            **\\> Reason:** \`Not specified\``);
+                        }
+                        embedMsg.setFooter(moderator.displayName, moderator.user.displayAvatarURL());
+                    } else {
+                        if (reason) {
+                            embedMsg.setDescription(stripIndents`**\\> Banned member:** ${bMember} (${bMember.id})
+                            **\\> Duration:** ${duration == 0 ? "Forever" : ms(duration, { long: true })}
+                            **\\> Reason:** ${reason}`);
+                        } else {
+                            embedMsg.setDescription(stripIndents`**\\> Banned member:** ${bMember} (${bMember.id})
+                            **\\> Duration:** ${duration == 0 ? "Forever" : ms(duration, { long: true })}
+                            **\\> Reason:** \`Not specified\``);
+                        }
+                    }
+
+                    logChannel.send(embedMsg).catch((err) => {
+                        // Most likely don't have permissions to type
+                        //message.channel.send(`I don't have permission to log this in the configured log channel. Please give me permission to write messages there, or use \`${settings.prefix}config logChannel\` to change it.`);
+                        console.error("Error sending ban log message: ", err);
+                    });
+                } else { // channel was removed, disable logging in settings
+                    client.updateGuild(guild, {
+                        logMessages: {
+                            enabled: false,
+                            channelID: null
+                        }
+                    });
+                }
+            }
+
+            if (duration > 0) {
+                const endTime = Date.now() + duration;
+
+                Member.ban({ userID: bMember.user.id, guildID: guild.id }, endTime).then(() => {
+                    setTimeout(() => {
+                        module.exports.unban(client, guild, settings, bMember.user.id, "Ban duration expired", null);
+                    }, duration);
+                }).catch((err) => {
+                    console.error("Error saving unban time to database: ", err);
+                });
+            }
+        });
+
+        return;
+    },
+    /**
+     * @param {import("discord.js").Client} client Discord Client instance
+     * @param {import("discord.js").Guild} guild Discord Guild object
+     * @param {Object} settings guild settings
+     * @param {import("discord.js").GuildMember} bUserID Discord User ID to unban
+     * @param {String} reason unban reason
+     * @param {import("discord.js").GuildMember} moderator Discord Guild member that issued the ban
+    */
+    unban: async (client, guild, settings, bUserID, reason, moderator) => {
+        guild.members.unban(bUserID, reason).then((user) => {
+            if (settings.logMessages.enabled) {
+                // Log activity
+                if (guild.channels.cache.some(channel => channel.id === settings.logMessages.channelID)) {
+                    const logChannel = guild.channels.cache.find(channel => channel.id === settings.logMessages.channelID);
+
+                    const embedMsg = new MessageEmbed()
+                        .setColor("GREEN")
+                        .setTitle("Unban")
+                        .setTimestamp();
+
+                    if (moderator) {
+                        if (reason) {
+                            embedMsg.setDescription(stripIndents`**\\> Unbanned member:** ${user} (${user.id})
+                            **\\> Unbanned by:** ${moderator}
+                            **\\> Reason:** ${reason}`);
+                        } else {
+                            embedMsg.setDescription(stripIndents`**\\> Unbanned member:** ${user} (${user.id})
+                            **\\> Unbanned by:** ${moderator}
+                            **\\> Reason:** \`Not specified\``);
+                        }
+                        embedMsg.setFooter(moderator.displayName, moderator.user.displayAvatarURL());
+                    } else {
+                        if (reason) {
+                            embedMsg.setDescription(stripIndents`**\\> Unbanned member:** ${user} (${user.id})
+                            **\\> Reason:** ${reason}`);
+                        } else {
+                            embedMsg.setDescription(stripIndents`**\\> Unbanned member:** ${user} (${user.id})
+                            **\\> Reason:** \`Not specified\``);
+                        }
+                    }
+
+                    logChannel.send(embedMsg).catch((err) => {
+                        // Most likely don't have permissions to type
+                        //message.channel.send(`I don't have permission to log this in the configured log channel. Please give me permission to write messages there, or use \`${settings.prefix}config logChannel\` to change it.`);
+                        console.error("Error sending ban log message: ", err);
+                    });
+                } else { // channel was removed, disable logging in settings
+                    client.updateGuild(guild, {
+                        logMessages: {
+                            enabled: false,
+                            channelID: null
+                        }
+                    });
+                }
+            }
+
+            Member.unban({ userID: user.id, guildID: guild.id }).catch((err) => {
+                console.error("Error unbanning member in database: ", err);
+            });
+        }).catch((err) => {
+            console.error("Error unbanning user: ", err);
+
+            // Remove ban from database
+            Member.unban({ userID: bUserID, guildID: guild.id }).catch((err) => {
+                console.error("Error unbanning member in database: ", err);
+            });
+        });
+
+        return;
     }
 };

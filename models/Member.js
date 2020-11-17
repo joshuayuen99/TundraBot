@@ -7,7 +7,25 @@ const memberSchema = mongoose.Schema({
     settings: {
         joinSoundEffect: { type: mongoose.Schema.Types.ObjectId, ref: "SoundEffect", default: null },
         leaveSoundEffect: { type: mongoose.Schema.Types.ObjectId, ref: "SoundEffect", default: null },
+    },
+    ban: {
+        endTime: { type: Date, default: null }
     }
 });
+
+/**
+ * @param {Object} condition { userID, guildID } to ban
+ * @param {Date} endTime when the ban ends
+ */
+memberSchema.statics.ban = function ban(condition, endTime) {
+    return this.findOneAndUpdate(condition, { "ban.endTime": endTime }, { upsert: true });
+}
+
+/**
+ * @param {Object} condition { userID, guildID } to unban
+ */
+memberSchema.statics.unban = function unban(condition) {
+    return this.findOneAndUpdate(condition, { "ban.endTime": null });
+}
 
 module.exports = mongoose.model("Member", memberSchema);

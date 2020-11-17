@@ -3,6 +3,7 @@ const checkEvents = require("../helpers/checkEvents");
 const loadRoleMenus = require("../helpers/loadRoleMenus");
 const loadMemberSoundEffects = require("../helpers/loadMemberSoundEffects");
 const cacheMembers = require("../helpers/cacheMembers");
+const checkBans = require("../helpers/checkBans");
 
 /**
  * @param {import("discord.js").Client} client Discord Client instance
@@ -21,6 +22,7 @@ module.exports = (client) => {
     loadRoleMenus.init(client);
     loadMemberSoundEffects.init(client);
     cacheMembers.init(client);
+    checkBans.init(client);
 
     console.log(`I'm now online, my name is ${client.user.tag}`);
 };

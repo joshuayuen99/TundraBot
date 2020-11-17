@@ -140,7 +140,7 @@ module.exports = {
                 const embedMsg = new MessageEmbed()
                     .setColor("RED")
                     .setThumbnail(kMember.user.displayAvatarURL())
-                    .setTimestamp()
+                    .setTimestamp();
 
                 if (kicker) {
                     embedMsg.setDescription(stripIndents`**\\> Kicked member:** ${kMember} (${kMember.id})
@@ -159,7 +159,7 @@ module.exports = {
                 });
             } else { // channel was removed, disable logging in settings
                 client.updateGuild(guild, {
-                    logChannel: {
+                    logMessages: {
                         enabled: false,
                         channelID: null
                     }
@@ -167,7 +167,7 @@ module.exports = {
             }
         }
 
-        // Kick after potentially creating the logging channel to avoid it happening twice (once in member leave event as well)
+        // Kick after logging
         kMember.kick(reason);
 
         return;
