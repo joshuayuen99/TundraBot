@@ -6,7 +6,7 @@ module.exports = {
     name: "kick",
     category: "moderation",
     description: "Kicks the member.",
-    usage: "kick <mention | <id> <reason>",
+    usage: "kick <mention | id> <reason>",
     /**
      * @param {import("discord.js").Client} client Discord Client instance
      * @param {import("discord.js").Message} message Discord Message object
@@ -21,21 +21,13 @@ module.exports = {
 
         // No user specified
         if (!args[0]) {
-            await message.reply("Please provide a user to kick.")
-                .then(m => m.delete({
-                    timeout: 5000
-                }));
-            if (message.deletable) message.delete();
+            await message.reply(`Usage: \`${module.exports.usage}\``);
             return;
         }
 
         // No reason specified
         if (!args[1]) {
-            await message.reply("Please provide a reason to kick.")
-                .then(m => m.delete({
-                    timeout: 5000
-                }));
-            if (message.deletable) message.delete();
+            await message.reply(`Usage: \`${module.exports.usage}\``);
             return;
         }
         const reason = args.splice(1).join(" ");
@@ -102,18 +94,9 @@ module.exports = {
             return;
         }
 
-        const embedMsg = new MessageEmbed()
-            .setColor("RED")
-            .setThumbnail(kMember.user.displayAvatarURL())
-            .setFooter(message.member.displayName, message.author.displayAvatarURL())
-            .setTimestamp()
-            .setDescription(stripIndents`**\\> Kicked member:** ${kMember} (${kMember.id})
-            **\\> Kicked by:** ${message.member}
-            **\\> Reason:** ${reason}`);
-
         const promptEmbed = new MessageEmbed()
             .setColor("GREEN")
-            .setAuthor("This verification becomes invalid after 30s")
+            .setFooter("This verification becomes invalid after 30s")
             .setDescription(`Do you want to kick ${kMember}?`)
         message.channel.send(promptEmbed).then(async msg => {
             const emoji = await promptMessage(msg, message.author, 30, [CONFIRM, CANCEL]);
@@ -121,35 +104,13 @@ module.exports = {
             if (emoji === CONFIRM) {
                 msg.delete();
 
-                if (settings.logMessages.enabled) {
-                    // Log activity
-                    if (message.guild.channels.cache.some(channel => channel.id === settings.logMessages.channelID)) {
-                        const logChannel = message.guild.channels.cache.find(channel => channel.id === settings.logMessages.channelID);
-
-                        logChannel.send(embedMsg).catch((err) => {
-                            // Most likely don't have permissions to type
-                            message.channel.send(`I don't have permission to log this in the configured log channel. Please give me permission to write messages there, or use \`${settings.prefix}config logChannel\` to change it.`);
-                        });
-                        if (message.deletable) message.delete();
-                    } else { // channel was removed, disable logging in settings
-                        client.updateGuild(message.guild, {
-                            logChannel: {
-                                enabled: false,
-                                channelID: null
-                            }
-                        });
-                    }
-                }
-
-                // Kick after potentially creating the logging channel to avoid it happening twice (once in member leave event as well)
-                kMember.kick(reason)
-                    .catch(err => {
-                        if (err) {
-                            message.channel.send("Well... something went wrong?");
-                            if (message.deletable) message.delete();
-                        }
-                    });
-
+                await module.exports.kick(client, message.guild, settings, kMember, reason, message.member).then(() => {
+                    if (message.deletable) message.delete();
+                }).catch((err) => {
+                    message.channel.send("Well... something went wrong?");
+                    console.error(err);
+                    if (message.deletable) message.delete();
+                });
                 return;
             } else if (emoji === CANCEL) {
                 msg.delete();
@@ -161,5 +122,54 @@ module.exports = {
                     }));
             }
         })
+    },
+    /**
+     * @param {import("discord.js").Client} client Discord Client instance
+     * @param {import("discord.js").Guild} guild Discord Guild object
+     * @param {Object} settings guild settings
+     * @param {import("discord.js").GuildMember} kMember Discord Guild member to kick
+     * @param {String} reason kick reason
+     * @param {import("discord.js").GuildMember} kicker Discord Guild member that issued the kick
+    */
+    kick: async (client, guild, settings, kMember, reason, kicker) => {
+        if (settings.logMessages.enabled) {
+            // Log activity
+            if (guild.channels.cache.some(channel => channel.id === settings.logMessages.channelID)) {
+                const logChannel = guild.channels.cache.find(channel => channel.id === settings.logMessages.channelID);
+                
+                const embedMsg = new MessageEmbed()
+                    .setColor("RED")
+                    .setThumbnail(kMember.user.displayAvatarURL())
+                    .setTimestamp()
+
+                if (kicker) {
+                    embedMsg.setDescription(stripIndents`**\\> Kicked member:** ${kMember} (${kMember.id})
+                    **\\> Kicked by:** ${kicker}
+                    **\\> Reason:** ${reason}`)
+                    .setFooter(kicker.displayName, kicker.user.displayAvatarURL());
+                } else {
+                    embedMsg.setDescription(stripIndents`**\\> Kicked member:** ${kMember} (${kMember.id})
+                    **\\> Reason:** ${reason}`);
+                }
+
+                logChannel.send(embedMsg).catch((err) => {
+                    // Most likely don't have permissions to type
+                    //message.channel.send(`I don't have permission to log this in the configured log channel. Please give me permission to write messages there, or use \`${settings.prefix}config logChannel\` to change it.`);
+                    console.error("Error sending kick log message: ", err);
+                });
+            } else { // channel was removed, disable logging in settings
+                client.updateGuild(guild, {
+                    logChannel: {
+                        enabled: false,
+                        channelID: null
+                    }
+                });
+            }
+        }
+
+        // Kick after potentially creating the logging channel to avoid it happening twice (once in member leave event as well)
+        kMember.kick(reason);
+
+        return;
     }
 };
