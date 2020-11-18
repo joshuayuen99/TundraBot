@@ -139,6 +139,7 @@ module.exports = {
                 
                 const embedMsg = new MessageEmbed()
                     .setColor("RED")
+                    .setTitle("Kick")
                     .setThumbnail(kMember.user.displayAvatarURL())
                     .setTimestamp();
 
