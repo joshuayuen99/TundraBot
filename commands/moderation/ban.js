@@ -8,7 +8,7 @@ module.exports = {
     name: "ban",
     category: "moderation",
     description: "Bans the member for an optional duration between 0-14 days.",
-    usage: "ban <mention | id> [duration] [reason]",
+    usage: "ban <mention | id> [duration (#s/m/h/d)] [reason]",
     /**
      * @param {import("discord.js").Client} client Discord Client instance
      * @param {import("discord.js").Message} message Discord Message object
@@ -272,6 +272,7 @@ module.exports = {
                 }
             }
 
+            // Remove ban from database
             Member.unban({ userID: user.id, guildID: guild.id }).catch((err) => {
                 console.error("Error unbanning member in database: ", err);
             });

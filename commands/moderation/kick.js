@@ -129,47 +129,46 @@ module.exports = {
      * @param {Object} settings guild settings
      * @param {import("discord.js").GuildMember} kMember Discord Guild member to kick
      * @param {String} reason kick reason
-     * @param {import("discord.js").GuildMember} kicker Discord Guild member that issued the kick
+     * @param {import("discord.js").GuildMember} moderator Discord Guild member that issued the kick
     */
-    kick: async (client, guild, settings, kMember, reason, kicker) => {
-        if (settings.logMessages.enabled) {
-            // Log activity
-            if (guild.channels.cache.some(channel => channel.id === settings.logMessages.channelID)) {
-                const logChannel = guild.channels.cache.find(channel => channel.id === settings.logMessages.channelID);
-                
-                const embedMsg = new MessageEmbed()
-                    .setColor("RED")
-                    .setTitle("Kick")
-                    .setThumbnail(kMember.user.displayAvatarURL())
-                    .setTimestamp();
+    kick: async (client, guild, settings, kMember, reason, moderator) => {
+        kMember.kick(reason).then(() => {
+            if (settings.logMessages.enabled) {
+                // Log activity
+                if (guild.channels.cache.some(channel => channel.id === settings.logMessages.channelID)) {
+                    const logChannel = guild.channels.cache.find(channel => channel.id === settings.logMessages.channelID);
 
-                if (kicker) {
-                    embedMsg.setDescription(stripIndents`**\\> Kicked member:** ${kMember} (${kMember.id})
-                    **\\> Kicked by:** ${kicker}
-                    **\\> Reason:** ${reason}`)
-                    .setFooter(kicker.displayName, kicker.user.displayAvatarURL());
-                } else {
-                    embedMsg.setDescription(stripIndents`**\\> Kicked member:** ${kMember} (${kMember.id})
-                    **\\> Reason:** ${reason}`);
-                }
+                    const embedMsg = new MessageEmbed()
+                        .setColor("RED")
+                        .setTitle("Kick")
+                        .setThumbnail(kMember.user.displayAvatarURL())
+                        .setTimestamp();
 
-                logChannel.send(embedMsg).catch((err) => {
-                    // Most likely don't have permissions to type
-                    //message.channel.send(`I don't have permission to log this in the configured log channel. Please give me permission to write messages there, or use \`${settings.prefix}config logChannel\` to change it.`);
-                    console.error("Error sending kick log message: ", err);
-                });
-            } else { // channel was removed, disable logging in settings
-                client.updateGuild(guild, {
-                    logMessages: {
-                        enabled: false,
-                        channelID: null
+                    if (moderator) {
+                        embedMsg.setDescription(stripIndents`**\\> Kicked member:** ${kMember} (${kMember.id})
+                        **\\> Kicked by:** ${moderator}
+                        **\\> Reason:** ${reason}`)
+                            .setFooter(moderator.displayName, moderator.user.displayAvatarURL());
+                    } else {
+                        embedMsg.setDescription(stripIndents`**\\> Kicked member:** ${kMember} (${kMember.id})
+                        **\\> Reason:** ${reason}`);
                     }
-                });
-            }
-        }
 
-        // Kick after logging
-        kMember.kick(reason);
+                    logChannel.send(embedMsg).catch((err) => {
+                        // Most likely don't have permissions to type
+                        //message.channel.send(`I don't have permission to log this in the configured log channel. Please give me permission to write messages there, or use \`${settings.prefix}config logChannel\` to change it.`);
+                        console.error("Error sending kick log message: ", err);
+                    });
+                } else { // channel was removed, disable logging in settings
+                    client.updateGuild(guild, {
+                        logMessages: {
+                            enabled: false,
+                            channelID: null
+                        }
+                    });
+                }
+            }
+        });
 
         return;
     }
