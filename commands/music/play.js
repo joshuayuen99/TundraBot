@@ -78,6 +78,7 @@ module.exports = {
             }
         }
 
+        // Search phrase
         var songInfo;
         if (!ytdl.validateURL(args[0])) {
             let { results, pageInfo } = await search(args.join(" "), videoOpts).catch((err) => {
@@ -118,10 +119,15 @@ module.exports = {
                 // Check user choice
                 switch (response.content) {
                     case `${settings.prefix}play 1`:
+                    case `${settings.prefix}p 1`:
                     case `${settings.prefix}play 2`:
+                    case `${settings.prefix}p 2`:
                     case `${settings.prefix}play 3`:
+                    case `${settings.prefix}p 3`:
                     case `${settings.prefix}play 4`:
+                    case `${settings.prefix}p 4`:
                     case `${settings.prefix}play 5`:
+                    case `${settings.prefix}p 5`:
                         //songInfo = await ytdl.getInfo(results[parseInt(response.content) - 1].link);
                         songInfo = videoDetailsList[parseInt(response.content.charAt(response.content.length - 1)) - 1];
                         songInfo.title = he.decode(songInfo.title);
@@ -149,7 +155,8 @@ module.exports = {
             song = {
                 title: songInfo.videoDetails.title,
                 url: songInfo.videoDetails.video_url,
-                isLive: songInfo.videoDetails.isLiveContent
+                isLive: songInfo.videoDetails.isLiveContent,
+                duration: songInfo.videoDetails.lengthSeconds
             };
         } else {
             song = {
@@ -196,10 +203,18 @@ async function createQueue(client, message, song) {
     client.musicGuilds.set(message.guild.id, queueConstruct);
 
     try {
-        let connection = await queueConstruct.voiceChannel.join();
-        connection.voice.setSelfDeaf(true);
-        queueConstruct.connection = connection;
-        play(client, message.guild.id);
+        await queueConstruct.voiceChannel.join()
+            .then((connection) => {
+                connection.voice.setSelfDeaf(true);
+                queueConstruct.connection = connection;
+                play(client, message.guild.id);
+            })
+            .catch((err) => {
+                console.error("Couldn't connect to the channel...", err);
+                client.musicGuilds.delete(message.guild.id);
+                message.channel.send("Couldn't connect to the channel...");
+                return;
+        });
     }
     catch (err) {
         console.error("Failed to join channel and start playing music: ", err);
