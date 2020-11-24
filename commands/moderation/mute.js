@@ -1,6 +1,6 @@
 const { MessageEmbed } = require("discord.js");
 const { stripIndents } = require("common-tags");
-const { createChannel, promptMessage } = require("../../functions.js");
+const { promptMessage } = require("../../functions.js");
 const ms = require("ms");
 const Member = require("../../models/Member.js");
 const { unmute } = require("./unmute.js");
@@ -200,7 +200,7 @@ module.exports = {
                         console.error("Error sending mute log message: ", err);
                     });
                 } else { // channel was removed, disable logging in settings
-                    client.updateGuild(message.guild, {
+                    client.updateGuild(guild, {
                         logMessages: {
                             enabled: false,
                             channelID: null

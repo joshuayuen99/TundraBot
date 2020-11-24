@@ -1,7 +1,7 @@
 const { MessageEmbed } = require("discord.js");
 const { Event } = require("../../models");
 const { stripIndents } = require("common-tags");
-const { createChannel, formatDateLong, waitResponse } = require("../../functions.js");
+const { waitResponse } = require("../../functions.js");
 const moment = require("moment");
 const momentTimezone = require("moment-timezone");
 
@@ -413,7 +413,7 @@ module.exports = {
                     respondent.send(personalEmbed);
                 }
             } else { // Let everyone know
-                for (userID of event.participants) {
+                for (const userID of event.participants) {
                     let respondent = await client.users.fetch(userID);
                     if (respondent.bot) continue;
 

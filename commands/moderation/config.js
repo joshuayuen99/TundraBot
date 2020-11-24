@@ -18,7 +18,7 @@ module.exports = {
     */
     run: async (client, message, args, settings) => {
         if (!message.member.hasPermission("MANAGE_GUILD")) {
-            return message.reply("Sorry but you don't have the permissions to change the configs. You must have the \`Manage Server\` permission.");
+            return message.reply("Sorry but you don't have the permissions to change the configs. You must have the `Manage Server` permission.");
         }
 
         let setting;
@@ -86,8 +86,6 @@ module.exports = {
                 break;
             }
             case "soundboardrole": {
-                let soundboardRole = message.guild.roles.cache.find(role => role.id === settings.soundboardRoleID);
-
                 if (!newSetting) {
                     return message.channel.send(`Current role for using most soundboard commands: <@&${settings.soundboardRoleID}>`);
                 }
@@ -110,8 +108,6 @@ module.exports = {
                         soundboardRoleID: newRole.id
                     });
 
-                    const updatedSettings = await client.getGuild(message.guild);
-
                     message.channel.send(`Soundboard role updated to: ${newRole}`);
                 } catch (err) {
                     message.reply(`An error occurred: **${err.message}**`)
@@ -128,6 +124,7 @@ module.exports = {
                 }
 
                 message.channel.send(settingsString).catch((err) => {
+                    console.error("Error displaying current config: ", err);
                     message.channel.send("Error displaying current config.");
                 });
                 break;

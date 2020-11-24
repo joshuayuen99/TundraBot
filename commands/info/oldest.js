@@ -1,5 +1,5 @@
 const { MessageEmbed } = require("discord.js");
-const { getMember, formatDate, formatDateLong } = require("../../functions.js");
+const { formatDate, formatDateLong } = require("../../functions.js");
 const { stripIndents } = require("common-tags");
 
 module.exports = {

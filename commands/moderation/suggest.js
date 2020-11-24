@@ -1,5 +1,4 @@
 const { MessageEmbed } = require("discord.js");
-const { config } = require("dotenv");
 const { stripIndents } = require("common-tags");
 
 module.exports = {

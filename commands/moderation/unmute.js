@@ -1,7 +1,5 @@
 const { MessageEmbed } = require("discord.js");
 const { stripIndents } = require("common-tags");
-const { createChannel, promptMessage } = require("../../functions.js");
-const ms = require("ms");
 const Member = require("../../models/Member.js");
 
 module.exports = {
@@ -22,7 +20,7 @@ module.exports = {
             return;
         }
 
-        reason = args.splice(1).join(" ");
+        const reason = args.splice(1).join(" ");
 
         // No author permission
         if (!message.member.hasPermission("MUTE_MEMBERS" | "MANAGE_ROLES")) {
@@ -122,7 +120,7 @@ module.exports = {
                         console.error("Error sending unmute log message: ", err);
                     });
                 } else { // channel was removed, disable logging in settings
-                    client.updateGuild(message.guild, {
+                    client.updateGuild(guild, {
                         logMessages: {
                             enabled: false,
                             channelID: null

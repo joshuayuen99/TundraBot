@@ -1,5 +1,4 @@
 const { MessageEmbed } = require("discord.js");
-const { formatDateLong } = require("../../functions.js");
 
 module.exports = {
     name: "invite",

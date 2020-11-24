@@ -7,7 +7,7 @@ module.exports = {
      */
     async init(client) {
         RoleMenu.find().then(async (roleMenus) => {
-            for (roleMenu of roleMenus) {
+            for (const roleMenu of roleMenus) {
                 // Fetch role menu message if not cached already
                 if (!client.guilds.cache.has(roleMenu.guildID)) await client.guilds.fetch(roleMenu.guildID).catch((err) => {
                     console.error("Guild was deleted?: ", err);

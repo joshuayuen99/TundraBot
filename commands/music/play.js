@@ -1,7 +1,7 @@
 const { MessageEmbed } = require("discord.js");
 const { stripIndents } = require("common-tags");
 const ytdl = require("ytdl-core");
-const { waitResponse, shuffle, jDecode } = require("../../functions");
+const { waitResponse, shuffle, } = require("../../functions");
 const search = require("youtube-search");
 const axios = require("axios");
 const he = require("he");
@@ -57,7 +57,7 @@ module.exports = {
             playlistId = playlistId[0];
             let results = await axios.get("https://www.googleapis.com/youtube/v3/playlistItems?" + "part=contentDetails%2Csnippet" + "&maxResults=50" + "&playlistId=" + playlistId + "&key=" + process.env.YOUTUBEKEY);
             if (results.data.items.length != 0) {
-                for (videoInfo of results.data.items) {
+                for (const videoInfo of results.data.items) {
                     const song = {
                         title: videoInfo.snippet.title,
                         url: "https://www.youtube.com/watch?v=" + videoInfo.contentDetails.videoId
@@ -87,7 +87,7 @@ module.exports = {
 
             let videos = "";
             let videoDetailsList = [];
-            for (i = 0; i < results.length; i++) {
+            for (let i = 0; i < results.length; i++) {
                 let videoDurationString = await getVideoDuration(results[i].id);
 
                 videos = videos + `**${i + 1}:** ${he.decode(results[i].title)} **(${videoDurationString})**\n`;
@@ -167,6 +167,8 @@ module.exports = {
         }
         
         await queueSong(client, message, song).catch((err) => {
+            console.error("Error queueing song: ", err);
+
             return message.channel.send(`There was an error playing this song. Try again and if this issue persists, please contact my creator ${process.env.OWNERNAME}${process.env.OWNERTAG}.`);
         });
         serverQueue = client.musicGuilds.get(message.guild.id);

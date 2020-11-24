@@ -6,7 +6,7 @@ module.exports = {
     name: "settimezone",
     aliases: ["setz"],
     category: "utility",
-    description: "Changes a user's timezone. Used for time specific commands such as \`event\`.",
+    description: "Changes a user's timezone. Used for time specific commands such as `event`.",
     usage: stripIndents`settimezone [timezone]
     eg. settimezone America/New_York`,
     /**

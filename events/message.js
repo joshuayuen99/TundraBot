@@ -31,7 +31,6 @@ module.exports = async (client, message) => {
     // If the message was not sent in a server
     if (!message.guild) {
         const owner = await client.users.fetch(process.env.OWNERID);
-        const messageAuthor = message.author;
         const messageContent = message.content;
         const messageAttachments = message.attachments;
 

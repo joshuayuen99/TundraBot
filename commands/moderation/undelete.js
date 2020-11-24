@@ -1,13 +1,12 @@
 const { MessageEmbed } = require("discord.js");
-const { stripIndents } = require("common-tags");
-const { Guild, Channel, Message } = require("../../models");
+const { Message } = require("../../models");
 const moment = require("moment");
 
 module.exports = {
     name: "undelete",
     aliases: ["ud"],
     category: "moderation",
-    description: "Displays the user's last \`n\` (default 10) deleted messages in the server, or the specified channel if one was given. The \`all\`, \`id\`, and \`mention\` options can only be used by members with the \`Manage Messages\` permission and will display the last \`n\` deleted messages of the specified member(s) in the server/specified channel.",
+    description: "Displays the user's last `n` (default 10) deleted messages in the server, or the specified channel if one was given. The `all`, `id`, and `mention` options can only be used by members with the `Manage Messages` permission and will display the last `n` deleted messages of the specified member(s) in the server/specified channel.",
     usage: `undelete [all | id | mention] [-c channel] [-n number of messages]
     ex. undelete @TundraBot -c #general -n 5`,
     /**
@@ -23,7 +22,7 @@ module.exports = {
             if (args[args.indexOf("-c") + 1]) {
                 targetChannelName = args[args.indexOf("-c") + 1];
             } else {
-                message.channel.send("Please specify a channel after \`-c\`. Defaulting to all channels.");
+                message.channel.send("Please specify a channel after `-c`. Defaulting to all channels.");
             }
         }
         let targetChannel;
@@ -55,20 +54,20 @@ module.exports = {
             if (args[0].toLowerCase() === "all") {
                 if (message.member.hasPermission("MANAGE_MESSAGES")) {
                 } else {
-                    await message.channel.send("Only members with the \`Manage Messages\` permission can see deleted messages from other users.");
+                    await message.channel.send("Only members with the `Manage Messages` permission can see deleted messages from other users.");
                 }
                 // If they give an ID
             } else if (message.guild.members.cache.some(member => member == args[0])) {
                 if (message.member.hasPermission("MANAGE_MESSAGES")) {
                     searchOptions.userID = args[0];
                 } else {
-                    await message.channel.send("Only members with the \`Manage Messages\` permission can see deleted messages from other users.");
+                    await message.channel.send("Only members with the `Manage Messages` permission can see deleted messages from other users.");
                 }
             } else if (message.mentions && message.mentions.users.size > 0) {
                 if (message.member.hasPermission("MANAGE_MESSAGES")) {
                     searchOptions.userID = message.mentions.users.first().id;
                 } else {
-                    await message.channel.send("Only members with the \`Manage Messages\` permission can see deleted messages from other users.");
+                    await message.channel.send("Only members with the `Manage Messages` permission can see deleted messages from other users.");
                 }
             } else { // Default to only searching for their deleted messages
                 searchOptions.userID = message.author.id;
@@ -86,7 +85,7 @@ module.exports = {
                     message.channel.send("I couldn't recognize that as a number. Defaulting to 10 messages.");
                 }
             } else {
-                message.channel.send("Please specify a number of messages to search for after \`-n\`. Defaulting to 10.");
+                message.channel.send("Please specify a number of messages to search for after `-n`. Defaulting to 10.");
             }
         }
 

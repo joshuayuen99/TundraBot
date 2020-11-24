@@ -8,7 +8,7 @@ module.exports = {
     name: "soundboard",
     aliases: ["sb"],
     category: "music",
-    description: "Plays a soundboard effect in the current channel. For more details on how to add an effect, use \`soundboard add\`.",
+    description: "Plays a soundboard effect in the current channel. For more details on how to add an effect, use `soundboard add`.",
     usage: stripIndents`soundboard
     soundboard play <effect name>
     soundboard add <effect name> <link | file attachment>
@@ -125,7 +125,7 @@ async function setJoinEffect(client, message, args, settings) {
     }
 
     // Get sound effect from database
-    soundEffectObject = await SoundEffect.findOne({
+    let soundEffectObject = await SoundEffect.findOne({
         name: effectName,
         guildID: message.guild.id
     }).catch((err) => {
@@ -207,7 +207,7 @@ async function setLeaveEffect(client, message, args, settings) {
     }
 
     // Get sound effect from database
-    soundEffectObject = await SoundEffect.findOne({
+    let soundEffectObject = await SoundEffect.findOne({
         name: effectName,
         guildID: message.guild.id
     }).catch((err) => {
@@ -346,7 +346,7 @@ async function deleteEffect(client, message, args, settings) {
     let effectName = args[args.indexOf("delete") + 1];
 
     if (!effectName) {
-        message.channel.send("Format: \`soundboard delete <effect name>\`");
+        message.channel.send("Format: `soundboard delete <effect name>`");
         return;
     }
 
@@ -383,7 +383,7 @@ async function renameEffect(client, message, args, settings) {
     let newEffectName = args[args.indexOf("rename") + 2];
 
     if (!effectName || !newEffectName) {
-        message.channel.send("Format: \`soundboard rename <effect name> <new effect name>\`");
+        message.channel.send("Format: `soundboard rename <effect name> <new effect name>`");
         return;
     }
 
@@ -435,11 +435,9 @@ async function playEffectCommand(client, message, args, settings) {
     let effectName = args[args.indexOf("play") + 1];
 
     if (!effectName) {
-        message.channel.send("Format: \`soundboard play <effect name>\`");
+        message.channel.send("Format: `soundboard play <effect name>`");
         return;
     }
-
-    var serverQueue = client.soundboardGuilds.get(message.guild.id);
 
     // Not in a voice channel
     if (!message.member.voice.channel) {
@@ -506,7 +504,7 @@ async function createQueue(client, guildID, voiceChannel, effect) {
     catch (err) {
         console.error("Failed to join channel and start playing music: ", err);
         client.soundboardGuilds.delete(guildID);
-        return message.channel.send(err);
+        return;
     }
 }
 

@@ -1,5 +1,5 @@
 const { MessageEmbed } = require("discord.js");
-const { createChannel, formatDateLong } = require("../functions.js");
+const { formatDateLong } = require("../functions.js");
 
 /**
  * @param {import("discord.js").Client} client Discord Client instance

@@ -8,7 +8,7 @@ module.exports = {
     aliases: ["rm"],
     category: "utility",
     description: "Starts an interactive wizard to create a rolemenu. Using the update flag allows you to update a pre-existing role menu by providing the message ID. Delete or remove will delete a role menu.",
-    usage: "rolemenu [update/edit \`messageID\` [delete/remove \`messageID\`]]",
+    usage: "rolemenu [update/edit `messageID` [delete/remove `messageID`]]",
     /**
      * @param {import("discord.js").Client} client Discord Client instance
      * @param {import("discord.js").Message} message Discord Message object
@@ -18,7 +18,7 @@ module.exports = {
     run: async (client, message, args, settings) => {
         // No permissions
         if (!message.member.hasPermission("MANAGE_ROLES")) {
-            await message.channel.send("Sorry, you don't have the \`MANAGE_ROLES\` permission.");
+            await message.channel.send("Sorry, you don't have the `MANAGE_ROLES` permission.");
 
             return;
         }
@@ -135,7 +135,7 @@ async function createRoleMenu(client, message, args, settings) {
         let retry = false;
         const emojiQueryEmbed = new MessageEmbed()
             .setTitle("Create Role Menu")
-            .setDescription("What's the emoji to use? Type \`done\` to finish.")
+            .setDescription("What's the emoji to use? Type `done` to finish.")
             .setColor("YELLOW");
 
         let queryMessage = await message.channel.send(emojiQueryEmbed);
@@ -260,7 +260,7 @@ async function updateRoleMenu(client, message, args, settings) {
                 const roleMenuMessage = client.channels.cache.get(cachedRoleMenu.channelID).messages.cache.get(cachedRoleMenu.messageID);
 
                 let roleMenuString = "";
-                for (option of cachedRoleMenu.roleOptions) {
+                for (const option of cachedRoleMenu.roleOptions) {
                     roleMenuString += `${option.emoji}: <@&${option.roleID}>\n`;
                 }
 
@@ -315,7 +315,7 @@ async function updateRoleMenu(client, message, args, settings) {
                                 let retry = false;
                                 const emojiQueryEmbed = new MessageEmbed()
                                     .setTitle("Update Role Menu")
-                                    .setDescription("What's the emoji to use? Type \`done\` to finish.")
+                                    .setDescription("What's the emoji to use? Type `done` to finish.")
                                     .setColor("YELLOW");
 
                                 let queryMessage = await message.channel.send(emojiQueryEmbed);
@@ -433,10 +433,9 @@ async function updateRoleMenu(client, message, args, settings) {
 
                             let isDone = false;
                             while (!isDone) {
-                                let retry = false;
                                 const emojiQueryEmbed = new MessageEmbed()
                                     .setTitle("Update Role Menu")
-                                    .setDescription("What's the emoji to remove? Type \`done\` to finish.")
+                                    .setDescription("What's the emoji to remove? Type `done` to finish.")
                                     .setColor("YELLOW");
 
                                 let queryMessage = await message.channel.send(emojiQueryEmbed);
@@ -485,7 +484,7 @@ async function updateRoleMenu(client, message, args, settings) {
                                 }
 
                                 roleMenuString = "";
-                                for (option of roleOptions) {
+                                for (const option of roleOptions) {
                                     roleMenuString += `${option.emoji}: <@&${option.roleID}>\n`;
                                 }
 
@@ -514,7 +513,7 @@ async function updateRoleMenu(client, message, args, settings) {
                 return;
             }
         } else { // no argument after "update"
-            message.channel.send("Please specify a message ID after \`update\`.");
+            message.channel.send("Please specify a message ID after `update`.");
 
             return;
         }
@@ -525,7 +524,7 @@ async function updateRoleMenu(client, message, args, settings) {
                 const roleMenuMessage = client.channels.cache.get(cachedRoleMenu.channelID).messages.cache.get(cachedRoleMenu.messageID);
 
                 let roleMenuString = "";
-                for (option of cachedRoleMenu.roleOptions) {
+                for (const option of cachedRoleMenu.roleOptions) {
                     roleMenuString += `${option.emoji}: <@&${option.roleID}>\n`;
                 }
 
@@ -580,7 +579,7 @@ async function updateRoleMenu(client, message, args, settings) {
                                 let retry = false;
                                 const emojiQueryEmbed = new MessageEmbed()
                                     .setTitle("Update Role Menu")
-                                    .setDescription("What's the emoji to use? Type \`done\` to finish.")
+                                    .setDescription("What's the emoji to use? Type `done` to finish.")
                                     .setColor("YELLOW");
 
                                 let queryMessage = await message.channel.send(emojiQueryEmbed);
@@ -698,10 +697,9 @@ async function updateRoleMenu(client, message, args, settings) {
 
                             let isDone = false;
                             while (!isDone) {
-                                let retry = false;
                                 const emojiQueryEmbed = new MessageEmbed()
                                     .setTitle("Update Role Menu")
-                                    .setDescription("What's the emoji to remove? Type \`done\` to finish.")
+                                    .setDescription("What's the emoji to remove? Type `done` to finish.")
                                     .setColor("YELLOW");
 
                                 let queryMessage = await message.channel.send(emojiQueryEmbed);
@@ -750,7 +748,7 @@ async function updateRoleMenu(client, message, args, settings) {
                                 }
 
                                 roleMenuString = "";
-                                for (option of roleOptions) {
+                                for (const option of roleOptions) {
                                     roleMenuString += `${option.emoji}: <@&${option.roleID}>\n`;
                                 }
 
@@ -779,7 +777,7 @@ async function updateRoleMenu(client, message, args, settings) {
                 return;
             }
         } else { // no argument after "edit"
-            message.channel.send("Please specify a message ID after \`edit\`.");
+            message.channel.send("Please specify a message ID after `edit`.");
 
             return;
         }
@@ -854,7 +852,7 @@ async function removeRoleMenu(client, message, args, settings) {
                 });
             }
         } else { // no argument after "delete"
-            message.channel.send("Please specify a message ID after \`delete\`.");
+            message.channel.send("Please specify a message ID after `delete`.");
 
             return;
         }
@@ -921,7 +919,7 @@ async function removeRoleMenu(client, message, args, settings) {
                 });
             }
         } else { // no argument after "remove"
-            message.channel.send("Please specify a message ID after \`remove\`.");
+            message.channel.send("Please specify a message ID after `remove`.");
 
             return;
         }

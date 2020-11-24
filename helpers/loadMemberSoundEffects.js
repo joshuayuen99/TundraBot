@@ -15,7 +15,7 @@ module.exports = {
                     "settings.leaveSoundEffect": { $exists: true }
                 }]
         }).then(async (members) => {
-            for (member of members) {
+            for (const member of members) {
                 let joinSoundEffect = await SoundEffect.findById(member.settings.joinSoundEffect).catch((err) => {
                     console.error("Error loading sound effect from loadMemberSoundEffect.js", err);
                 });

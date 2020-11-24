@@ -74,6 +74,7 @@ function getCommand(client, message, input) {
         return message.channel.send(embedMsg.setColor("RED").setDescription(info));
     }
 
+    let info;
     if (cmd.name) info = `**Command name**: \`${cmd.name}\``;    // Command name
     if (cmd.aliases) info += `\n**Aliases**: ${cmd.aliases.map(a => `\`${a}\``).join(", ")}`; // Aliases for the command
     if (cmd.description) info += `\n**Description**: ${cmd.description}`;    // Description of the command

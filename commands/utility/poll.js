@@ -1,7 +1,7 @@
 const { MessageEmbed } = require("discord.js");
 const { Poll } = require("../../models");
 const { stripIndents } = require("common-tags");
-const { createChannel, formatDateLong, waitResponse } = require("../../functions.js");
+const { waitResponse } = require("../../functions.js");
 const ms = require("ms");
 const GraphemeSplitter = require("grapheme-splitter");
 
@@ -85,7 +85,8 @@ module.exports = {
                 for (const reaction of emojisList) {
                     msg.react(reaction).catch((err) => {
                         msg.channel.send("I had trouble reacting with those emojis... removing the poll.");
-                        if(msg.deletable) msg.delete();
+                        if (msg.deletable) msg.delete();
+                        if (pollCreationMessage.deletable) pollCreationMessage.delete();
                         console.error("setReactions for poll command error: ", err);
                         throw err;
                     });
@@ -135,7 +136,7 @@ module.exports = {
 
         let participants = [];
         let resultsString = "";
-        for(emoji of poll.emojisList) {
+        for(const emoji of poll.emojisList) {
             const reactions = msg.reactions.cache.get(emoji);
             if(reactions) {
                 await reactions.users.fetch();
@@ -168,7 +169,7 @@ module.exports = {
             .addField("Created by", pollCreatorMember);
 
         // Let everyone who responded know the results
-        for (user of participants) {
+        for (const user of participants) {
             if(user == poll.creatorID) continue;
             let respondent = await client.users.fetch(user);
             if (respondent.bot) continue;
