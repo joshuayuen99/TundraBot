@@ -7,9 +7,9 @@ module.exports = {
     name: "undelete",
     aliases: ["ud"],
     category: "moderation",
-    description: "Displays the user's last \`n\` (default 10) deleted messages in the specified channel. The \`all\`, \`id\`, and \`mention\` options can only be used by members with the \`Manage Messages\` permission and will display the last \`n\` deleted messages of the specified member(s) in that channel.",
+    description: "Displays the user's last \`n\` (default 10) deleted messages in the server, or the specified channel. The \`all\`, \`id\`, and \`mention\` options can only be used by members with the \`Manage Messages\` permission and will display the last \`n\` deleted messages of the specified member(s) in the server/specified channel.",
     usage: `undelete [all | id | mention] [-c channel] [-n number of messages]
-    ex. undelete @TundraBot -c #general`,
+    ex. undelete @TundraBot -c #general -n 5`,
     /**
      * @param {import("discord.js").Client} client Discord Client instance
      * @param {import("discord.js").Message} message Discord Message object
@@ -23,7 +23,7 @@ module.exports = {
             if (args[args.indexOf("-c") + 1]) {
                 targetChannelName = args[args.indexOf("-c") + 1];
             } else {
-                message.channel.send("Please specify a channel after \`-c\`. Defaulting to the current channel.");
+                message.channel.send("Please specify a channel after \`-c\`. Defaulting to all channels.");
             }
         }
         let targetChannel;
@@ -38,59 +38,42 @@ module.exports = {
         }
 
         // If the user specified a channel, search that
-        if (!targetChannel) { // Default to searching current channel
+        if (!targetChannel) { // Default to searching all channels
             if (targetChannelName) {
-                await message.channel.send("I couldn't find that channel! Please make sure you typed it correctly. Defaulting to the current channel.");
+                await message.channel.send("I couldn't find that channel! Please make sure you typed it correctly. Defaulting to all channels.");
             }
-            targetChannel = message.channel;
+            // targetChannel = message.channel;
         }
 
-        let searchOptions;
+        let searchOptions = {
+            deleted: true
+        };
+        if (targetChannel) searchOptions.channelID = targetChannel.id;
         if (args[0]) {
             // Give "all" option
             if (args[0].toLowerCase() === "all") {
                 if (message.member.hasPermission("MANAGE_MESSAGES")) {
-                    searchOptions = {
-                        channelID: message.channel.id,
-                        deleted: true
-                    };
                 } else {
                     await message.channel.send("Only members with the \`Manage Messages\` permission can see deleted messages from other users.");
                 }
                 // If they give an ID
             } else if (message.guild.members.cache.some(member => member == args[0])) {
                 if (message.member.hasPermission("MANAGE_MESSAGES")) {
-                    searchOptions = {
-                        channelID: message.channel.id,
-                        deleted: true,
-                        userID: args[0]
-                    };
+                    searchOptions.userID = args[0];
                 } else {
                     await message.channel.send("Only members with the \`Manage Messages\` permission can see deleted messages from other users.");
                 }
             } else if (message.mentions && message.mentions.users.size > 0) {
                 if (message.member.hasPermission("MANAGE_MESSAGES")) {
-                    searchOptions = {
-                        channelID: message.channel.id,
-                        deleted: true,
-                        userID: message.mentions.users.first().id
-                    }
+                    searchOptions.userID = message.mentions.users.first().id;
                 } else {
                     await message.channel.send("Only members with the \`Manage Messages\` permission can see deleted messages from other users.");
                 }
             } else { // Default to only searching for their deleted messages
-                searchOptions = {
-                    channelID: message.channel.id,
-                    deleted: true,
-                    userID: message.author.id
-                };
+                searchOptions.userID = message.author.id;
             }
         } else { // Default to only searching for their deleted messages
-            searchOptions = {
-                channelID: message.channel.id,
-                deleted: true,
-                userID: message.author.id
-            };
+            searchOptions.userID = message.author.id;
         }
 
         let messageLimit = 10;
@@ -107,7 +90,7 @@ module.exports = {
         }
 
         await Message.find(searchOptions, null, {
-            sort: { updatedAt: 1 },
+            sort: { updatedAt: -1 },
             limit: messageLimit
         }).exec((err, messages) => {
             if (err) return console.error("undelete find error: ", err);
@@ -123,8 +106,11 @@ module.exports = {
                 let messageText = savedMessage.text;
                 let editText = savedMessage.editedText;
                 let messageMember = message.guild.members.cache.find(member => member == savedMessage.userID);
+                let channel = `<#${savedMessage.channelID}>`;
 
-                deletedMessagesString += `**${timeSinceDeletion} (${messageDeleteTime.toString()})**\nAuthor: ${messageMember}\n`;
+                deletedMessagesString += `**[${deletedMessagesCount}] ${timeSinceDeletion} (${messageDeleteTime.toString()})**\nAuthor: ${messageMember}\n`;
+
+                if (!searchOptions.channelID) deletedMessagesString += `Channel: ${channel}\n`;
 
                 if (editText) {
                     deletedMessagesString += `Original message:\n\`${messageText}\`\n\n`;
@@ -146,24 +132,24 @@ module.exports = {
                 let searchOptionsMember = message.guild.members.cache.find(member => member == searchOptions.userID);
 
                 if (deletedMessagesCount == 0) {
-                    deletedMessagesString += `I couldn't find any deleted messages that I've saved from ${searchOptionsMember} in ${targetChannel}!`;
+                    deletedMessagesString += `I couldn't find any deleted messages that I've saved from ${searchOptionsMember} in ${searchOptions.channelID ? `${targetChannel}` : "this server"}!`;
                 }
 
-                headerString = `**Latest deleted messages from ${searchOptionsMember} in ${targetChannel}**\n\n`;
+                headerString = `**Latest deleted messages from ${searchOptionsMember} in ${searchOptions.channelID ? targetChannel : "this server"}**\n\n`;
             } else {
-                headerString = `**Latest deleted messages in ${targetChannel}**\n\n`;
+                headerString = `**Latest deleted messages in ${searchOptions.channelID ? targetChannel : "all channels"}**\n\n`;
 
                 if (deletedMessagesCount == 0) {
-                    deletedMessagesString += `I couldn't find any deleted messages that I've saved from this channel!`;
+                    deletedMessagesString += `I couldn't find any deleted messages that I've saved from ${searchOptions.channelID ? "this channel" : "this server"}!`;
                 }
             }
 
             embedMsg.setDescription(headerString + deletedMessagesString);
 
-            if (embedMsg.length > 2000) {
-                return message.channel.send("Output exceeded 2000 characters. Exported to the attached file", {
+            if (headerString.length + deletedMessagesString.length > 2048) {
+                return message.channel.send("Output exceeded 2048 characters. Exported to the attached file.", {
                     files: [{
-                        attachment: Buffer.from(embedMsg),
+                        attachment: Buffer.from(headerString + deletedMessagesString),
                         name: "output.txt"
                     }]
                 });
