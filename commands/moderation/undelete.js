@@ -7,7 +7,7 @@ module.exports = {
     name: "undelete",
     aliases: ["ud"],
     category: "moderation",
-    description: "Displays the user's last \`n\` (default 10) deleted messages in the server, or the specified channel. The \`all\`, \`id\`, and \`mention\` options can only be used by members with the \`Manage Messages\` permission and will display the last \`n\` deleted messages of the specified member(s) in the server/specified channel.",
+    description: "Displays the user's last \`n\` (default 10) deleted messages in the server, or the specified channel if one was given. The \`all\`, \`id\`, and \`mention\` options can only be used by members with the \`Manage Messages\` permission and will display the last \`n\` deleted messages of the specified member(s) in the server/specified channel.",
     usage: `undelete [all | id | mention] [-c channel] [-n number of messages]
     ex. undelete @TundraBot -c #general -n 5`,
     /**

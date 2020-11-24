@@ -4,9 +4,14 @@
 
 A personal Discord bot made in my free time and used by me and my friends. I've been developing it in chunks ever since November 2019, and still plan to continue improving it and adding new features moving forward. Updated for Discord.js v12.
 
+TundraBot features a [dashboard](https://tundrabot.herokuapp.com) for server admins and moderators for high levels of configuration and general stats about the server, with new features constantly being added!
+
+![Dashboard Statistics](/images/message_stats.png)
+![Dashboard General Configuration](/images/dashboard_general.png)
+
 Main features include playing music, server moderation, organizing events and polls, configurable role menus, configurable soundboard effects, and general info commands about the server and its members.
 
-[Check out my official website and dashboard!](https://tundrabot.herokuapp.com/)
+[Check out my official website and dashboard!](https://tundrabot.herokuapp.com)
 
 To add me to your server click [here](https://discord.com/api/oauth2/authorize?client_id=647196546492006423&permissions=309587062&scope=bot)!
 
@@ -146,6 +151,8 @@ You're done! All you need now is to copy the link at the bottom of the "Scopes" 
 
 # Commands
 
+For a full list of commands visit [my commands page](https://tundrabot.herokuapp.com/commands)!
+
 `<>`s in commands indicate required arguments.
 
 `[]`s in commands indicate optional arguments.
@@ -194,6 +201,8 @@ Soundboard commands are locked behind a configurable role (`config` command) to 
 ## Moderation
 My bot will automatically log whenever someone joins and leaves the server, along with when they first joined. Alongside this feature, my bot will provide logs for server admins whenever commands such as `ban`, `kick`, and `mute` are used, including information such as who issued the command and for what reason. These logs will be posted in a private admin channel that will be created automatically if it doesn't already exist. It will default to disallowing the @everyone role from being able to read it, thus allowing only members with Administrator permission to see it.
 
+- `Undelete [all | id | mention] [-c channel] [-n number of messages]` Displays the user's last `n` (default 10) deleted messages in the server, or the specified channel if one was given. The `all`, `id`, and `mention` options can only be used by members with the `Manage Messages` permission and will display the last `n` deleted messages of the specified member(s) in the server/specified channel.
+- `Unedit [all | id | mention] [-c channel] [-n number of messages]` Displays the history of the user's last `n` (default 10) edited messages in the server, or the specified channel. The `all`, `id`, and `mention` options can only be used by members with the `Manage Messages` permission and will display the history of the last `n` edited messages of the specified member(s) in the server/specified channel.
 - `Ban <mention | id> <reason>` Bans a member of the server and logs the reason to the admins.
 - `Kick <mention | id> <reason>` Kicks a member of the server and logs the reason to the admins.
 - `Mute <mention | id> <time (#s/m/h)>` Mutes a member of the server for the given amount of time, preventing them from typing in text channels and from talking in voice channels.
@@ -202,9 +211,17 @@ My bot will automatically log whenever someone joins and leaves the server, alon
 
 ## Utility
 
-- `Event` Creates an event that members of the server can sign up for, just provide the date and time! It gets updated in real-time whenever someone signs up for it, and automatically DM's each participant when the event starts. It allows you to set a limit for how many people can sign up, and keeps track of a waitlist of who is next in line in case someone drops out.
+- `Event` Creates an interactive event that members of the server can sign up for, just provide the date and time! It gets updated in real-time whenever someone signs up for it, and automatically DM's each participant when the event starts. It allows you to set a limit for how many people can sign up, and keeps track of a waitlist of who is next in line in case someone drops out.
+
+    ![Event](/images/scheduled_event.png)
+
 - `Poll` Creates a poll that members of the server can respond to! Input is given by reacting to the poll with emojis that the poll creator specifies (👍 and 👎 for example). The creator just needs to provide how long the poll should last and when the time comes, the poll will be automatically updated to show what the final results were. Each participant in the poll will also be DM'd with the final results.
+
 - `Rolemenu` Creates a role menu that members of the server can simply react to in order to get roles! Allows for editing/updating the role menu by adding or removing roles on the fly without needing to create an entire new one. Useful uses for this could be allowing members to assign name colors to themselves, or to assign roles for games that they're interested in getting @'d for.
+
+    ![Color role Menu](/images/role_menu_colors.png)
+    ![Games role Menu](/images/role_menu_games.png)
+
 - `RNG [min max]` Randomly picks a number between [min] and [max] if provided, or 0-100 otherwise.
 - `Emoji <emoji> [...emoji]` Gives the unicode for the entered emoji(s).
 
@@ -215,4 +232,4 @@ My bot will automatically log whenever someone joins and leaves the server, alon
 
 # Contributing
 
-Contributions of any kind are welcome! Please submit them to the repository via pull requests.
+Contributions of any kind are welcome! Please feel free to contact me on Discord (TundraBuddy#4650) or submit them to the repository via pull requests.
