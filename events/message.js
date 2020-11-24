@@ -63,7 +63,9 @@ module.exports = async (client, message) => {
 
         owner.send(embedMsg);
 
-        return message.channel.send(`Message my master ${process.env.OWNERNAME}${process.env.OWNERTAG} instead!`);
+        return;
+
+        // return message.channel.send(`Message my master ${process.env.OWNERNAME}${process.env.OWNERTAG} instead!`);
     }
 
     let settings;
