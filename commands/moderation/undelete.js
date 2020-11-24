@@ -46,7 +46,8 @@ module.exports = {
         }
 
         let searchOptions = {
-            deleted: true
+            deleted: true,
+            guildID: message.guild.id
         };
         if (targetChannel) searchOptions.channelID = targetChannel.id;
         if (args[0]) {

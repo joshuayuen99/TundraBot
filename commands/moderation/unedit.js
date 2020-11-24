@@ -46,7 +46,8 @@ module.exports = {
         }
 
         let searchOptions = {
-            "editedText.0": { "$exists": true }
+            "editedText.0": { "$exists": true },
+            guildID: message.guild.id
         };
         if (targetChannel) searchOptions.channelID = targetChannel.id;
         if (args[0]) {
