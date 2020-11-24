@@ -82,6 +82,13 @@ module.exports = async (client, message) => {
 
     // Sent in a blacklisted channel
     if (settings.blacklistedChannelIDs.includes(message.channel.id)) return;
+
+    // @TundraBot
+    if (message.content.trim() === `<@${client.user.id}>` || message.content.trim() === `<@!${client.user.id}>`) {
+        message.channel.send(`My prefix in this server is \`${settings.prefix}\``);
+        return;
+    }
+
     // Did not contain the command prefix
     if (!message.content.trim().startsWith(settings.prefix)) return;
     if (!message.member) message.member = await message.guild.members.fetch(message.member);
