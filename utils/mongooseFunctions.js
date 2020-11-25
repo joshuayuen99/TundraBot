@@ -277,7 +277,7 @@ module.exports = (client) => {
     
     client.updateEvent = async (messageID, participantObject) => {
         // we want to add new participants
-        if(participantObject.add) {
+        if (participantObject.add) {
             return await Event.findOneAndUpdate({ messageID: messageID }, {
                         $addToSet: { participants: participantObject.participant }
                     }).catch((err) => {

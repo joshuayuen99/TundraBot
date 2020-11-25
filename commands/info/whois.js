@@ -45,7 +45,7 @@ module.exports = {
 
         // User activities
         for (let activity of member.user.presence.activities) {
-            switch(activity.type) {
+            switch (activity.type) {
                 case "PLAYING":
                     embedMsg.addField("Playing", stripIndents`**\\>** ${activity.name}`);
                     break;
@@ -62,7 +62,7 @@ module.exports = {
                     break;
                 case "CUSTOM_STATUS":
                     let statusString = "";
-                    if(activity.emoji) {
+                    if (activity.emoji) {
                         statusString += activity.emoji.name;
                         if (activity.state) {
                             statusString += ` ${activity.state}`;

@@ -136,11 +136,11 @@ module.exports = {
 
         let participants = [];
         let resultsString = "";
-        for(const emoji of poll.emojisList) {
+        for (const emoji of poll.emojisList) {
             const reactions = msg.reactions.cache.get(emoji);
-            if(reactions) {
+            if (reactions) {
                 await reactions.users.fetch();
-                if(reactions.me) { // if the bot has reacted with this emoji
+                if (reactions.me) { // if the bot has reacted with this emoji
                     resultsString += `${emoji}: ${reactions.count - 1}\n`;
                 } else { // if someone removed the bot's own reactions
                     resultsString += `${emoji}: ${reactions.count}\n`;
@@ -170,7 +170,7 @@ module.exports = {
 
         // Let everyone who responded know the results
         for (const user of participants) {
-            if(user == poll.creatorID) continue;
+            if (user == poll.creatorID) continue;
             let respondent = await client.users.fetch(user);
             if (respondent.bot) continue;
 

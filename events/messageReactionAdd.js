@@ -7,7 +7,7 @@ const { roleMenuHandleMessageReactionAdd } = require("../commands/utility/roleme
  * @param {import("discord.js").User} user Discord User
 */
 module.exports = async (client, reaction, user) => {
-    if(client.databaseCache.events.has(reaction.message.id)) {
+    if (client.databaseCache.events.has(reaction.message.id)) {
         eventHandleMessageReactionAdd(client, reaction, user);
     }
 
