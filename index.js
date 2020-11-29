@@ -60,6 +60,7 @@ function setup() {
     client.mongoose.init();
 
     client.databaseCache = {};
+    client.databaseCache.settings = new Collection();
     client.databaseCache.events = new Collection();
     client.databaseCache.roleMenus = new Collection();
     client.databaseCache.soundEffects = new Collection();

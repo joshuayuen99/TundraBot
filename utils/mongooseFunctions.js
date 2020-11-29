@@ -3,17 +3,24 @@ const { Guild, User, Member, Channel, Message, Event, Poll, RoleMenu, SoundEffec
 
 module.exports = (client) => {
     client.getGuild = async (guild) => {
-        return Guild.findOne({ guildID: guild.id })
+        // Check cache first
+        if (client.databaseCache.settings.has(guild.id)) return client.databaseCache.settings.get(guild.id);
+
+        const data = await Guild.findOne({ guildID: guild.id })
             .then((guild, err) => {
                 if (err) console.error(err);
 
                 if (guild) return guild.toObject();
                 else return client.config.defaultGuildSettings;
             });
+
+        client.databaseCache.settings.set(guild.id, data);
+
+        return data;
     };
 
     client.updateGuild = async (guild, settings) => {
-        let data = await client.getGuild(guild);
+        let data = -await client.getGuild(guild);
 
         if (typeof data !== "object") data = {};
         for (const key in settings) {
@@ -21,12 +28,16 @@ module.exports = (client) => {
             else continue;
         }
 
-        data = await Guild.findOneAndUpdate({ guildID: guild.id }, data).then(() => {
-            console.log(`Guild "${data.guildName}" updated settings: ${Object.keys(settings)}`);
+        return Guild.findOneAndUpdate({ guildID: guild.id }, data, { new: true })
+        .then((newData) => {
+            console.log(`Guild "${newData.guildName}" updated settings: ${Object.keys(settings)}`);
+
+            // Update cache
+            client.databaseCache.settings.set(guild.id, newData.toObject());
+            return newData;
         }).catch((err) => {
                 console.error("Error updating guild in database: ", err);
             });
-        return data;
     };
 
     client.createGuild = async (settings) => {
