@@ -10,6 +10,8 @@ module.exports = {
      * @param {Object} settings guild settings
     */
     run: async (client, message, args, settings) => {
+        const PAUSE_EMOJI = "⏸️";
+
         const serverQueue = client.musicGuilds.get(message.guild.id);
         if (!serverQueue) {
             return message.reply("There isn't a song currently playing.")
@@ -25,7 +27,11 @@ module.exports = {
                 }));
         }
 
-        serverQueue.connection.dispatcher.pause();
-        return message.channel.send("Pausing...");
+        message.react(PAUSE_EMOJI)
+            .catch((err) => { // Probably don't have permissions to react
+                message.channel.send("Pausing...");
+            }).finally(() => {
+                serverQueue.connection.dispatcher.pause();
+            });
     }
 }

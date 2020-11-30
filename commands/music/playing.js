@@ -1,3 +1,5 @@
+const { MessageEmbed } = require("discord.js");
+
 module.exports = {
     name: "playing",
     aliases: ["nowplaying", "np"],
@@ -19,6 +21,10 @@ module.exports = {
                 }));
         }
 
-        message.channel.send(`Currently playing:\n${serverQueue.songs[0].url}`)
+        const embedMsg = new MessageEmbed()
+            .setColor("BLUE")
+            .setDescription(`🎵 Currently playing: [${serverQueue.songs[0].title}](${serverQueue.songs[0].url})\nThere ${serverQueue.songs.length == 1 ? "is currently `1` song" : `are currently \`${serverQueue.songs.length}\` songs`} in queue.`);
+
+        message.channel.send(embedMsg);
     }
 }

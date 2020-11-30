@@ -10,6 +10,8 @@ module.exports = {
      * @param {Object} settings guild settings
     */
     run: async (client, message, args, settings) => {
+        const STOP_EMOJI = "⏹️";
+
         const serverQueue = client.musicGuilds.get(message.guild.id);
         if (!serverQueue) {
             return message.reply("There isn't a song currently playing.")
@@ -18,9 +20,13 @@ module.exports = {
                 }));
         }
 
-        message.channel.send("Stopping...");
-        serverQueue.songs = [];
-        client.musicGuilds.delete(message.guild.id);
-        serverQueue.voiceChannel.leave();
+        message.react(STOP_EMOJI)
+            .catch((err) => { // Probably don't have permissions to react
+                message.channel.send("Stopping...");
+            }).finally(() => {
+                serverQueue.songs = [];
+                client.musicGuilds.delete(message.guild.id);
+                serverQueue.voiceChannel.leave();
+            });
     }
 }

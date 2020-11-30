@@ -10,6 +10,8 @@ module.exports = {
      * @param {Object} settings guild settings
     */
     run: async (client, message, args, settings) => {
+        const RESTART_EMOJI = "◀️";
+
         const serverQueue = client.musicGuilds.get(message.guild.id);
         if (!serverQueue) {
             return message.reply("There isn't a song currently playing.")
@@ -18,12 +20,16 @@ module.exports = {
                 }));
         }
 
-		message.channel.send("Restarting...");
-		const oldRepeat = serverQueue.repeat;
-		serverQueue.repeat = true;
-		await serverQueue.connection.dispatcher.end();
-		setTimeout(() => {
-			serverQueue.repeat = oldRepeat;
-		}, 1000);
+        message.react(RESTART_EMOJI)
+            .catch((err) => { // Probably don't have permissions to react
+                message.channel.send("Restarting...");
+            }).finally(() => {
+                const oldRepeat = serverQueue.repeat;
+                serverQueue.repeat = true;
+                serverQueue.connection.dispatcher.end();
+                setTimeout(() => {
+                    serverQueue.repeat = oldRepeat;
+                }, 1000);
+            });
     }
 }

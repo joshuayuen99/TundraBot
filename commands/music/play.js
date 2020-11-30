@@ -178,8 +178,8 @@ module.exports = {
                 return message.channel.send(embedMsg);
             } else {
                 const embedMsg = new MessageEmbed()
-                .setColor("BLUE")
-                .setDescription(`🎵 [${song.title}](${song.url}) has been added to the queue! There is currently \`${serverQueue.songs.length}\` song in queue.`);
+                    .setColor("BLUE")
+                    .setDescription(`🎵 [${song.title}](${song.url}) has been added to the queue! There is currently \`${serverQueue.songs.length}\` song in queue.`);
                 return message.channel.send(embedMsg);
             }
         }).catch((err) => {
@@ -249,7 +249,7 @@ function play(client, guildID) {
     if (!song) {
         serverQueue.voiceChannel.leave();
         client.musicGuilds.delete(guildID);
-        return serverQueue.textChannel.send("Queue empty, leaving now.");
+        return;
     }
 
     let options;

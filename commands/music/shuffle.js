@@ -1,3 +1,4 @@
+const { MessageEmbed } = require("discord.js");
 const { shuffle } = require("../../functions.js");
 
 module.exports = {
@@ -12,6 +13,8 @@ module.exports = {
      * @param {Object} settings guild settings
     */
     run: async (client, message, args, settings) => {
+        const SHUFFLE_EMOJI = "🔀";
+
         const serverQueue = client.musicGuilds.get(message.guild.id);
         if (!serverQueue) {
             return message.reply("There isn't a queue to shuffle.")
@@ -24,16 +27,34 @@ module.exports = {
         if (!args[0]) {
             const currentSong = serverQueue.songs.slice(0, 1);
             serverQueue.songs = currentSong.concat(shuffle(serverQueue.songs.slice(1)));
-            return message.channel.send("Current queue has been shuffled.");
+
+            const embedMsg = new MessageEmbed()
+                .setColor("BLUE")
+                .setDescription(`${SHUFFLE_EMOJI} Current queue has been shuffled.`);
+
+            message.channel.send(embedMsg);
+            return;
         }
         else if (args[0].toLowerCase() == "toggle" || args[0].toLowerCase() == "t") {
             serverQueue.toggle = serverQueue.toggle ? false : true;
-            return message.channel.send(`Shuffling is now set to ${serverQueue.toggle}.`);
+
+            const embedMsg = new MessageEmbed()
+                .setColor("BLUE")
+                .setDescription(`${SHUFFLE_EMOJI} Shuffling is now set to ${serverQueue.toggle}.`);
+
+            message.channel.send(embedMsg);
+            return;
         }
         else {
             const currentSong = serverQueue.songs.slice(0, 1);
             serverQueue.songs = currentSong.concat(shuffle(serverQueue.songs.slice(1)));
-            return message.channel.send("Current queue has been shuffled.");
+
+            const embedMsg = new MessageEmbed()
+                .setColor("BLUE")
+                .setDescription(`${SHUFFLE_EMOJI} Current queue has been shuffled.`);
+
+            message.channel.send(embedMsg);
+            return;
         }
     }
 }

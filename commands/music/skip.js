@@ -11,6 +11,8 @@ module.exports = {
      * @param {Object} settings guild settings
     */
     run: async (client, message, args, settings) => {
+        const SKIP_EMOJI = "⏭️";
+
         const serverQueue = client.musicGuilds.get(message.guild.id);
         if (!serverQueue) {
             return message.reply("There isn't a song currently playing.")
@@ -19,7 +21,11 @@ module.exports = {
                 }));
         }
 
-        message.channel.send("Skipping...");
-        serverQueue.connection.dispatcher.end();
+        message.react(SKIP_EMOJI)
+            .catch((err) => { // Probably don't have permissions to react
+                message.channel.send("Skipping...");
+            }).finally(() => {
+                serverQueue.connection.dispatcher.end();
+            });
     }
 }
