@@ -2,7 +2,7 @@ const express = require("express");
 const moment = require("moment");
 const { Message } = require("../../models");
 const { validateGuild } = require("../modules/middleware");
-const client = {};
+const { client } = require("../../index");
 require("../../utils/mongooseFunctions")(client);
 
 const router = express.Router();
