@@ -218,7 +218,12 @@ async function createQueue(client, message, song) {
                 } catch (err) {
                     console.error("Can't play music. IP banned?: ", err);
                     client.musicGuilds.delete(message.guild.id);
-                    message.channel.send("I'm currently having problems playing songs... please try again later.");
+
+                    const embedMsg = new MessageEmbed()
+                        .setColor("RED")
+                        .setDescription("🔇 **I'm currently having problems playing songs... please try again later.**")
+                        .addField("Error", err.message);
+                    message.channel.send(embedMsg);
                     queueConstruct.voiceChannel.leave();
                 }
             })
@@ -267,7 +272,14 @@ function play(client, guildID) {
         })
         .on("error", (err) => {
             console.error("Error playing song: ", err);
-            throw (err);
+            client.musicGuilds.delete(serverQueue.textChannel.guild.id);
+
+            const embedMsg = new MessageEmbed()
+                .setColor("RED")
+                .setDescription("🔇 **I'm currently experiencing issues playing songs... please try again later.**")
+                .addField("Error", err.message);
+            serverQueue.textChannel.send(embedMsg);
+            serverQueue.voiceChannel.leave();
         });
     dispatcher.setVolumeLogarithmic(serverQueue.volume / 10);
 }
