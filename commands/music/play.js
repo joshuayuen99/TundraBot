@@ -132,6 +132,7 @@ module.exports = {
                         songInfo = videoDetailsList[parseInt(response.content.charAt(response.content.length - 1)) - 1];
                         songInfo.title = he.decode(songInfo.title);
                         songInfo.video_url = "https://www.youtube.com/watch?v=" + songInfo.videoId;
+                        songInfo.isLiveContent = songInfo.videoDuration == "LIVE" ? true : false;
                         msg.delete();
                         return response;
                     default:
@@ -162,7 +163,7 @@ module.exports = {
             song = {
                 title: songInfo.title,
                 url: songInfo.video_url,
-                isLive: false
+                isLive: songInfo.isLiveContent ? true : false
             };
         }
         
@@ -279,6 +280,7 @@ async function getVideoDuration(videoId) {
     let videoDetails = await axios.get("https://www.googleapis.com/youtube/v3/videos?" + "part=contentDetails" + "&id=" + videoId + "&key=" + process.env.YOUTUBEKEY);
     let videoDurationRaw = videoDetails.data.items[0].contentDetails.duration;
 
+    if (videoDurationRaw == "P0D") return "LIVE";
     let hours;
     let minutes;
     let seconds;
