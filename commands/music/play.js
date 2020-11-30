@@ -167,23 +167,26 @@ module.exports = {
             };
         }
         
-        await queueSong(client, message, song).catch((err) => {
+        await queueSong(client, message, song).then(() => {
+            serverQueue = client.musicGuilds.get(message.guild.id);
+            if (!serverQueue) return; // we had trouble queueing up the song
+
+            if (serverQueue.songs.length > 1) {
+                const embedMsg = new MessageEmbed()
+                    .setColor("BLUE")
+                    .setDescription(`🎵 [${song.title}](${song.url}) has been added to the queue! There are currently \`${serverQueue.songs.length}\` songs in queue.`);
+                return message.channel.send(embedMsg);
+            } else {
+                const embedMsg = new MessageEmbed()
+                .setColor("BLUE")
+                .setDescription(`🎵 [${song.title}](${song.url}) has been added to the queue! There is currently \`${serverQueue.songs.length}\` song in queue.`);
+                return message.channel.send(embedMsg);
+            }
+        }).catch((err) => {
             console.error("Error queueing song: ", err);
 
             return message.channel.send(`There was an error playing this song. Try again and if this issue persists, please contact my creator ${process.env.OWNERNAME}${process.env.OWNERTAG}.`);
         });
-        serverQueue = client.musicGuilds.get(message.guild.id);
-        if (serverQueue.songs.length > 1) {
-            const embedMsg = new MessageEmbed()
-                .setColor("BLUE")
-                .setDescription(`🎵 [${song.title}](${song.url}) has been added to the queue! There are currently \`${serverQueue.songs.length}\` songs in queue.`);
-            return message.channel.send(embedMsg);
-        } else {
-            const embedMsg = new MessageEmbed()
-            .setColor("BLUE")
-            .setDescription(`🎵 [${song.title}](${song.url}) has been added to the queue! There is currently \`${serverQueue.songs.length}\` song in queue.`);
-            return message.channel.send(embedMsg);
-        }
     }
 }
 
@@ -210,7 +213,14 @@ async function createQueue(client, message, song) {
             .then((connection) => {
                 connection.voice.setSelfDeaf(true);
                 queueConstruct.connection = connection;
-                play(client, message.guild.id);
+                try {
+                    play(client, message.guild.id);
+                } catch (err) {
+                    console.error("Can't play music. IP banned?: ", err);
+                    client.musicGuilds.delete(message.guild.id);
+                    message.channel.send("I'm currently having problems playing songs... please try again later.");
+                    queueConstruct.voiceChannel.leave();
+                }
             })
             .catch((err) => {
                 console.error("Couldn't connect to the channel...", err);
@@ -222,7 +232,7 @@ async function createQueue(client, message, song) {
     catch (err) {
         console.error("Failed to join channel and start playing music: ", err);
         client.musicGuilds.delete(message.guild.id);
-        return message.channel.send(err);
+        return;
     }
 }
 
@@ -257,6 +267,7 @@ function play(client, guildID) {
         })
         .on("error", (err) => {
             console.error("Error playing song: ", err);
+            throw (err);
         });
     dispatcher.setVolumeLogarithmic(serverQueue.volume / 10);
 }
