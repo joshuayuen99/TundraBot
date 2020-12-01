@@ -9,10 +9,10 @@ module.exports = {
         Member.find({
             $or: [
                 {
-                    "settings.joinSoundEffect": { $exists: true }
+                    "settings.joinSoundEffect": { $exists: true, $ne: null }
                 },
                 {
-                    "settings.leaveSoundEffect": { $exists: true }
+                    "settings.leaveSoundEffect": { $exists: true, $ne: null }
                 }]
         }).then(async (members) => {
             for (const member of members) {

@@ -270,14 +270,23 @@ async function listEffects(client, message, args, settings) {
 
         let memberSoundEffects = client.databaseCache.memberSoundEffects.get(`${message.member.guild.id}${message.author.id}`);
 
+        soundEffectsString += "\n\n**Current user settings:**";
         if (memberSoundEffects) {
-            soundEffectsString += "\n\n**Current user settings:**";
+            soundEffectsString += `\nJoin sound effect: `;
             if (memberSoundEffects.joinSoundEffect) {
-                soundEffectsString += `\nJoin sound effect: \`${memberSoundEffects.joinSoundEffect.name}\``;
+                soundEffectsString += `\`${memberSoundEffects.joinSoundEffect.name}\``;
+            } else {
+                soundEffectsString += "`None`"
             }
+
+            soundEffectsString += `\nLeave sound effect: `;
             if (memberSoundEffects.leaveSoundEffect) {
-                soundEffectsString += `\nLeave sound effect: \`${memberSoundEffects.leaveSoundEffect.name}\``;
+                soundEffectsString += `\`${memberSoundEffects.leaveSoundEffect.name}\``;
+            } else {
+                soundEffectsString += "`None`";
             }
+        } else {
+            soundEffectsString += `\nJoin sound effect: \`None\`\nLeave sound effect: \`None\``;
         }
 
         soundEffectsEmbed
