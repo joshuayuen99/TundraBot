@@ -150,8 +150,14 @@ module.exports = {
             songInfo = await ytdl.getInfo(args[0]).catch((err) => {
                 console.error("ytdl.getInfo error: ", err);
 
-                return message.channel.send(`There was an error playing this song. Try again and if this issue persists, please contact my creator ${process.env.OWNERNAME}${process.env.OWNERTAG}.`);
+                const embedMsg = new MessageEmbed()
+                    .setColor("RED")
+                    .setDescription("🔇 **I'm currently experiencing issues playing songs... please try again later.**")
+                    .addField("Error", err.message);
+                message.channel.send(embedMsg);
             });
+
+            if (!songInfo) return;
             
             song = {
                 title: songInfo.videoDetails.title,
