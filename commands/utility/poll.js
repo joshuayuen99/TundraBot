@@ -37,7 +37,7 @@ module.exports = {
 
         let postChannel;
         // Check to see if the channel exists
-        if (message.guild.channels.cache.some(channel => channel.name === postChannelName)) {
+        if (message.guild.channels.cache.some(channel => channel.name === postChannelName && channel.type == "text")) {
             postChannel = message.guild.channels.cache.find(channel => channel.name === postChannelName);
 
             // Check to make sure we have permission to post in the channel
@@ -83,17 +83,13 @@ module.exports = {
 
             async function setReactions() {
                 for (const reaction of emojisList) {
-                    msg.react(reaction).catch((err) => {
-                        msg.channel.send("I had trouble reacting with those emojis... removing the poll.");
-                        if (msg.deletable) msg.delete();
-                        if (pollCreationMessage.deletable) pollCreationMessage.delete();
-                        console.error("setReactions for poll command error: ", err);
-                        throw err;
+                    await msg.react(reaction).catch((err) => {
+                        throw new Error(reaction);
                     });
                 }
             }
     
-            await setReactions().then(() => {
+            setReactions().then(() => {
                 const pollObject = {
                     messageID: msg.id,
                     guildID: msg.guild.id,
@@ -113,7 +109,9 @@ module.exports = {
                     });
                 }, endTime - startTime);
             }).catch((err) => {
-                console.error("Couldn't create a poll: ", err);
+                if (msg.deletable) msg.delete();
+                if (pollCreationMessage.deletable) pollCreationMessage.delete();
+                message.channel.send(`I had trouble reacting with \`${err.message}\`... removing the poll.`);
             });
         });
 
