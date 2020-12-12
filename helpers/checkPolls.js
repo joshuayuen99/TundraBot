@@ -10,38 +10,43 @@ module.exports = {
         Poll.find().then(async (polls) => {
             const dateNow = Date.now();
             for (const poll of polls) {
-                // Fetch poll message if not cached already
-                if (!client.guilds.cache.has(poll.guildID)) await client.guilds.fetch(poll.guildID).catch((err) => {
-                    console.error("Guild was deleted?: ", err);
-                });
-                if (!client.channels.cache.has(poll.channelID)) await client.channels.fetch(poll.channelID).catch((err) => {
-                    console.error("Channel was deleted?: ", err);
-                });
-                const channel = client.channels.cache.get(poll.channelID);
-                if (!channel) continue;
-                if (!channel.messages.cache.has(poll.messageID)) await channel.messages.fetch(poll.messageID).then((message) => {
-                    // Poll is still ongoing
-                    if (poll.endTime > dateNow) {
-                        setTimeout(() => {
+                try {
+                    // Fetch poll message if not cached already
+                    if (!client.guilds.cache.has(poll.guildID)) await client.guilds.fetch(poll.guildID).catch((err) => {
+                        console.error("Guild was deleted? Removing poll from database: ", err);
+                        throw err;
+                    });
+                    if (!client.channels.cache.has(poll.channelID)) await client.channels.fetch(poll.channelID).catch((err) => {
+                        console.error("Channel was deleted? Removing poll from database: ", err);
+                        throw err;
+                    });
+                    const channel = client.channels.cache.get(poll.channelID);
+                    if (!channel) continue;
+                    if (!channel.messages.cache.has(poll.messageID)) await channel.messages.fetch(poll.messageID).then((message) => {
+                        // Poll is still ongoing
+                        if (poll.endTime > dateNow) {
+                            setTimeout(() => {
+                                pollHandleFinish(client, poll);
+                                Poll.deleteOne(poll).catch((err) => {
+                                    console.error("Couldn't delete poll from database: ", err);
+                                });
+                            }, poll.endTime - dateNow);
+                        } else { // Poll is finished
                             pollHandleFinish(client, poll);
                             Poll.deleteOne(poll).catch((err) => {
                                 console.error("Couldn't delete poll from database: ", err);
                             });
-                        }, poll.endTime - dateNow);
-                    } else { // Poll is finished
-                        pollHandleFinish(client, poll);
-                        Poll.deleteOne(poll).catch((err) => {
-                            console.error("Couldn't delete poll from database: ", err);
-                        });
-                    }
-                }).catch((err) => {
-                    console.error("Poll was deleted manually? Removing poll from database: ", err);
-
+                        }
+                    }).catch((err) => {
+                        console.error("Poll was deleted manually? Removing poll from database: ", err);
+                        throw err;
+                    });
+                } catch (err) {
                     // remove poll from database
                     Poll.deleteOne({ messageID: poll.messageID }).catch((err) => {
                         console.error("Couldn't delete event from database: ", err);
                     });
-                });
+                }
             }
             console.log(`Loaded ${polls.length} polls`);
         })
