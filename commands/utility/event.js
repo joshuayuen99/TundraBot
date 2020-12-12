@@ -37,7 +37,7 @@ module.exports = {
 
         let postChannel;
         // Check to see if the channel exists
-        if (message.guild.channels.cache.some(channel => channel.name === postChannelName)) {
+        if (message.guild.channels.cache.some(channel => channel.name === postChannelName && channel.type == "text")) {
             postChannel = message.guild.channels.cache.find(channel => channel.name === postChannelName);
 
             // Check to make sure we have permission to post in the channel

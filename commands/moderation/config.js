@@ -62,7 +62,7 @@ module.exports = {
                 let newLogChannel;
                 if (message.guild.channels.cache.some(channel => `<#${channel.id}>` === newSetting)) {
                     newLogChannel = message.guild.channels.cache.find(channel => `<#${channel.id}>` === newSetting);
-                } else if (message.guild.channels.cache.some(channel => channel.name === newSetting)) {
+                } else if (message.guild.channels.cache.some(channel => channel.name === newSetting && channel.type == "text")) {
                     newLogChannel = message.guild.channels.cache.find(channel => channel.name === newSetting);
                 }
 
