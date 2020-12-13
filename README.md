@@ -227,6 +227,7 @@ My bot will automatically log whenever someone joins and leaves the server, alon
 
 ## Fun
 
+- `Akinator` Play a game of Akinator!
 - `RPS (rock paper scissors)` Play a game of rock paper scissors against the bot. Choose your move by reacting to the bot's response message.
 - `Love [mention | id | username]` Displays how much love a given person has for you (just a random fun command). If a user is not given, it randomly chooses someone else in the server.
 
