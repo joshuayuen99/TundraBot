@@ -23,6 +23,7 @@
   "homepage": "https://github.com/joshuayuen99/discordbot#readme",
   "dependencies": {
     "@discordjs/opus": "^0.3.3",
+    "aki-api": "^5.2.0",
     "ascii-table": "0.0.9",
     "assert": "^2.0.0",
     "body-parser": "^1.19.0",
