@@ -473,6 +473,13 @@ async function playEffectCommand(client, message, args, settings) {
             name: effectName,
             guildID: message.guild.id
         });
+
+        // Sound effect doesn't exist
+        if (!soundEffect) {
+            message.channel.send(`I couldn't find any sound effects with the name \`${effectName}\``);
+            return;
+        }
+
         client.databaseCache.soundEffects.set(`${message.guild.id}${effectName}`, soundEffect);
     }
 
