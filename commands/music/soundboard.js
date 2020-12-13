@@ -313,8 +313,8 @@ async function addEffect(client, message, args, settings) {
         message.channel.send(`Please provide a name for the effect and either a link to the sound effect, or upload the file directly with the command (upload the file and type \`${settings.prefix}soundboard add <effect name>\` as the comment).`);
         return;
     } else if (link == undefined) { // check uploaded file
-        if (!message.attachments) { // no link or sound effect attachment
-            message.channel.send(`Please provide a link to the sound effect, or upload the file directly with the command (upload the file and type \`${settings.prefix}soundboard add\` as the comment).`);
+        if (message.attachments.size === 0) { // no link or sound effect attachment
+            message.channel.send(`Please provide a link to the sound effect, or upload the file directly with the command (upload the file and type \`${settings.prefix}soundboard add <effect name>\` as the comment).`);
             return;
         } else { // file was uploaded as an attachment
             link = message.attachments.first().url;
