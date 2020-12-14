@@ -5,8 +5,8 @@ const { waitResponse } = require("../../functions");
 module.exports = {
     name: "akinator",
     category: "fun",
-    description: "Start a game of Akinator!",
-    usage: "akinator",
+    description: "Start a game of Akinator! Choose from guessing characters, objects, or animals (defaults to characters).",
+    usage: "akinator [characters | objects | animals]",
     /**
      * @param {import("discord.js").Client} client Discord Client instance
      * @param {import("discord.js").Message} message Discord Message object
@@ -15,12 +15,42 @@ module.exports = {
     */
     run: async (client, message, args, settings) => {
         try {
-            const region = "en";
+            if (client.gameMembers.has(`${message.guild.id}${message.member.id}`)) {
+                let embedMsg = new MessageEmbed()
+                    .setColor("RED")
+                    .setTitle("Akinator")
+                    .setDescription("You are already playing another game! Finish your first one.")
+                    .setFooter(message.member.displayName, message.author.avatarURL());
+
+                message.channel.send(embedMsg);
+                return;
+            }
+
+            client.gameMembers.set(`${message.guild.id}${message.member.id}`, "Akinator");
+
+            let category;
+            if (args[0]) category = args[0];
+            else category = "characters";
+            
+            let region;
+            switch (category) {
+                case "characters":
+                    region = "en";
+                    break;
+                case "objects":
+                    region = "en_objects";
+                    break;
+                case "animals":
+                    region = "en_animals";
+                    break;
+                default:
+                    region = "en";
+            }
 
             let embedMsg = new MessageEmbed()
                 .setColor("BLUE")
                 .setTitle("Akinator")
-                .setDescription("🧠 Starting up...")
+                .setDescription(`🧠 Starting up... Guessing ${category}!`)
                 .setFooter(message.member.displayName, message.author.avatarURL());
             const startingMessage = await message.channel.send(embedMsg);
 
@@ -97,6 +127,9 @@ module.exports = {
                             .setDescription("Game cancelled!")
                             .setFooter(message.member.displayName, message.author.avatarURL());
                         message.channel.send(gameCancelledEmbed);
+
+                        client.gameMembers.delete(`${message.guild.id}${message.member.id}`);
+
                         return;
                     default:
                         newQuestion = false;
@@ -118,6 +151,8 @@ module.exports = {
                 .setFooter(message.member.displayName, message.author.avatarURL());
 
             message.channel.send(embedMsg);
+
+            client.gameMembers.delete(`${message.guild.id}${message.member.id}`);
         } catch (err) {
             console.error("Akinator error: ", err);
 
@@ -127,6 +162,8 @@ module.exports = {
                 .setDescription("Akinator is experiencing some issues right now sorry. Your game has been cancelled.")
                 .setFooter(message.member.displayName, message.author.avatarURL());
             message.channel.send(embedMsg);
+
+            client.gameMembers.delete(`${message.guild.id}${message.member.id}`);
         }
     }
 };

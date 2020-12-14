@@ -54,6 +54,9 @@ function setup() {
     // Map with guilds playing soundboard effects
     client.soundboardGuilds = new Map();
 
+    // Map with members playing games
+    client.gameMembers = new Map();
+
     // Set of people we are currently waiting on a response from so that we can ignore any further commands until we get it
     client.waitingResponse = new Set();
 
