@@ -67,8 +67,19 @@ module.exports = {
             return message.reply("Cancelling poll.");
         }
 
+        if (isNaN(ms(duration.content))) {
+            message.reply("I couldn't recognize that duration. Cancelling poll.");
+            return;
+        }
+
         const startTime = message.createdAt.getTime();
         const endTime = message.createdAt.getTime() + ms(duration.content);
+
+        // User entered a negative time
+        if (endTime <= startTime) {
+            message.reply("The poll can't end in the past!");
+            return;
+        }
 
         const promptEmbed = new MessageEmbed()
             .setColor("PURPLE")
