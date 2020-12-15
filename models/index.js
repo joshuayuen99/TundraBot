@@ -7,5 +7,6 @@ module.exports = {
     Event: require("./Event"),
     Poll: require("./Poll"),
     RoleMenu: require("./RoleMenu"),
-    SoundEffect: require("./SoundEffect")
+    SoundEffect: require("./SoundEffect"),
+    Reminder: require("./Reminder")
 };

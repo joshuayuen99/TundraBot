@@ -1,5 +1,4 @@
-const mongoose = require("mongoose");
-const { Guild, User, Member, Channel, Message, Event, Poll, RoleMenu, SoundEffect } = require("../models");
+const { Guild, User, Member, Channel, Message, Event, Poll, RoleMenu, SoundEffect, Reminder } = require("../models");
 
 module.exports = (client) => {
     client.getGuild = async (guild) => {
@@ -339,6 +338,26 @@ module.exports = (client) => {
         return await newSoundEffect.save().catch((err) => {
             console.error("Error creating new sound effect in database: ", err);
         })
+    };
+
+    client.getReminders = async (userID) => {
+        return await Reminder.find({ userID : userID }).catch((err) => {
+            console.error("Error getting reminder from database: ", err);
+        });
+    };
+
+    client.createReminder = async (reminder) => {
+        const newReminder = await new Reminder(reminder);
+
+        return await newReminder.save().catch((err) => {
+            console.error("Error creating new reminder in database: ", err);
+        });
+    };
+
+    client.deleteReminder = async (reminder) => {
+        return reminder.delete().catch((err) => {
+            console.error("Error deleting reminder from database: ", err);
+        });
     };
 
     client.clean = async (client, text) => {
