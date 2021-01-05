@@ -36,6 +36,9 @@ module.exports = async (client, member) => {
                     if (!cachedInvites.get(invite[0])) continue;
                     if (cachedInvites.get(invite[0]).uses < invite[1].uses) {
                         inviteUsed = invite[1];
+
+                        // Update cached invite uses
+                        cachedInvites.set(invite[0], invite[1]);
                         break;
                     }
                 }
