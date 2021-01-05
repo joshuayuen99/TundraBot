@@ -1,5 +1,7 @@
 const { Guild, User, Member, Channel, Message, Event, Poll, RoleMenu, SoundEffect, Reminder } = require("../models");
 
+const { cacheInvites } = require("../helpers/cacheInvites");
+
 module.exports = (client) => {
     client.getGuild = async (guild) => {
         // Check cache first
@@ -33,6 +35,8 @@ module.exports = (client) => {
 
             // Update cache
             client.databaseCache.settings.set(guild.id, newData.toObject());
+
+            if (newData.joinMessages.inviteTracker) cacheInvites(client, guild);
             return newData;
         }).catch((err) => {
                 console.error("Error updating guild in database: ", err);

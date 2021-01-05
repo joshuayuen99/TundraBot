@@ -43,7 +43,7 @@ module.exports = async (client, member) => {
                     }
                 }
 
-                if (inviteUsed) embedMsg.addField("Invited by: ", `${inviteUsed.inviter ? inviteUsed.inviter : "Unknown"} (${inviteUsed.url})`);
+                if (inviteUsed) embedMsg.addField("Invited by: ", `${inviteUsed.inviter ? `${inviteUsed.inviter} (${inviteUsed.inviter.tag})` : "Unknown"}\nCode: ${inviteUsed.code}\nUses: ${inviteUsed.uses}`);
             }).catch((err) => {
                 console.error("Invite tracker fetchInvites error: ", err);
             });
