@@ -6,6 +6,7 @@ const cacheMembers = require("../helpers/cacheMembers");
 const checkBans = require("../helpers/checkBans");
 const checkMutes = require("../helpers/checkMutes");
 const checkReminders = require("../helpers/checkReminders");
+const cacheInvites = require("../helpers/cacheInvites");
 
 /**
  * @param {import("discord.js").Client} client Discord Client instance
@@ -27,6 +28,7 @@ module.exports = (client) => {
     checkBans.init(client);
     checkMutes.init(client);
     checkReminders.init(client);
+    cacheInvites.init(client);
 
     console.log(`I'm now online, my name is ${client.user.tag}`);
 };

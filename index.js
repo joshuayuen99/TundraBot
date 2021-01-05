@@ -60,6 +60,9 @@ function setup() {
     // Set of people we are currently waiting on a response from so that we can ignore any further commands until we get it
     client.waitingResponse = new Set();
 
+    // Map with invites for each guild
+    client.guildInvites = new Map();
+
     client.mongoose.init();
 
     client.databaseCache = {};

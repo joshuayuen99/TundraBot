@@ -19,7 +19,8 @@ const guildSchema = mongoose.Schema({
     },
     joinMessages: {
         enabled: { type: Boolean, default: false },
-        channelID: { type: String, default: null }
+        channelID: { type: String, default: null },
+        trackInvites: { type: Boolean, default: true }
     },
     leaveMessages: {
         enabled: { type: Boolean, default: false },

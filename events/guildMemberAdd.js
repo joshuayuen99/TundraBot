@@ -26,6 +26,26 @@ module.exports = async (client, member) => {
             .addField("New total members", guild.memberCount)
             .setTimestamp();
 
+        // Invite tracker enabled
+        if (settings.joinMessages.inviteTracker) {
+            await guild.fetchInvites().then((invites) => {
+                const cachedInvites = client.guildInvites.get(guild.id);
+
+                let inviteUsed;
+                for (const invite of invites) {
+                    if (!cachedInvites.get(invite[0])) continue;
+                    if (cachedInvites.get(invite[0]).uses < invite[1].uses) {
+                        inviteUsed = invite[1];
+                        break;
+                    }
+                }
+
+                if (inviteUsed) embedMsg.addField("Invited by: ", `${inviteUsed.inviter ? inviteUsed.inviter : "Unknown"} (${inviteUsed.url})`);
+            }).catch((err) => {
+                console.error("Invite tracker fetchInvites error: ", err);
+            });
+        }
+
         if (guild.channels.cache.some(channel => channel.id === settings.joinMessages.channelID)) {
             let logChannel = guild.channels.cache.find(channel => channel.id === settings.joinMessages.channelID);
 
