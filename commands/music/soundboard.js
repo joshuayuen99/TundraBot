@@ -132,6 +132,12 @@ async function setJoinEffect(client, message, args, settings) {
         console.error("Error getting sound effect from database: ", err);
     });
 
+    // No sound effect with that name
+    if (!soundEffectObject) {
+        message.channel.send(`I couldn't find any sound effects with the name \`${effectName}\``);
+        return;
+    }
+
     // Save sound effect to database
     client.updateMember(message.member, {
         joinSoundEffect: soundEffectObject._id
@@ -213,6 +219,11 @@ async function setLeaveEffect(client, message, args, settings) {
     }).catch((err) => {
         console.error("Error getting sound effect from database: ", err);
     });
+
+    if (!soundEffectObject) {
+        message.channel.send(`I couldn't find any sound effects with the name \`${effectName}\``);
+        return;
+    }
 
     // Save sound effect to database
     client.updateMember(message.member, {
