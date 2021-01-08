@@ -123,6 +123,7 @@ module.exports = {
             .setTimestamp(endTime.toISOString())
             .setTitle("Scheduled Event")
             .addField("Event", event.content)
+            .addField("Time", `UTC: \`${endTime.utc().format("DD MMM YYYY HH:mm")}\`\nLook at the bottom of this message to see when the event starts in your local time.`)
             .addField("Scheduled by", stripIndents`${message.member}
             
             React with a ${HAND_EMOJI} emoji to sign up for the event and be alerted when it starts!`);
@@ -308,6 +309,7 @@ module.exports = {
             .setTimestamp(cachedEvent.endTime)
             .setTitle("Scheduled Event")
             .addField("Event", cachedEvent.event)
+            .addField("Time", `UTC: \`${moment(cachedEvent.endTime).utc().format("DD MMM YYYY HH:mm")}\`\nLook at the bottom of this message to see when the event starts in your local time.`)
             .addField("Scheduled by", stripIndents`${eventCreatorMember}
             
             React with a ${HAND_EMOJI} emoji to sign up for the event and be alerted when it starts!`);
@@ -360,6 +362,7 @@ module.exports = {
             .setTimestamp(cachedEvent.endTime)
             .setTitle("Scheduled Event")
             .addField("Event", cachedEvent.event)
+            .addField("Time", `UTC: \`${moment(cachedEvent.endTime).utc().format("DD MMM YYYY HH:mm")}\`\nLook at the bottom of this message to see when the event starts in your local time.`)
             .addField("Scheduled by", stripIndents`${eventCreatorMember}
             
             React with a ${HAND_EMOJI} emoji to sign up for the event and be alerted when it starts!`);
@@ -392,6 +395,7 @@ module.exports = {
             .setTimestamp(event.endTime)
             .setTitle("Event Started")
             .addField("Event", event.event)
+            .addField("Time", `UTC: \`${moment(event.endTime).utc().format("DD MMM YYYY HH:mm")}\`\nLook at the bottom of this message to see when the event started in your local time.`)
             .addField("Scheduled by", eventCreatorMember);
 
         // Print differently depending on if there was a cap set or not for participants
