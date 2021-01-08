@@ -27,7 +27,7 @@ module.exports = async (client, member) => {
             .setTimestamp();
 
         // Invite tracker enabled
-        if (settings.joinMessages.inviteTracker) {
+        if (settings.joinMessages.trackInvites) {
             await guild.fetchInvites().then((invites) => {
                 const cachedInvites = client.guildInvites.get(guild.id);
 
