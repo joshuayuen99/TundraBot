@@ -107,8 +107,15 @@ module.exports = {
         const startTime = message.createdAt.getTime();
         const endTime = momentEventDate;
 
+        let momentNow = moment();
+
         // If the time is in the past
-        if (endTime < Date.now()) return message.reply("That time already passed! Cancelling event.");
+        if (endTime.isBefore(momentNow)) {
+            let curTimeString = momentNow.clone().tz(userSettings.settings.timezone).format("M/D/YYYY h:mm A");
+            let attemptTimeString = momentEventDate.clone().tz(userSettings.settings.timezone).format("M/D/YYYY h:mm A");
+
+            return message.reply(`That time already passed! It is currently \`${curTimeString}\` in \`${userSettings.settings.timezone}\` time and you attempted to make an event at \`${attemptTimeString}\`. A common reason for this is typing the year in YYYY format instead of YY. Cancelling event.`);
+        }
 
         const baseEmbed = new MessageEmbed()
             .setColor("PURPLE")
