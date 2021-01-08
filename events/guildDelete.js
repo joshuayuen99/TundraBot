@@ -10,6 +10,9 @@ const { Guild } = require("../models");
 module.exports = async (client, guild) => {
     try {
         await Guild.findOneAndDelete({ guildID: guild.id });
+
+        // Delete from cache
+        client.databaseCache.settings.delete(guild.id);
     } catch (err) {
         console.error("Leave server error: ", err);
     }
