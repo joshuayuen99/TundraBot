@@ -382,8 +382,11 @@ module.exports = {
     },
     eventHandleFinish: async (client, event) => {
         const guild = client.guilds.cache.get(event.guildID);
+        if (!guild) return;
         const channel = guild.channels.cache.get(event.channelID);
+        if (!channel) return;
         const msg = channel.messages.cache.get(event.messageID);
+        if (!msg) return;
 
         const { participantsString, waitingString } = module.exports.getParticipantsString(event.participants, event.maxParticipants);
 

@@ -140,8 +140,11 @@ module.exports = {
     */
     pollHandleFinish: async (client, poll) => {
         const guild = client.guilds.cache.get(poll.guildID);
+        if (!guild) return;
         const channel = guild.channels.cache.get(poll.channelID);
+        if (!channel) return;
         const msg = channel.messages.cache.get(poll.messageID);
+        if (!msg) return;
 
         let participants = [];
         let resultsString = "";
