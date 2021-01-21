@@ -11,7 +11,7 @@ module.exports = async (client, invite) => {
     }
 
     // Join messages are enabled and invite tracking is on
-    if (settings.joinMessages.enabled && settings.joinMessages.inviteTracker) {
+    if (settings.joinMessages.enabled && settings.joinMessages.trackInvites) {
         let currentInvites = client.guildInvites.get(invite.guild.id);
         currentInvites.set(invite[0], invite[1]);
         client.guildInvites.set(invite.guild.id, currentInvites);
