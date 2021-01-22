@@ -9,6 +9,7 @@ module.exports = {
         Guild.find({
             "joinMessages.enabled": true
         }).then(async (guilds) => {
+            let totalInvites = 0;
             for (const guild of guilds) {
                 // Fetch guild if not cached already
                 if (!client.guilds.cache.has(guild.guildID)) await client.guilds.fetch(guild.guildID).catch((err) => {
@@ -16,9 +17,9 @@ module.exports = {
                 });
 
                 const discordGuild = client.guilds.cache.get(guild.guildID);
-                await module.exports.cacheInvites(client, discordGuild);
+                totalInvites += await module.exports.cacheInvites(client, discordGuild);
             }
-            console.log(`Cached ${client.guildInvites.size} invites`);
+            console.log(`Cached ${totalInvites} invites in ${client.guildInvites.size} guilds`);
         }).catch((err) => {
             console.error("cacheInvites init error: ", err);
         });
@@ -26,8 +27,10 @@ module.exports = {
 
     /**
      * @param {import("discord.js").Guild} guild Discord Guild
+     * @returns {Number} the number of invites cached
      */
     async cacheInvites(client, guild) {
+        let inviteCount = 0;
         await guild.fetchInvites().then(invites => {
             for (const invite of invites) {
                 let currentInvites = client.guildInvites.get(guild.id);
@@ -35,9 +38,11 @@ module.exports = {
                 currentInvites.set(invite[0], invite[1]);
                 client.guildInvites.set(guild.id, currentInvites);
             }
+            inviteCount += invites.size;
         }).catch((err) => {
             console.error("fetchInvites error: ", err);
         });
+        return inviteCount;
     }
 };
 
