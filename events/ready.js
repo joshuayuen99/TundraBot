@@ -1,4 +1,5 @@
-const checkPolls = require(".././helpers/checkPolls");
+const guildsSanityCheck = require("../helpers/guildsSanityCheck");
+const checkPolls = require("../helpers/checkPolls");
 const checkEvents = require("../helpers/checkEvents");
 const loadRoleMenus = require("../helpers/loadRoleMenus");
 const loadMemberSoundEffects = require("../helpers/loadMemberSoundEffects");
@@ -20,6 +21,7 @@ module.exports = (client) => {
         }
     });
 
+    guildsSanityCheck.init(client);
     checkPolls.init(client);
     checkEvents.init(client);
     loadRoleMenus.init(client);
