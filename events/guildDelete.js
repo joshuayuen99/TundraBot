@@ -21,6 +21,8 @@ module.exports = async (client, guild) => {
 
     const owner = await client.users.fetch(process.env.OWNERID);
 
+    const [bots, users] = guild.members.cache.partition(member => member.user.bot);
+
     const embedMsg = new MessageEmbed()
         .setColor("RED")
         .setTimestamp()
@@ -29,6 +31,8 @@ module.exports = async (client, guild) => {
         .addField("Guild information", stripIndents`**\\> ID:** ${guild.id}
             **\\> Name:** ${guild.name}
             **\\> Member count:** ${guild.memberCount}
+            **\\> User count:** ${users.size}
+            **\\> Bot count:** ${bots.size}
             **\\> Created at:** ${formatDateLong(guild.createdTimestamp)}
             **\\> Joined at:** ${formatDateLong(guild.joinedTimestamp)}`);
     if (!guild.owner) {
