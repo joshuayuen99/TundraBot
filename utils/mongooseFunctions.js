@@ -48,7 +48,7 @@ module.exports = (client) => {
         let merged = Object.assign(defaults, settings);
 
         const newGuild = await new Guild(merged);
-        newGuild.save()
+        await newGuild.save()
             .then(() => {
                 console.log(`Default settings saved for guild "${merged.guildName}" (${merged.guildID})`);
             }).catch((err) => {
