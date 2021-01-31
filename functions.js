@@ -32,8 +32,8 @@ module.exports = {
      * @returns {Promise<import("discord.js").TextChannel>} Guild text channel
     */
     createChannel: async function (guild, name, permissions) {
-        if (guild.channels.cache.some(channel => channel.name === name)) {
-            return guild.channels.cache.find(channel => channel.name === name);
+        if (guild.channels.cache.some(channel => (channel.type === "text" && channel.name === name))) {
+            return guild.channels.cache.find(channel => (channel.type === "text" && channel.name === name));
         }
 
         return guild.channels.create(name, {
