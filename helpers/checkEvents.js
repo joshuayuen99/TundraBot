@@ -13,11 +13,11 @@ module.exports = {
                 try {
                     // Fetch event message if not cached already
                     if (!client.guilds.cache.has(event.guildID)) await client.guilds.fetch(event.guildID).catch((err) => {
-                        console.error("Guild was deleted? Removing event from database: ", err);
+                        console.error(`Guild was deleted? (${event.guildID}) Removing event from database: `, err);
                         throw err;
                     });
                     if (!client.channels.cache.has(event.channelID)) await client.channels.fetch(event.channelID).catch((err) => {
-                        console.error("Channel was deleted? Removing event from database: ", err);
+                        console.error(`Channel was deleted? (${event.channelID}) Removing event from database: `, err);
                         throw err;
                     });
                     const channel = client.channels.cache.get(event.channelID);

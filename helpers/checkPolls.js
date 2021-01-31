@@ -13,11 +13,11 @@ module.exports = {
                 try {
                     // Fetch poll message if not cached already
                     if (!client.guilds.cache.has(poll.guildID)) await client.guilds.fetch(poll.guildID).catch((err) => {
-                        console.error("Guild was deleted? Removing poll from database: ", err);
+                        console.error(`Guild was deleted? (${poll.guildID}) Removing poll from database: `, err);
                         throw err;
                     });
                     if (!client.channels.cache.has(poll.channelID)) await client.channels.fetch(poll.channelID).catch((err) => {
-                        console.error("Channel was deleted? Removing poll from database: ", err);
+                        console.error(`Channel was deleted? (${poll.channelID}) Removing poll from database: `, err);
                         throw err;
                     });
                     const channel = client.channels.cache.get(poll.channelID);

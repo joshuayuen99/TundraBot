@@ -13,7 +13,7 @@ module.exports = {
             for (const guild of guilds) {
                 // Fetch guild if not cached already
                 if (!client.guilds.cache.has(guild.guildID)) await client.guilds.fetch(guild.guildID).catch((err) => {
-                    console.error("Guild was deleted?: ", err);
+                    console.error(`Guild was deleted? (${guild.guildID}): `, err);
                 });
 
                 const discordGuild = client.guilds.cache.get(guild.guildID);
