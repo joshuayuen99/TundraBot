@@ -1,3 +1,4 @@
+const { MessageEmbed } = require("discord.js");
 const { stripIndents } = require("common-tags");
 
 module.exports = {
@@ -116,14 +117,26 @@ module.exports = {
                 break;
             }
             default:
-                const editableSettings = ["prefix", "logChannel", "soundboardRole"];
                 let settingsString = "";
-                for (let setting in settings) {
-                    if (!editableSettings.includes(setting)) continue;
-                    settingsString += `**${setting}**: \`${settings[setting]}\`\n`;
-                }
+                // prefix
+                settingsString += `**prefix**: \`${settings["prefix"]}\`\n`;
+                
+                // logChannel
+                let logChannel = message.guild.channels.cache.get(settings["logMessages"]["channelID"]);
+                settingsString += `**logChannel**: ${logChannel}\n`;
 
-                message.channel.send(settingsString).catch((err) => {
+                //soundboardRole
+                let soundboardRole = message.guild.roles.cache.get(settings["soundboardRoleID"]);
+                settingsString += `**soundboardRole**: ${soundboardRole}\n`;
+
+                settingsString += `\nFor additional configuration visit my [web dashboard](${process.env.DASHBOARD_URL}) and log in to see this server!`;
+
+                const embedMsg = new MessageEmbed()
+                    .setColor("PURPLE")
+                    .setTitle("Configuration Settings")
+                    .setDescription(settingsString);
+
+                message.channel.send(embedMsg).catch((err) => {
                     console.error("Error displaying current config: ", err);
                     message.channel.send("Error displaying current config.");
                 });
