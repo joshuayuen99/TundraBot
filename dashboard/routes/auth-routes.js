@@ -24,10 +24,15 @@ router.get("/auth-guild", async (req, res) => {
 router.get("/auth", async (req, res) => {
     const code = req.query.code;
     try {
-        const key = await authClient.getAccess(code);
-        res.cookies.set("key", key);
+        const key = await authClient.getAccess(code)
+        .then(() => {
+            res.cookies.set("key", key);
 
-        res.redirect("/dashboard");
+            res.redirect("/dashboard");
+        }).catch((err) => {
+            console.error(`${err.statusCode} :: ${err.message}`);
+            res.render("errors/400");
+        });
     } catch (err) {
         res.redirect("/");
     }
