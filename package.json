@@ -31,7 +31,7 @@
     "cookies": "^0.8.0",
     "css-element-queries": "^1.2.3",
     "d3": "^6.2.0",
-    "disco-oauth": "^5.0.0",
+    "disco-oauth": "^4.2.7",
     "discord.js": "^12.4.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
