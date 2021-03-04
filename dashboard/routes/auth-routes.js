@@ -24,8 +24,8 @@ router.get("/auth-guild", async (req, res) => {
 router.get("/auth", async (req, res) => {
     const code = req.query.code;
     try {
-        const key = await authClient.getAccess(code)
-        .then(() => {
+        await authClient.getAccess(code)
+        .then((key) => {
             res.cookies.set("key", key);
 
             res.redirect("/dashboard");
