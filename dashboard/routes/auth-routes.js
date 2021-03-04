@@ -9,7 +9,7 @@ router.get("/invite", (req, res) => {
 });
 
 router.get("/login", (req, res) => {
-    res.redirect(`https://discord.com/api/oauth2/authorize?client_id=${process.env.BOT_ID}&redirect_uri=${process.env.DASHBOARD_URL}/auth&response_type=code&scope=identify%20guilds&prompt=none`);
+    res.redirect(`https://discord.com/api/oauth2/authorize?client_id=${process.env.BOT_ID}&redirect_uri=${process.env.DASHBOARD_URL}/auth&response_type=code&scope=identify%20guilds`);
 });
 
 router.get("/auth-guild", async (req, res) => {
