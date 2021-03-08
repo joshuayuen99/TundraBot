@@ -66,7 +66,7 @@ module.exports = {
             return;
         }
 
-        const bMember = message.mentions.members.first() || message.guild.members.get(args[0]);
+        const bMember = message.mentions.members.first() || message.guild.members.cache.get(args[0]);
 
         // No member found
         if (!bMember) {
