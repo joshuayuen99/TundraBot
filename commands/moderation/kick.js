@@ -52,7 +52,7 @@ module.exports = {
             return;
         }
 
-        const kMember = message.mentions.members.first() || message.guild.members.get(args[0]);
+        const kMember = message.mentions.members.first() || message.guild.members.cache.get(args[0]);
 
         // No member found
         if (!kMember) {
