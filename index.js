@@ -57,6 +57,10 @@ function setup() {
     // Map with members playing games
     client.gameMembers = new Map();
 
+    // Set of people currently stealing emojis in a server
+    // `${guildID}${userID}
+    client.activeEmojiStealing = new Set();
+
     // Set of people we are currently waiting on a response from so that we can ignore any further commands until we get it
     client.waitingResponse = new Set();
 
