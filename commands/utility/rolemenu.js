@@ -8,7 +8,7 @@ module.exports = {
     aliases: ["rm"],
     category: "utility",
     description: "Starts an interactive wizard to create a rolemenu. Using the update flag allows you to update a pre-existing role menu by providing the message ID. Delete or remove will delete a role menu.",
-    usage: "rolemenu [update/edit `messageID` [delete/remove `messageID`]]",
+    usage: "rolemenu [update/edit `messageID`] [delete/remove `messageID`]",
     /**
      * @param {import("discord.js").Client} client Discord Client instance
      * @param {import("discord.js").Message} message Discord Message object
