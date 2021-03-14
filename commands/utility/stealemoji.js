@@ -69,7 +69,6 @@ module.exports = {
             return embedMessage
                 .awaitReactions(filter, { max: 1, time: 60 * 1000 })
                 .then(async (collected) => {
-                    console.log(collected);
                     const reactions = collected.filter((emoji) =>
                         emoji.users.cache.has(message.author.id)
                     );
