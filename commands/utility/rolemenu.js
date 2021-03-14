@@ -71,6 +71,10 @@ module.exports = {
             if (option.emoji == reaction.emoji.toString()) {
                 reaction.message.guild.members.fetch(user.id);
                 let member = reaction.message.guild.members.cache.get(user.id);
+                if (!member) { // member left the server and reactions were automatically removed
+                    break;
+                }
+
                 if (member.roles.cache.has(option.roleID)) { // remove the role
                     member.roles.remove(option.roleID);
                 }
