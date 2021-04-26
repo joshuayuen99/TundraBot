@@ -19,7 +19,7 @@ module.exports = async (client, member) => {
         const micon = member.user.displayAvatarURL();
     
         const embedMsg = new MessageEmbed()
-            .setDescription(`${member.user.username} left the server`)
+            .setDescription(`${member.user} (${member.user.tag}) left the server`)
             .setColor("RED")
             .setThumbnail(micon)
             .addField(`${member.user.username} joined`, `${formatDateLong(member.joinedAt)} EST`)
