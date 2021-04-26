@@ -6,7 +6,7 @@ module.exports = {
     name: "kick",
     category: "moderation",
     description: "Kicks the member.",
-    usage: "kick <mention | id> <reason>",
+    usage: "kick <mention | id> [reason]",
     /**
      * @param {import("discord.js").Client} client Discord Client instance
      * @param {import("discord.js").Message} message Discord Message object
@@ -25,11 +25,6 @@ module.exports = {
             return;
         }
 
-        // No reason specified
-        if (!args[1]) {
-            await message.reply(`Usage: \`${module.exports.usage}\``);
-            return;
-        }
         const reason = args.splice(1).join(" ");
 
         // No author permission
@@ -145,13 +140,24 @@ module.exports = {
                         .setTimestamp();
 
                     if (moderator) {
-                        embedMsg.setDescription(stripIndents`**\\> Kicked member:** ${kMember} (${kMember.id})
-                        **\\> Kicked by:** ${moderator}
-                        **\\> Reason:** ${reason}`)
-                            .setFooter(moderator.displayName, moderator.user.displayAvatarURL());
+                        if (reason) {
+                            embedMsg.setDescription(stripIndents`**\\> Kicked member:** ${kMember} (${kMember.id})
+                                **\\> Kicked by:** ${moderator}
+                                **\\> Reason:** ${reason}`);
+                        } else {
+                            embedMsg.setDescription(stripIndents`**\\> Kicked member:** ${kMember} (${kMember.id})
+                                **\\> Kicked by:** ${moderator}
+                                **\\> Reason:** \`Not specified\``);
+                        }
+                        embedMsg.setFooter(moderator.displayName, moderator.user.displayAvatarURL());
                     } else {
-                        embedMsg.setDescription(stripIndents`**\\> Kicked member:** ${kMember} (${kMember.id})
-                        **\\> Reason:** ${reason}`);
+                        if (reason) {
+                            embedMsg.setDescription(stripIndents`**\\> Kicked member:** ${kMember} (${kMember.id})
+                                **\\> Reason:** ${reason}`);
+                        } else {
+                            embedMsg.setDescription(stripIndents`**\\> Kicked member:** ${kMember} (${kMember.id})
+                                **\\> Reason:** \`Not specified\``);
+                        }
                     }
 
                     logChannel.send(embedMsg).catch((err) => {
