@@ -59,6 +59,24 @@ module.exports = async (client, guild) => {
         }).catch((err) => {
             console.error("Database error when adding logChannel: ", err);
         });
+
+        const embedGreeting = new MessageEmbed()
+            .setTitle("TundraBot Info")
+            .setDescription(stripIndents`**Thanks for adding me to your server!**
+
+            I offer lots of configuration via my [web dashboard](${process.env.DASHBOARD_URL}), but the basics can also be changed with commands as described below!
+            
+            My default prefix is \`${defaults.prefix}\` (not \`-\`)! This is the top-left key on most keyboards. To change this you may run \`${defaults.prefix}config prefix <new prefix>\` (without the <>s).
+            
+            This channel will serve as the default channel I will use to log whenever moderation commands are used and by who. You may also change this with \`${defaults.prefix}config logChannel <new channel>\`.
+            
+            Type \`${defaults.prefix}help\` to get started with a list of all commands! \`${defaults.prefix}help <command>\` will display more info on a specific command.
+            
+            `)
+            .addField("Useful links", `[Website/Dashboard](${process.env.DASHBOARD_URL}), [Invite Me](${process.env.BOT_INVITE_LINK}), [Support Server](${process.env.SUPPORT_SERVER_INVITE_LINK})`)
+            .setColor("BLUE")
+            .setThumbnail(client.user.displayAvatarURL());
+        channel.send(embedGreeting);
     }).catch((err) => {
         console.error("Couldn't create log channel: ", err);
 
