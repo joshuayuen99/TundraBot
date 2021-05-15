@@ -135,8 +135,10 @@ router.put("/servers/:id/:module", validateGuild, async (req, res) => {
             if (req.body.joinMessagesEnabled == "on") {
                 settings.joinMessages.enabled = true;
                 settings.joinMessages.channelID = req.body.joinMessagesChannel;
+                settings.joinMessages.trackInvites = true;
             } else {
                 settings.joinMessages.enabled = false;
+                settings.joinMessages.trackInvites = true;
             }
 
             // Leave messages
