@@ -529,7 +529,7 @@ async function createQueue(client, guildID, voiceChannel, effect) {
         playEffect(client, guildID);
     }
     catch (err) {
-        console.error("Failed to join channel and start playing music: ", err);
+        console.error("Failed to join channel and start playing soundboard effect: ", err);
         client.soundboardGuilds.delete(guildID);
         return;
     }
