@@ -94,6 +94,10 @@ module.exports = {
                         .setDescription("Cancelling game due to inactivity.")
                         .setFooter(message.member.displayName, message.author.avatarURL());
                     message.channel.send(inactivityEmbed);
+
+                    // Remove game state for user
+                    client.gameMembers.delete(`${message.guild.id}${message.member.id}`);
+
                     return;
                 }
                 answer = answer.content;
@@ -128,6 +132,7 @@ module.exports = {
                             .setFooter(message.member.displayName, message.author.avatarURL());
                         message.channel.send(gameCancelledEmbed);
 
+                        // Remove game state for user
                         client.gameMembers.delete(`${message.guild.id}${message.member.id}`);
 
                         return;
@@ -163,6 +168,7 @@ module.exports = {
                 .setFooter(message.member.displayName, message.author.avatarURL());
             message.channel.send(embedMsg);
 
+            // Remove game state for user
             client.gameMembers.delete(`${message.guild.id}${message.member.id}`);
         }
     }
