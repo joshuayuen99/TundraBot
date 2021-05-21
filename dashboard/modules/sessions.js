@@ -3,9 +3,9 @@ const { client } = require("../../index");
 
 const sessions = new Map();
 
-function get(key) {
+async function get(key) {
     let data = sessions.get(key);
-    if (data === undefined) data = create(key);
+    if (data === undefined) data = await create(key);
     return data;
 }
 
