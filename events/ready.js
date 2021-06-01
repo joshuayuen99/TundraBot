@@ -16,9 +16,13 @@ module.exports = (client) => {
     client.user.setPresence({
         status: "online",
         activity: {
-            name: "music ~play | ~help",
-            type: "PLAYING",
+            name: `~help (not -)!`,
+            type: "WATCHING"
         }
+    }).then(() => {
+        console.log("Set bot status");
+    }).catch((err) => {
+        console.error("Error setting bot status: ", err);
     });
 
     guildsSanityCheck.init(client);
