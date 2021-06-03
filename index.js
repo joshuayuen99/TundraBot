@@ -11,8 +11,7 @@ function setup() {
     }
 
     const client = new Client({
-        disableEveryone: false,
-        fetchAllMembers: true
+        disableEveryone: false
     });
 
     // Config
@@ -76,7 +75,7 @@ function setup() {
     client.databaseCache.soundEffects = new Collection();
     client.databaseCache.memberSoundEffects = new Collection();
 
-    client.login(process.env.DISCORDTOKEN);
+    client.login(process.env.DISCORDTOKEN).catch((err) => console.error(err));
 
     // Start dashboard server
     require("./dashboard/server");

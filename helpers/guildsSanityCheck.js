@@ -10,10 +10,11 @@ module.exports = {
         Guild.find().then(async (guilds) => {
             // Check for newly left guilds
             for (const guild of guilds) {
-                // Fetch guild if not cached already
-                if (!client.guilds.cache.has(guild.guildID)) await client.guilds.fetch(guild.guildID).catch((err) => {
-                    console.error(`Guild was deleted? (${guild.guildID}): `, err);
-                });
+                // Check if guild was deleted
+                if (!client.guilds.cache.has(guild.guildID)) {
+                    console.error(`Guild was deleted? (${guild.guildID})`);
+                    continue;
+                }
             }
 
             // Check for newly joined guilds

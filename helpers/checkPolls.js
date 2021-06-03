@@ -12,10 +12,10 @@ module.exports = {
             for (const poll of polls) {
                 try {
                     // Fetch poll message if not cached already
-                    if (!client.guilds.cache.has(poll.guildID)) await client.guilds.fetch(poll.guildID).catch((err) => {
-                        console.error(`Guild was deleted? (${poll.guildID}) Removing poll from database: `, err);
-                        throw err;
-                    });
+                    if (!client.guilds.cache.has(poll.guildID)) {
+                        console.error(`Guild was deleted? (${poll.guildID}) Removing poll from database`);
+                        throw new Error();
+                    }
                     if (!client.channels.cache.has(poll.channelID)) await client.channels.fetch(poll.channelID).catch((err) => {
                         console.error(`Channel was deleted? (${poll.channelID}) Removing poll from database: `, err);
                         throw err;

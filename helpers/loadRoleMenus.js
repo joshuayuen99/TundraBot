@@ -10,10 +10,10 @@ module.exports = {
             for (const roleMenu of roleMenus) {
                 try {
                     // Fetch role menu message if not cached already
-                    if (!client.guilds.cache.has(roleMenu.guildID)) await client.guilds.fetch(roleMenu.guildID).catch((err) => {
-                        console.error(`Guild was deleted? (${roleMenu.guildID}) Removing role menu from database: `, err);
-                        throw err;
-                    });
+                    if (!client.guilds.cache.has(roleMenu.guildID)) {
+                        console.error(`Guild was deleted? (${roleMenu.guildID}) Removing role menu from database`);
+                        throw new Error();
+                    }
                     if (!client.channels.cache.has(roleMenu.channelID)) await client.channels.fetch(roleMenu.channelID).catch((err) => {
                         console.error(`Channel was deleted? (${roleMenu.channelID}) Removing role menu from database: `, err);
                         throw err;

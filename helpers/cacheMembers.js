@@ -11,10 +11,11 @@ module.exports = {
         }).then(async (guilds) => {
             async function cacheMembers() {
                 for (const guild of guilds) {
-                    // Fetch guild if not cached already
-                    if (!client.guilds.cache.has(guild.guildID)) await client.guilds.fetch(guild.guildID).catch((err) => {
-                        console.error(`Guild was deleted? (${guild.guildID}): `, err);
-                    });
+                    // Check if guild was deleted
+                    if (!client.guilds.cache.has(guild.guildID)) {
+                        console.error(`Guild was deleted? (${guild.guildID})`);
+                        continue;
+                    }
 
                     client.guilds.cache.get(guild.guildID).members.fetch();
                 }

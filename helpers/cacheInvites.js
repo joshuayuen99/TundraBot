@@ -11,10 +11,11 @@ module.exports = {
         }).then(async (guilds) => {
             let totalInvites = 0;
             for (const guild of guilds) {
-                // Fetch guild if not cached already
-                if (!client.guilds.cache.has(guild.guildID)) await client.guilds.fetch(guild.guildID).catch((err) => {
-                    console.error(`Guild was deleted? (${guild.guildID}): `, err);
-                });
+                // Check if guild was deleted
+                if (!client.guilds.cache.has(guild.guildID)) {
+                    console.error(`Guild was deleted? (${guild.guildID})`);
+                    continue;
+                }
 
                 const discordGuild = client.guilds.cache.get(guild.guildID);
                 totalInvites += await module.exports.cacheInvites(client, discordGuild);

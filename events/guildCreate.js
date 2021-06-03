@@ -70,9 +70,7 @@ module.exports = async (client, guild) => {
             
             This channel will serve as the default channel I will use to log whenever moderation commands are used and by who. You may also change this with \`${defaults.prefix}config logChannel <new channel>\`.
             
-            Type \`${defaults.prefix}help\` to get started with a list of all commands! \`${defaults.prefix}help <command>\` will display more info on a specific command.
-            
-            `)
+            Type \`${defaults.prefix}help\` to get started with a list of all commands! \`${defaults.prefix}help <command>\` will display more info on a specific command.`)
             .addField("Useful links", `[Website/Dashboard](${process.env.DASHBOARD_URL}), [Invite Me](${process.env.BOT_INVITE_LINK}), [Support Server](${process.env.SUPPORT_SERVER_INVITE_LINK})`)
             .setColor("BLUE")
             .setThumbnail(client.user.displayAvatarURL());

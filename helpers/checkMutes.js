@@ -10,8 +10,11 @@ module.exports = {
         Member.find({ "mute.endTime": { $ne: null } }).then(async (members) => {
             const dateNow = Date.now();
             for (const member of members) {
-                // Fetch guild if not cached already
-                if (!client.guilds.cache.has(member.guildID)) await client.guilds.fetch(member.guildID);
+                // Check if guild was deleted
+                if (!client.guilds.cache.has(member.guildID)) {
+                    console.error(`Guild was deleted? (${member.guildID})`);
+                    continue;
+                }
                 const guild = client.guilds.cache.get(member.guildID);
 
                 const discordMember = guild.members.cache.get(member.userID);
