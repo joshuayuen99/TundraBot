@@ -50,7 +50,7 @@
     "node-opus": "^0.3.3",
     "pug": "^3.0.0",
     "youtube-search": "^1.1.6",
-    "ytdl-core": "^4.8.2"
+    "ytdl-core": "^4.8.3"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
