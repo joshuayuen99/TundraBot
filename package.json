@@ -13,14 +13,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/joshuayuen99/discordbot.git"
+    "url": "git+https://github.com/joshuayuen99/tundrabot.git"
   },
   "author": "Joshua Yuen",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/joshuayuen99/discordbot/issues"
+    "url": "https://github.com/joshuayuen99/tundrabot/issues"
   },
-  "homepage": "https://github.com/joshuayuen99/discordbot#readme",
+  "homepage": "https://github.com/joshuayuen99/tundrabot#readme",
   "dependencies": {
     "@babel/core": "^7.14.6",
     "@discord-player/downloader": "^2.0.3",

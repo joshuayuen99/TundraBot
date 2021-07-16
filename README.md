@@ -87,7 +87,7 @@ ffmpeg -version
 
 Download or clone this repository with the command:
 ```
-git clone https://github.com/joshuayuen99/discordbot.git
+git clone https://github.com/joshuayuen99/tundrabot.git
 ```
 
 Navigate to the newly created `discordbot` directory and type the following command:
