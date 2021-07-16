@@ -1,32 +1,13 @@
 /*
 Logger class for easy and aesthetically pleasing console logging
 */
+
+import momentTimezone from "moment-timezone";
+
 import { bgBlue, black, green } from "chalk";
 
-function dateTimePad(value, digits) {
-    let number = value;
-    while (number.toString().length < digits) {
-        number = "0" + number;
-    }
-    return number;
-}
-
 function format(tDate: Date) {
-    return (
-        tDate.getFullYear() +
-        "-" +
-        dateTimePad(tDate.getMonth() + 1, 2) +
-        "-" +
-        dateTimePad(tDate.getDate(), 2) +
-        " " +
-        dateTimePad(tDate.getHours(), 2) +
-        ":" +
-        dateTimePad(tDate.getMinutes(), 2) +
-        ":" +
-        dateTimePad(tDate.getSeconds(), 2) +
-        "." +
-        dateTimePad(tDate.getMilliseconds(), 3)
-    );
+    return momentTimezone(tDate).tz("America/New_York").format("YYYY-MM-DD HH:mm:ss:SSS");
 }
 
 type LogType = "info" | "warn" | "error" | "debug" | "cmd" | "ready";
