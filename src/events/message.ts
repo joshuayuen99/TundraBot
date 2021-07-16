@@ -162,8 +162,7 @@ export default class MessageHandler extends EventHandler {
                 if (!validateBotPermissions(ctx)) return;
                 if (!validateMemberPermissions(ctx)) return;
 
-                // TODO: comment before pushing
-                Logger.log("cmd", `${cmd} ${args.join(" ")}`);
+                // Logger.log("cmd", `${cmd} ${args.join(" ")}`);
                 command.execute(ctx, args).catch((err) => {
                     Logger.log(
                         "error",
