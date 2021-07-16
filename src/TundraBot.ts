@@ -5,13 +5,15 @@ import * as dotenv from "dotenv";
 import Server from "./dashboard/server";
 
 import fetch from "node-fetch";
+import { exit } from "process";
 
 function setup() {
     const result = dotenv.config({
-        path: __dirname + "/.env",
+        path: __dirname + "/../.env",
     });
     if (result.error) {
-        Logger.log("error", result.error.message);
+        Logger.log("error", `Error loading .env file:\n${result.error.message}`);
+        exit(1);
     }
 
     // TODO: update package to use fork of discord-player until bugfix gets pushed to production
