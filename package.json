@@ -2,7 +2,8 @@
   "name": "tundrabot",
   "version": "1.0.0",
   "engines": {
-    "node": ">=14.0.0"
+    "node": "14.16.1",
+    "npm": ">=7.19.1"
   },
   "description": "",
   "main": "TundraBot.ts",
