@@ -35,15 +35,4 @@ describe("API Connections", function () {
 			return client.login(process.env.DISCORDTOKEN);
 		});
 	});
-	describe("YouTube API", function () {
-		it("Connects", async function () {
-			const videoOpts = {
-				maxResults: 5,
-				type: "video",
-				key: process.env.YOUTUBEKEY
-			};
-			let { results, pageInfo } = await search("", videoOpts);
-			assert.isNotNull(results);
-		})
-	});
 });

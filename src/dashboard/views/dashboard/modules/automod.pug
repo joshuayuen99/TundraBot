@@ -1,0 +1,60 @@
+section#musicModule.module.css-transitions-only-after-page-load
+    .jumbotron.bg-transparent.pb-0
+        h1.display-4.text-center Music
+    .form-group.mt-5
+        .row
+            h1 Coming Soon!
+
+//- include ../../includes/mixins.pug
+
+//- section#autoModModule.module.css-transitions-only-after-page-load
+//-     .jumbotron.bg-transparent.pb-0
+//-         h1.display-4.text-center Auto-mod
+//-     .row.px-3.justify-content-center.pb-3
+//-         .col
+//-             ul#automodTabs.nav.nav-tabs.mb-3(role='tablist')
+//-                 li.nav-item
+//-                     a#home-tab.nav-link.active(data-toggle='tab', href='#home', role='tab', aria-controls='home', aria-selected='true') Home
+//-                 li.nav-item
+//-                     a#profile-tab.nav-link(data-toggle='tab', href='#profile', role='tab', aria-controls='profile', aria-selected='false') Profile
+//-                 li.nav-item
+//-                     a#contact-tab.nav-link(data-toggle='tab', href='#contact', role='tab', aria-controls='contact', aria-selected='false') Contact
+//-             #automodTabContent.tab-content
+//-                 #home.tab-pane.fade.show.active(role='tabpanel', aria-labelledby='home-tab') 
+//-                     .row.px-3.justify-content-center.pb-3
+//-                         .col
+//-                             .dashboard-item
+//-                                 form#createRulesetForm(action=`/servers/${guild.id}/automod/createRuleset?_method=PUT`, method="POST")
+//-                                     .form-group
+//-                                         label
+//-                                             strong Create a new ruleset
+//-                                         br
+//-                                         | Name
+//-                                         input#newRulesetName.form-control(type="text" name="newRulesetName" minlength="1" required)
+//-                                         .invalid-feedback Please enter a ruleset name!
+//-                                     button#createNewRuleset.btn.btn-primary Create
+//-                 #profile.tab-pane.fade(role='tabpanel', aria-labelledby='profile-tab') profile tab
+//-                 #contact.tab-pane.fade(role='tabpanel', aria-labelledby='contact-tab') contact tab
+//-     .row.px-3.justify-content-center.pb-3
+//-         .col
+//-             #autoModTriggerSection.automod-rule-part-table(data-automod-part-type="0")
+//-                 label
+//-                     strong Triggers
+//-                 .row.autoModTriggerRow
+//-                     .col-5
+//-                         p Type
+//-                         .autoModTriggerTypeDiv
+//-                             select.autoModTriggerType.form-control(name="trigger-selection")
+//-                                 option None
+//-                                 each trigger of availableTriggers
+//-                                     +trigger(trigger)
+//-                     .col-5
+//-                         p Options
+//-                             .autoModTriggerOptionsDiv
+                
+//-             .row
+//-                 | test
+                
+                
+
+//- script(src="/js/automod.js", defer)
