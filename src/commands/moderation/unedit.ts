@@ -149,10 +149,16 @@ export default class Unedit implements Command {
                     const messageEditTime = moment(savedMessage.updatedAt);
                     const messageEditTimeDiscordDate = formatDiscordDate(messageEditTime.toDate());
                     const timeSinceEdited = messageEditTime.fromNow();
-                    const messageText = savedMessage.text;
+                    let messageText = savedMessage.text;
                     const editText = savedMessage.editedText;
                     const author = `<@${savedMessage.userID}>`;
                     const channel = `<#${savedMessage.channelID}>`;
+
+                    // message with attachments only
+                    if (!messageText) {
+                        const attachmentCount = savedMessage.attachments.length;
+                        messageText = `\`${attachmentCount} attachment(s)\``;
+                    }
 
                     editedMessagesString += `**[${editedMessagesCount}] ${timeSinceEdited} (${messageEditTimeDiscordDate})**\n`;
                     
@@ -161,17 +167,13 @@ export default class Unedit implements Command {
                     if (!searchOptions.channelID)
                         editedMessagesString += `Channel: ${channel}\n`;
 
-                    if (editText) {
-                        editedMessagesString += `\nOriginal message:\n\`${messageText}\`\n`;
+                    editedMessagesString += `\n\`Original message:\`\n${messageText}\n`;
 
-                        let editCounter = 1;
-                        editText.forEach((edit) => {
-                            editedMessagesString += `Edit ${editCounter}:\n\`${edit}\`\n`;
-                            editCounter += 1;
-                        });
-                    } else {
-                        editedMessagesString += `${messageText}\n\n`;
-                    }
+                    let editCounter = 1;
+                    editText.forEach((edit) => {
+                        editedMessagesString += `\`Edit ${editCounter}:\`\n${edit}\n`;
+                        editCounter += 1;
+                    });
 
                     editedMessagesString += "\n";
                 });

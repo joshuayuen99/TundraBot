@@ -149,10 +149,16 @@ export default class Undelete implements Command {
                     const messageDeleteTime = moment(savedMessage.updatedAt);
                     const messageDeleteTimeDiscordDate = formatDiscordDate(messageDeleteTime.toDate());
                     const timeSinceDeletion = messageDeleteTime.fromNow();
-                    const messageText = savedMessage.text;
+                    let messageText = savedMessage.text;
                     const editText = savedMessage.editedText;
                     const author = `<@${savedMessage.userID}>`;
                     const channel = `<#${savedMessage.channelID}>`;
+
+                    // message with attachments only
+                    if (!messageText) {
+                        const attachmentCount = savedMessage.attachments.length;
+                        messageText = `\`${attachmentCount} attachment(s)\``;
+                    }
 
                     deletedMessagesString += `**[${deletedMessagesCount}] ${timeSinceDeletion} (${messageDeleteTimeDiscordDate})**\n`;
                     
@@ -161,17 +167,13 @@ export default class Undelete implements Command {
                     if (!searchOptions.channelID)
                         deletedMessagesString += `Channel: ${channel}\n`;
 
-                    if (editText) {
-                        deletedMessagesString += `Original message:\n\`${messageText}\`\n\n`;
+                    deletedMessagesString += `Original message:\n${messageText}\n\n`;
 
-                        let editCounter = 1;
-                        editText.forEach((edit) => {
-                            deletedMessagesString += `Edit ${editCounter}:\n\`${edit}\`\n`;
-                            editCounter += 1;
-                        });
-                    } else {
-                        deletedMessagesString += `${messageText}\n\n`;
-                    }
+                    let editCounter = 1;
+                    editText.forEach((edit) => {
+                        deletedMessagesString += `Edit ${editCounter}:\n\`${edit}\`\n`;
+                        editCounter += 1;
+                    });
 
                     deletedMessagesString += "\n";
                 });
