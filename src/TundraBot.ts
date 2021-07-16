@@ -16,7 +16,6 @@ function setup() {
         exit(1);
     }
 
-    // TODO: update package to use fork of discord-player until bugfix gets pushed to production
     const client = new TundraBot();
 
     // Login
