@@ -42,6 +42,11 @@ export async function getMember(
         });
     }
 
+    // Search for ID
+    if (!target && toFind) {
+        target = message.guild.members.cache.get(toFind);
+    }
+
     // If no one is found that matches, return the callee
     if (!target) {
         target = message.member;
