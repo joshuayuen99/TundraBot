@@ -14,7 +14,6 @@
       "strictNullChecks": false,
       "target": "ES6",
       "typeRoots": ["@types"],
-      "watch": true
     },
     "include": ["src"]
   }
