@@ -1,7 +1,7 @@
 import { Command, CommandContext } from "../../base/Command";
 
 import { MessageEmbed, PermissionString } from "discord.js";
-import { getMember, formatDate, sendMessage } from "../../utils/functions";
+import { getMember, formatDateShort, sendMessage } from "../../utils/functions";
 import { stripIndents } from "common-tags";
 
 export default class WhoIs implements Command {
@@ -24,7 +24,7 @@ export default class WhoIs implements Command {
         const member = await getMember(ctx.msg, args.join(" "));
 
         // Member variables
-        const joined = formatDate(member.joinedAt);
+        const joined = formatDateShort(member.joinedAt);
         const roles =
             member.roles.cache
                 .filter((r) => r.id !== ctx.guild.id) // Filters out the @everyone role
@@ -32,7 +32,7 @@ export default class WhoIs implements Command {
                 .join(", ") || "`none`";
 
         // User variables
-        const created = formatDate(member.user.createdAt);
+        const created = formatDateShort(member.user.createdAt);
         const avatarURL = member.user.displayAvatarURL();
 
         const embedMsg = new MessageEmbed()

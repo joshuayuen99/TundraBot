@@ -1,6 +1,6 @@
 import { EventHandler } from "../base/EventHandler";
 import { Guild, MessageEmbed } from "discord.js";
-import { formatDate, formatDateLong } from "../utils/functions";
+import { formatDateShort, formatDateLong } from "../utils/functions";
 import Deps from "../utils/deps";
 import { TundraBot } from "../base/TundraBot";
 import { DBGuild } from "../models/Guild";
@@ -44,7 +44,7 @@ export default class GuildDeleteHandler extends EventHandler {
                 **\\> User count:** ${users.size}
                 **\\> Bot count:** ${bots.size}
                 **\\> Created at:** ${formatDateLong(guild.createdAt)}
-                **\\> Joined at:** ${formatDateLong(guild.createdAt)}`
+                **\\> Joined at:** ${formatDateLong(guild.me.joinedAt)}`
             );
         if (guild.owner) {
             embedMsg.addField(
@@ -52,7 +52,7 @@ export default class GuildDeleteHandler extends EventHandler {
                 stripIndents`**\\> ID:** ${guild.owner.user.id}
                 **\\> Username:** ${guild.owner.user.username}
                 **\\> Discord Tag:** ${guild.owner.user.tag}
-                **\\> Created account:** ${formatDate(guild.owner.user.createdAt)}`,
+                **\\> Created account:** ${formatDateShort(guild.owner.user.createdAt)}`,
                 true
             );
         }

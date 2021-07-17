@@ -1,7 +1,7 @@
 import { Command, CommandContext } from "../../base/Command";
 
 import { MessageEmbed } from "discord.js";
-import { formatDate, formatDateLong, sendMessage, sendReply } from "../../utils/functions";
+import { formatDateShort, formatDateLong, sendMessage, sendReply } from "../../utils/functions";
 import { stripIndents } from "common-tags";
 
 export default class Oldest implements Command {
@@ -61,7 +61,7 @@ export default class Oldest implements Command {
                 .join(", ") || "none";
 
         // User variables
-        const created = formatDate(member.user.createdAt);
+        const created = formatDateShort(member.user.createdAt);
 
         const embedMsg = new MessageEmbed()
             .setFooter(member.displayName, member.user.displayAvatarURL())

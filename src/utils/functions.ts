@@ -135,30 +135,18 @@ export async function createRole(
     return;
 }
 
-export function formatDiscordDate(date: Date): string {
+export function formatDateShort(date: Date): string {
     const momentDate = moment(date);
-    const discordDate = `<t:${momentDate.unix()}:F>`;
+    const discordDate = `<t:${momentDate.unix()}:D>`;
 
     return discordDate;
 }
 
-export function formatDate(date: Date): string {
-    return new Intl.DateTimeFormat("en-US").format(date);
-}
-
 export function formatDateLong(date: Date): string {
-    const options = {
-        timeZone: "America/New_York",
-        hour12: true,
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-        second: "numeric",
-    } as Intl.DateTimeFormatOptions;
-    return new Intl.DateTimeFormat("en-US", options).format(date);
+    const momentDate = moment(date);
+    const discordDate = `<t:${momentDate.unix()}:F>`;
+
+    return discordDate;
 }
 
 /**

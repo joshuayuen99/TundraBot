@@ -8,7 +8,7 @@ import {
 } from "discord.js";
 import { stripIndents } from "common-tags";
 import {
-    formatDiscordDate,
+    formatDateLong,
     getTextChannel,
     sendMessage,
     sendReply,
@@ -172,7 +172,7 @@ export default class Poll implements Command {
             .setTitle("Poll")
             .addField("Question", pollQuestionMessage.content)
             .addField("Created by", ctx.member)
-            .addField("Poll ends", formatDiscordDate(endTime));
+            .addField("Poll ends", formatDateLong(endTime));
 
         const pollMessage = (await sendMessage(ctx.client, promptEmbed, postChannel)) as Message;
 
@@ -284,7 +284,7 @@ export default class Poll implements Command {
             .addField("Question", poll.pollQuestion)
             .addField("Results", resultsString)
             .addField("Created by", pollCreatorMember)
-            .addField("Poll ended", formatDiscordDate(poll.endTime));
+            .addField("Poll ended", formatDateLong(poll.endTime));
 
         msg.edit(resultsEmbed);
 

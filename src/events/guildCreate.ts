@@ -3,7 +3,7 @@ import { Guild, MessageEmbed } from "discord.js";
 import {
     createChannel,
     createRole,
-    formatDate,
+    formatDateShort,
     formatDateLong,
     sendMessage,
 } from "../utils/functions";
@@ -58,7 +58,7 @@ export default class GuildCreateHandler extends EventHandler {
                 **\\> User count:** ${users.size}
                 **\\> Bot count:** ${bots.size}
                 **\\> Created at:** ${formatDateLong(guild.createdAt)}
-                **\\> Joined at:** ${formatDateLong(guild.createdAt)}`
+                **\\> Joined at:** ${formatDateLong(guild.me.joinedAt)}`
             );
         if (!guild.owner) {
             await guild.members.fetch(guild.ownerID);
@@ -68,7 +68,7 @@ export default class GuildCreateHandler extends EventHandler {
             stripIndents`**\\> ID:** ${guild.owner.user.id}
             **\\> Username:** ${guild.owner.user.username}
             **\\> Discord Tag:** ${guild.owner.user.tag}
-            **\\> Created account:** ${formatDate(guild.owner.user.createdAt)}`,
+            **\\> Created account:** ${formatDateShort(guild.owner.user.createdAt)}`,
             true
         );
 

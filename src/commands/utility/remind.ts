@@ -1,6 +1,6 @@
 import { Command, CommandContext } from "../../base/Command";
 import {
-    formatDiscordDate,
+    formatDateLong,
     sendMessage,
     sendReply,
 } from "../../utils/functions";
@@ -73,7 +73,7 @@ export default class Remind implements Command {
             .setThumbnail(ctx.author.avatarURL())
             .setTitle("Reminder set")
             .setDescription(reminder)
-            .addField("Reminder for", formatDiscordDate(endTime));
+            .addField("Reminder for", formatDateLong(endTime));
 
         sendMessage(ctx.client, embedMsg, ctx.channel);
 
@@ -108,7 +108,7 @@ export default class Remind implements Command {
                     .setDescription(reminder.reminder)
                     .addField(
                         "Reminder for",
-                        formatDiscordDate(reminder.endTime)
+                        formatDateLong(reminder.endTime)
                     )
                     .setTimestamp(reminder.endTime);
 

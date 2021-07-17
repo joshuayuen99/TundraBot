@@ -1,7 +1,7 @@
 import { Command, CommandContext } from "../../base/Command";
 import { MessageEmbed } from "discord.js";
 import moment from "moment";
-import { formatDiscordDate, getTextChannel, sendReply } from "../../utils/functions";
+import { formatDateLong, getTextChannel, sendReply } from "../../utils/functions";
 import { messageInterface, messageModel } from "../../models/Message";
 import { FilterQuery } from "mongoose";
 import Logger from "../../utils/logger";
@@ -147,7 +147,7 @@ export default class Undelete implements Command {
                 messages.forEach((savedMessage) => {
                     deletedMessagesCount += 1;
                     const messageDeleteTime = moment(savedMessage.updatedAt);
-                    const messageDeleteTimeDiscordDate = formatDiscordDate(messageDeleteTime.toDate());
+                    const messageDeleteTimeDiscordDate = formatDateLong(messageDeleteTime.toDate());
                     const timeSinceDeletion = messageDeleteTime.fromNow();
                     let messageText = savedMessage.text;
                     const editText = savedMessage.editedText;

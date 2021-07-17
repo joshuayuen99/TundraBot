@@ -11,7 +11,7 @@ import {
 import { DBEvent, eventInterface } from "../../models/Event";
 import { stripIndents } from "common-tags";
 import {
-    formatDiscordDate,
+    formatDateLong,
     getTextChannel,
     sendMessage,
     sendReply,
@@ -268,7 +268,7 @@ export default class Event implements Command {
             .setTimestamp(endTime.toDate())
             .setTitle("Scheduled Event")
             .addField("Event", eventTitleMessage.content)
-            .addField("Time", formatDiscordDate(endTime.toDate()))
+            .addField("Time", formatDateLong(endTime.toDate()))
             .addField(
                 "Scheduled by",
                 stripIndents`${ctx.member}
@@ -379,7 +379,7 @@ export default class Event implements Command {
             .setTimestamp(cachedEvent.endTime)
             .setTitle("Scheduled Event")
             .addField("Event", cachedEvent.event)
-            .addField("Time", formatDiscordDate(cachedEvent.endTime))
+            .addField("Time", formatDateLong(cachedEvent.endTime))
             .addField(
                 "Scheduled by",
                 stripIndents`${eventCreatorMember}
@@ -473,7 +473,7 @@ export default class Event implements Command {
             .setTimestamp(cachedEvent.endTime)
             .setTitle("Scheduled Event")
             .addField("Event", cachedEvent.event)
-            .addField("Time", formatDiscordDate(cachedEvent.endTime))
+            .addField("Time", formatDateLong(cachedEvent.endTime))
             .addField(
                 "Scheduled by",
                 stripIndents`${eventCreatorMember}
@@ -543,7 +543,7 @@ export default class Event implements Command {
             .setTimestamp(event.endTime)
             .setTitle("Event Started")
             .addField("Event", event.event)
-            .addField("Time", formatDiscordDate(event.endTime))
+            .addField("Time", formatDateLong(event.endTime))
             .addField("Scheduled by", eventCreatorMember);
 
         // Print differently depending on if there was a cap set or not for participants
