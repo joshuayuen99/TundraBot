@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import { Command, CommandContext } from "../../base/Command";
 
 import { MessageEmbed, PermissionString } from "discord.js";
