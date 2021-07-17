@@ -1,6 +1,6 @@
 import { EventHandler } from "../base/EventHandler";
-import { Guild, MessageEmbed } from "discord.js";
-import { formatDateShort, formatDateLong } from "../utils/functions";
+import { Guild, MessageEmbed, TextChannel } from "discord.js";
+import { formatDateShort, formatDateLong, sendMessage } from "../utils/functions";
 import Deps from "../utils/deps";
 import { TundraBot } from "../base/TundraBot";
 import { DBGuild } from "../models/Guild";
@@ -25,8 +25,6 @@ export default class GuildDeleteHandler extends EventHandler {
     }
 
     async notifyOwner(guild: Guild): Promise<void> {
-        const owner = await this.client.users.fetch(process.env.OWNERID);
-
         const [bots, users] = guild.members.cache.partition(
             (member) => member.user.bot
         );
@@ -44,7 +42,7 @@ export default class GuildDeleteHandler extends EventHandler {
                 **\\> User count:** ${users.size}
                 **\\> Bot count:** ${bots.size}
                 **\\> Created at:** ${formatDateLong(guild.createdAt)}
-                **\\> Joined at:** ${formatDateLong(guild.me.joinedAt)}`
+                **\\> Joined at:** ${formatDateLong(guild.joinedAt)}`
             );
         if (guild.owner) {
             embedMsg.addField(
@@ -57,6 +55,10 @@ export default class GuildDeleteHandler extends EventHandler {
             );
         }
 
-        owner.send(embedMsg);
+        const supportGuild = await this.client.guilds.fetch(process.env.SUPPORT_SERVER_ID);
+        
+        const leaveChannel = supportGuild.channels.cache.get(process.env.SUPPORT_SERVER_LEAVE_CHANNEL_ID) as TextChannel;
+
+        sendMessage(this.client, embedMsg, leaveChannel);
     }
 }

@@ -1,5 +1,5 @@
 import { EventHandler } from "../base/EventHandler";
-import { Guild, MessageEmbed } from "discord.js";
+import { Guild, MessageEmbed, TextChannel } from "discord.js";
 import {
     createChannel,
     createRole,
@@ -39,8 +39,6 @@ export default class GuildCreateHandler extends EventHandler {
     }
 
     async notifyOwner(guild: Guild): Promise<void> {
-        const owner = await this.client.users.fetch(process.env.OWNERID);
-
         const [bots, users] = guild.members.cache.partition(
             (member) => member.user.bot
         );
@@ -58,7 +56,7 @@ export default class GuildCreateHandler extends EventHandler {
                 **\\> User count:** ${users.size}
                 **\\> Bot count:** ${bots.size}
                 **\\> Created at:** ${formatDateLong(guild.createdAt)}
-                **\\> Joined at:** ${formatDateLong(guild.me.joinedAt)}`
+                **\\> Joined at:** ${formatDateLong(guild.joinedAt)}`
             );
         if (!guild.owner) {
             await guild.members.fetch(guild.ownerID);
@@ -72,7 +70,11 @@ export default class GuildCreateHandler extends EventHandler {
             true
         );
 
-        owner.send(embedMsg);
+        const supportGuild = await this.client.guilds.fetch(process.env.SUPPORT_SERVER_ID);
+        
+        const joinChannel = supportGuild.channels.cache.get(process.env.SUPPORT_SERVER_JOIN_CHANNEL_ID) as TextChannel;
+
+        sendMessage(this.client, embedMsg, joinChannel);
     }
 
     async createChannels(guild: Guild): Promise<void> {
