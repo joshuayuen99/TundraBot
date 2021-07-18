@@ -8,7 +8,8 @@
   "description": "",
   "main": "TundraBot.ts",
   "scripts": {
-    "start": "ts-node src/TundraBot.ts",
+    "start": "node dist/TundraBot.js",
+    "build": "npx tsc",
     "dev": "ts-node-dev src/TundraBot.ts",
     "test": "mocha"
   },

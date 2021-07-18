@@ -8,14 +8,11 @@ import Deps from "../utils/deps";
 const table = new ascii().setHeading("Command", "Load status");
 
 export default async (client: TundraBot): Promise<void> => {
-    const dirs = readdirSync("./src/commands/");
+    const dirs = readdirSync(__dirname + "/../commands/");
     for (const dir of dirs) {
-        // Gets all .ts "commands"
-        const commands = readdirSync(`./src/commands/${dir}`).filter((f) =>
-            f.endsWith(".ts")
-        );
+        const commands = readdirSync(`${__dirname}/../commands/${dir}`);
 
-        // For every .ts "command"
+        // For every command
         for (const file of commands) {
             const { default: Command } = await import(`../commands/${dir}/${file}`);
             Deps.build(Command);

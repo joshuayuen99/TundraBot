@@ -8,9 +8,8 @@ import { EventHandler } from "../base/EventHandler";
 const table = new ascii().setHeading("Event", "Load status");
 
 export default async (client: TundraBot): Promise<void> => {
-    const handlerFiles = readdirSync("./src/events/");
+    const handlerFiles = readdirSync(__dirname + "/../events/");
     for (const file of handlerFiles) {
-        if (!file.endsWith(".ts")) continue;
         const {default: Handler} = await import(`../events/${file}`);
         Deps.buildWithClient(client, Handler);
         const handler: EventHandler = Deps.get(Handler);
