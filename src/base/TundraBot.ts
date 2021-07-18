@@ -69,7 +69,7 @@ export class TundraBot extends Client {
 
         this.commands = new Collection();
         this.aliases = new Collection();
-        this.categories = fs.readdirSync("./src/commands");
+        this.categories = fs.readdirSync(__dirname + "/../commands");
 
         Deps.buildDB(
             this,
