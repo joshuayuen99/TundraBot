@@ -28,7 +28,7 @@ export default class Logger {
                 );
             }
             case "error": {
-                return console.log(
+                return console.error(
                     `${date} ${black.bgRed(type.toUpperCase())} ${content} `
                 );
             }
