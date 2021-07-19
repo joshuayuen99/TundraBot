@@ -125,9 +125,12 @@ export default class Poll implements Command {
         const emojisList: string[] = [];
         const emojisListIterator = responseEmojisMessage.content.match(/<:[A-z0-9]+:[0-9]+>/g);
         const standardEmojisList = responseEmojisMessage.content.replace(/<:[A-z0-9]+:[0-9]+>/g, "");
-        for (const customEmoji of emojisListIterator) {
-            emojisList.push(customEmoji);
+        if (emojisListIterator) {
+            for (const customEmoji of emojisListIterator) {
+                emojisList.push(customEmoji);
+            }
         }
+
         splitter.splitGraphemes(standardEmojisList.replace(/\s/g, "")).forEach((standardEmoji) => {
             emojisList.push(standardEmoji);
         });
