@@ -36,11 +36,9 @@ export default class CheckEvents extends StartupHelper {
                     if (poll.endTime > dateNow) {
                         setTimeout(() => {
                             this.PollCommand.pollHandleFinish(this.client, poll);
-                            this.DBPollManager.delete(poll);
                         }, poll.endTime.valueOf() - dateNow.valueOf());
                     } else { // Poll is finished
                         this.PollCommand.pollHandleFinish(this.client, poll);
-                        this.DBPollManager.delete(poll);
                     }
                 } catch (err) {
                     // remove poll from database
