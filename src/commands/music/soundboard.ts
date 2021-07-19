@@ -341,7 +341,8 @@ export default class Soundboard implements Command {
                 );
                 return;
             })
-            .catch(() => {
+            .catch((err) => {
+                Logger.log("error", `Error deleting sound effect from database:\n${err}`);
                 sendReply(
                     ctx.client,
                     "There was an error deleting the sound effect. This has been reported to my developer.",

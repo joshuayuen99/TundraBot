@@ -36,7 +36,7 @@ export class DBReminder extends DBWrapper<
     }
 
     async delete(reminder: reminderInterface): Promise<void> {
-        reminderModel
+        await reminderModel
             .findOneAndDelete({
                 userID: reminder.userID,
                 reminder: reminder.reminder,

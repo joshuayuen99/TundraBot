@@ -441,7 +441,9 @@ export default class Rolemenu implements Command {
                     this.DBRolemenuManager.update(
                         cachedRoleMenu.messageID,
                         cachedRoleMenu
-                    );
+                    ).catch((err) => {
+                        Logger.log("error", `Error updating role menu (${cachedRoleMenu.messageID}):\n${err}`);
+                    });
 
                     sendReply(ctx.client, "Rolemenu updated!", ctx.msg);
 
@@ -600,7 +602,9 @@ export default class Rolemenu implements Command {
                             this.DBRolemenuManager.update(
                                 cachedRoleMenu.messageID,
                                 cachedRoleMenu
-                            );
+                            ).catch((err) => {
+                                Logger.log("error", `Error updating role menu (${cachedRoleMenu.messageID}):\n${err}`);
+                            });
 
                             // Edit rolemenu text
                             roleMenuString = roleMenuString.slice(
@@ -711,7 +715,9 @@ export default class Rolemenu implements Command {
                         this.DBRolemenuManager.update(
                             cachedRoleMenu.messageID,
                             cachedRoleMenu
-                        );
+                        ).catch((err) => {
+                            Logger.log("error", `Error updating role menu (${cachedRoleMenu.messageID}):\n${err}`);
+                        });
 
                         roleMenuString = "";
                         for (const option of cachedRoleMenu.roleOptions) {

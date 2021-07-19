@@ -42,6 +42,7 @@ export class DBPoll extends DBWrapper<Partial<pollInterface>, pollInterface> {
     }
 
     async delete(poll: pollInterface): Promise<void> {
-        pollModel.findOneAndDelete({ messageID: poll.messageID });
+        await pollModel.findOneAndDelete({ messageID: poll.messageID });
+        return;
     }
 }

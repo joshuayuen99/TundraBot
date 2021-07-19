@@ -119,7 +119,7 @@ export class DBMember extends DBWrapper<GuildMember, memberInterface> {
             memberSoundEffects.joinSoundEffect = soundEffect;
         }
 
-        this.save(savedMember).then(() => {
+        await this.save(savedMember).then(() => {
             this.client.databaseCache.memberSoundEffects.set(
                 `${member.guild.id}${member.user.id}`,
                 memberSoundEffects
@@ -149,7 +149,7 @@ export class DBMember extends DBWrapper<GuildMember, memberInterface> {
             memberSoundEffects.leaveSoundEffect = soundEffect;
         }
 
-        this.save(savedMember).then(() => {
+        await this.save(savedMember).then(() => {
             this.client.databaseCache.memberSoundEffects.set(
                 `${member.guild.id}${member.user.id}`,
                 memberSoundEffects

@@ -59,7 +59,7 @@ export class DBEvent extends DBWrapper<
     }
 
     async delete(event: eventInterface): Promise<void> {
-        eventModel
+        await eventModel
             .findOneAndDelete({ messageID: event.messageID })
             .then(() => {
                 this.client.databaseCache.events.delete(event.messageID);

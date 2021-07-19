@@ -19,7 +19,7 @@ import {
 } from "../../utils/functions";
 import moment from "moment";
 import momentTimezone from "moment-timezone";
-import { DBUser } from "../../models/User";
+import { DBUser, userInterface } from "../../models/User";
 import Deps from "../../utils/deps";
 import { TundraBot } from "../../base/TundraBot";
 import Logger from "../../utils/logger";
@@ -144,7 +144,7 @@ export default class Event implements Command {
         }
 
         // Get saved user settings
-        let userSettings = await this.DBUserManager.get(ctx.author);
+        let userSettings: userInterface | void = await this.DBUserManager.get(ctx.author);
 
         // If we don't have a saved timezone for the user
         if (!userSettings.settings.timezone) {
@@ -182,7 +182,15 @@ export default class Event implements Command {
 
             userSettings = await this.DBUserManager.update(ctx.author, {
                 timezone: timezoneMessage.content,
+            }).catch((err) => {
+                Logger.log("error", `Error updating user in database:\n${err}`);
             });
+
+            if (!userSettings) {
+                sendReply(ctx.client, `I had trouble updating your settings. Please try again later or contact my developer ${process.env.OWNERNAME}${process.env.OWNERTAG}`,timezoneMessage);
+                
+                return;
+            }
         }
 
         sendMessage(

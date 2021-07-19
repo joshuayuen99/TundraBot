@@ -2,8 +2,9 @@ import { Command, CommandContext } from "../../base/Command";
 import { sendMessage, sendReply, waitResponse } from "../../utils/functions";
 import { stripIndents } from "common-tags";
 import moment from "moment-timezone";
-import { DBUser } from "../../models/User";
+import { DBUser, userInterface } from "../../models/User";
 import Deps from "../../utils/deps";
+import Logger from "../../utils/logger";
 
 export default class SetTimeZone implements Command {
     name = "settimezone";
@@ -28,7 +29,7 @@ export default class SetTimeZone implements Command {
 
     async execute(ctx: CommandContext, args: string[]): Promise<void> {
         // Get saved user settings or create new user if they don't exist yet
-        let userSettings = await this.DBUserManager.get(ctx.author);
+        let userSettings: userInterface | void = await this.DBUserManager.get(ctx.author);
 
         // Changing timezone
         if (args[0]) {
@@ -38,7 +39,15 @@ export default class SetTimeZone implements Command {
                 return;
             }
 
-            userSettings = await this.DBUserManager.update(ctx.author, { timezone: args[0] });
+            userSettings = await this.DBUserManager.update(ctx.author, { timezone: args[0] }).catch((err) => {
+                Logger.log("error", `Error updating user in database:\n${err}`);
+            });
+
+            if (!userSettings) {
+                sendReply(ctx.client, `I had trouble updating your settings. Please try again later or contact my developer ${process.env.OWNERNAME}${process.env.OWNERTAG}`, ctx.msg);
+                
+                return;
+            }
 
             sendMessage(ctx.client, `Saved! Your new timezone is \`${userSettings.settings.timezone}\`.`, ctx.channel);
 
@@ -74,7 +83,15 @@ export default class SetTimeZone implements Command {
 
         userSettings = await this.DBUserManager.update(ctx.author, {
             timezone: timezoneMessage.content,
+        }).catch((err) => {
+            Logger.log("error", `Error updating user in database:\n${err}`);
         });
+
+        if (!userSettings) {
+            sendReply(ctx.client, `I had trouble updating your settings. Please try again later or contact my developer ${process.env.OWNERNAME}${process.env.OWNERTAG}`, ctx.msg);
+                
+            return;
+        }
 
         sendMessage(ctx.client, `Saved! Your new timezone is \`${userSettings.settings.timezone}\`.`, ctx.channel);
 

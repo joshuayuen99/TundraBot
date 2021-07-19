@@ -78,15 +78,12 @@ export class DBSoundEffect extends DBWrapper<
     }
 
     async delete(soundEffect: soundEffectInterface): Promise<void> {
-        return await soundEffect
+        return soundEffect
             .delete()
             .then(() => {
                 this.client.databaseCache.soundEffects.delete(
                     `${soundEffect.guildID}${soundEffect.name}`
                 );
-            })
-            .catch(() => {
-                throw new Error("Error deleting sound effect from database");
             });
     }
 

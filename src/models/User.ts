@@ -45,9 +45,7 @@ export class DBUser extends DBWrapper<User, userInterface> {
             },
         });
 
-        return this.save(newUser).catch(() => {
-            throw new Error("Error saving new user to database");
-        });
+        return this.save(newUser);
     }
 
     async update(user: User, settings: Partial<userSettings>): Promise<userInterface> {
@@ -61,8 +59,6 @@ export class DBUser extends DBWrapper<User, userInterface> {
 
         return userModel.findOneAndUpdate({ userID: user.id }, {
             settings: userSettings
-        }, { new: true }).catch(() => {
-            throw new Error("Error updating user in database");
-        });
+        }, { new: true });
     }
 }

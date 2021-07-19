@@ -164,9 +164,10 @@ export class DBGuild extends DBWrapper<Guild, guildInterface> {
     }
 
     async delete(guild: Guild): Promise<void> {
-        guildModel.findOneAndDelete({ guildID: guild.id }).then(() => {
+        await guildModel.findOneAndDelete({ guildID: guild.id }).then(() => {
             // Delete from cache
             this.client.databaseCache.settings.delete(guild.id);
         });
+        return;
     }
 }

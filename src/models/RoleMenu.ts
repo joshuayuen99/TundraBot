@@ -57,20 +57,19 @@ export class DBRoleMenu extends DBWrapper<Partial<roleMenuInterface>, roleMenuIn
     }
 
     async update (messageID: string, roleMenu: Partial<roleMenuInterface>): Promise<roleMenuInterface> {
-        const updatedRoleMenu = await roleMenuModel.findOneAndUpdate({ messageID: messageID }, roleMenu, { new: true }).catch(() => {
-            throw new Error(`Error updating role menu (messageID: ${roleMenu.messageID}) in database`);
+        return roleMenuModel.findOneAndUpdate({ messageID: messageID }, roleMenu, { new: true }).then((updatedRoleMenu) => {
+            // Update cache
+            this.client.databaseCache.roleMenus.set(roleMenu.messageID, updatedRoleMenu);
+
+            return updatedRoleMenu;
         });
-
-        // Update cache
-        this.client.databaseCache.roleMenus.set(roleMenu.messageID, updatedRoleMenu);
-
-        return updatedRoleMenu;
     }
 
     async delete (messageID: string): Promise<void> {
-        roleMenuModel.findOneAndDelete({ messageID: messageID });
-
-        // Delete from cache
-        this.client.databaseCache.roleMenus.delete(messageID);
+        await roleMenuModel.findOneAndDelete({ messageID: messageID }).then(() => {
+            // Delete from cache
+            this.client.databaseCache.roleMenus.delete(messageID);
+        });
+        return;
     }
 }
