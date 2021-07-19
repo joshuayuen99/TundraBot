@@ -25,16 +25,6 @@ function setup() {
 
     // Start dashboard server
     new Server(client);
-
-    // Keep Heroku dyno alive
-    setInterval(() => {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        fetch(process.env.DASHBOARD_URL).then(() => {
-            Logger.log("info", "Reviving");
-        }).catch((err) => {
-            Logger.log("error", `Error reviving:\n${err}`);
-        });
-    }, 25 * 60 * 1000); // 25 mins
 }
 
 // if there is an unhandledRejection, log them
