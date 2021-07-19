@@ -12,8 +12,33 @@ import CheckReminders from "../helpers/checkReminders";
 import CheckMutes from "../helpers/checkMutes";
 import CheckBans from "../helpers/checkBans";
 import LoadRoleMenus from "../helpers/loadRoleMenus";
+import { PresenceData } from "discord.js";
 
 export default class ReadyHandler extends EventHandler {
+    botStatusState: number; // index of current status
+    static botStatuses: PresenceData[] = [
+        {
+            status: "online",
+            activity: {
+                name: "~help (not -)!",
+                type: "WATCHING",
+            },
+        },
+        {
+            status: "online",
+            activity: {
+                name: "tundrabot.xyz",
+                type: "WATCHING",
+            },
+        },
+        {
+            status: "online",
+            activity: {
+                name: "audio filters | ~filter",
+                type: "LISTENING",
+            },
+        },
+    ];
     Player: PlayerInit;
     GuildsSanityCheck: GuildsSanityCheck;
     CacheMembers: CacheMembers;
@@ -27,6 +52,7 @@ export default class ReadyHandler extends EventHandler {
     CacheInvites: CacheInvites;
     constructor(client: TundraBot) {
         super(client);
+        this.botStatusState = 0;
         this.Player = new PlayerInit(this.client);
         this.GuildsSanityCheck = new GuildsSanityCheck(this.client);
         this.CacheMembers = new CacheMembers(this.client);
@@ -41,17 +67,8 @@ export default class ReadyHandler extends EventHandler {
     }
 
     async invoke(): Promise<void> {
-        this.client.user.setPresence({
-            status: "online",
-            activity: {
-                name: "~help (not -)!",
-                type: "WATCHING"
-            }
-        }).then(() => {
-            Logger.log("ready", "Set bot status");
-        }).catch((err) => {
-            Logger.log("error", `Error setting bot status: ${err}`);
-        });
+        this.cycleStatus();
+        setInterval(this.cycleStatus.bind(this), 10 * 1000); // cycle status every 10 seconds
 
         this.Player.init();
         await this.GuildsSanityCheck.init();
@@ -65,6 +82,19 @@ export default class ReadyHandler extends EventHandler {
         this.CheckReminders.init();
         this.CacheInvites.init();
 
-        Logger.log("ready", `I'm now online, my name is ${this.client.user.tag}`);
+        Logger.log(
+            "ready",
+            `I'm now online, my name is ${this.client.user.tag}`
+        );
+    }
+
+    async cycleStatus(): Promise<void> {
+        this.client.user
+            .setPresence(ReadyHandler.botStatuses[this.botStatusState])
+            .catch((err) => {
+                Logger.log("error", `Error setting bot status: ${err}`);
+            });
+
+        this.botStatusState = (this.botStatusState + 1) % ReadyHandler.botStatuses.length;
     }
 }
