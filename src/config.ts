@@ -1,8 +1,6 @@
 export default {
-    owner: process.env.OWNERID,
-    prefix: process.env.COMMAND_PREFIX,
     defaultGuildSettings: {
-        prefix: process.env.COMMAND_PREFIX,
+        prefix: "~",
         welcomeMessage: {
             enabled: false,
             welcomeMessage: "Welcome **{{member}}** to **{{server}}**!",
