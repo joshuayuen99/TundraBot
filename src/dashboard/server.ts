@@ -1,4 +1,5 @@
 import express from "express";
+import https from "https";
 import cookies from "cookies";
 import bodyParser from "body-parser";
 import methodOverride from "method-override";
@@ -12,6 +13,7 @@ import Logger from "../utils/logger";
 import Deps from "../utils/deps";
 import { TundraBot } from "../base/TundraBot";
 import AuthClient from "./modules/auth-client";
+import { readFileSync } from "fs";
 
 export default class Server {
     client: TundraBot;
@@ -60,9 +62,14 @@ export default class Server {
             res.render("errors/404");
         });
 
-        const port = process.env.PORT || 3000;
-        app.listen(port, () => {
-            Logger.log("ready", `The web server is live on port ${port}!`);
+        const certificate = readFileSync(process.env.CERTIFICATE_PATH);
+        const privateKey = readFileSync(process.env.PRIVATE_KEY_PATH);
+
+        https.createServer({
+            cert: certificate,
+            key: privateKey
+        }, app).listen(443, () => {
+            Logger.log("ready", `The web server is live on port ${443}!`);
         });
     }
 }
