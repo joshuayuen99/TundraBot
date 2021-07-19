@@ -50,6 +50,15 @@ export default class MessageHandler extends EventHandler {
                     });
                 }
 
+                // @TundraBot
+                if (
+                    message.content.trim() === `<@${this.client.user.id}>` ||
+                    message.content.trim() === `<@!${this.client.user.id}>`
+                ) {
+                    sendReply(this.client, `My prefix in this server is \`${settings.prefix}\``, message);
+                    return;
+                }
+
                 // Did not contain the command prefix
                 if (!message.content.trim().startsWith(settings.prefix)) return;
 
@@ -109,15 +118,6 @@ export default class MessageHandler extends EventHandler {
                 // Sent in a blacklisted channel
                 if (settings.blacklistedChannelIDs.includes(message.channel.id))
                     return;
-
-                // @TundraBot
-                if (
-                    message.content.trim() === `<@${this.client.user.id}>` ||
-                    message.content.trim() === `<@!${this.client.user.id}>`
-                ) {
-                    sendReply(this.client, `My prefix in this server is \`${settings.prefix}\``, message);
-                    return;
-                }
 
                 const ctx = new CommandContext(
                     this.client,
