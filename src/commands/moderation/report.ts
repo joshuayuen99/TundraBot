@@ -69,7 +69,7 @@ export default class Report implements Command {
                 });
             }
 
-            const reportMessage = sendMessage(ctx.client, embedMsg, logChannel);
+            const reportMessage = await sendMessage(ctx.client, embedMsg, logChannel);
             if (reportMessage) {
                 sendReply(ctx.client, "Your report was submitted.", ctx.msg);
             } else {
