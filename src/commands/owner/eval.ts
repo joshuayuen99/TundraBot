@@ -10,7 +10,7 @@ import * as utils from "util";
 
 export default class Eval implements Command {
     name = "eval";
-    category = "ownerCommands";
+    category = "owner";
     description = "Evaluate Javascript commands.";
     usage = "eval <Javascript>";
     enabled = true;
