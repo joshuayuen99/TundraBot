@@ -43,7 +43,7 @@ export default class BotInfo implements Command {
             )
             .addField(
                 "Source code",
-                "https://github.com/joshuayuen99/tundrabot"
+                "https://github.com/joshuayuen99/TundraBot"
             )
             .addField("Server count", ctx.client.guilds.cache.size)
             .addField("Created at", formatDateLong(ctx.client.user.createdAt));
