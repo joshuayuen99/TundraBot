@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/joshuayuen99/discordbot.svg?token=EpUAuzH5nzhMPCzTTrCx&branch=master)](https://travis-ci.com/joshuayuen99/discordbot)
+[![Build Status](https://travis-ci.com/joshuayuen99/TundraBot.svg?token=EpUAuzH5nzhMPCzTTrCx&branch=master)](https://travis-ci.com/joshuayuen99/TundraBot)
 
 # TundraBot
 
@@ -87,10 +87,10 @@ ffmpeg -version
 
 Download or clone this repository with the command:
 ```
-git clone https://github.com/joshuayuen99/tundrabot.git
+git clone https://github.com/joshuayuen99/TundraBot.git
 ```
 
-Navigate to the newly created `discordbot` directory and type the following command:
+Navigate to the newly created `TundraBot` directory and type the following command:
 ```
 npm install
 ```
@@ -110,7 +110,7 @@ To start using the bot, you will first need to generate a Discord API token.
 3) Click the "Bot" tab on the left.
 4) Click the "Add Bot" button at the top right and give it a name.
 5) Where it says "Token", click the "Copy" button.
-6) Open up the `.env` file in your `discordbot` directory and paste your token directly after `DISCORDTOKEN=`
+6) Open up the `.env` file in your `TundraBot` directory and paste your token directly after `DISCORDTOKEN=`
 
 Secondly, for the music playing functionality to work correctly, you will need to provide a YouTube API key as well.
 
@@ -126,13 +126,13 @@ Secondly, for the music playing functionality to work correctly, you will need t
 10) Select "Public data" for which type of data you will be accessing.
 11) Click "What credentials will I need?".
 12) Copy your new API key and click done.
-13) Open up the `.env` file in your `discordbot` directory and paste your key directly after `YOUTUBEKEY=`
+13) Open up the `.env` file in your `TundraBot` directory and paste your key directly after `YOUTUBEKEY=`
 
 ## Starting the Bot
 
 Once you've set up your Discord and YouTube APIs, you're ready to start the bot.
 
-To start the bot, simply navigate to your `discordbot` directory and enter the command:
+To start the bot, simply navigate to your `TundraBot` directory and enter the command:
 ```
 npm start
 ```
