@@ -118,7 +118,7 @@ export default class GuildCreateHandler extends EventHandler {
             .setDescription(
                 stripIndents`**Thanks for adding me to your server!**
 
-                I offer lots of configuration via my [web dashboard](${process.env.DASHBOARD_URL}), but the basics can also be changed with commands as described below!
+                I offer lots of configuration via my [web dashboard](${process.env.DASHBOARD_URL}), but the basics can also be changed with commands as described below! If you run into any problems or you have any questions, please join my [Discord server](${process.env.SUPPORT_SERVER_INVITE_LINK}).
 
                 My default prefix is \`${process.env.COMMAND_PREFIX}\` (not \`-\`)! This is the top-left key on most keyboards. To change this you may run \`${process.env.COMMAND_PREFIX}config prefix <new prefix>\` (without the <>s).
 
