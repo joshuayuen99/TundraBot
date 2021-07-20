@@ -19,6 +19,8 @@ export abstract class Command {
     cooldown?: number; // milliseconds
 
     abstract execute(ctx: CommandContext, args: string[]): Promise<any | void>;
+
+    shutdown?(): Promise<any | void>;
 }
 
 export class CommandContext {

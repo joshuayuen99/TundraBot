@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+import { Command } from "../base/Command";
 import { TundraBot } from "../base/TundraBot";
 
 export default class Deps {
@@ -15,6 +16,16 @@ export default class Deps {
             // catch { throw new TypeError(`Type '${Type}' could not be instantiated`); }
             // eslint-disable-next-line no-empty
             catch {}
+        }
+    }
+
+    static removeCommand(commandName: string): boolean {
+        try {
+            this.deps = this.deps.filter((dep) => !(dep instanceof Command) && dep.name === commandName);
+
+            return true;
+        } catch {
+            return false;
         }
     }
 
