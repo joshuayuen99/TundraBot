@@ -58,7 +58,7 @@ export default class Mute implements Command {
                 ctx.client,
                 stripIndents`Usage: \`${
                     this.usage
-                }\`\nExamples:\n${this.examples.join("\n")}`,
+                }\`\nExamples:\n\`\`\`${this.examples.join("\n")}\`\`\``,
                 ctx.msg
             );
             return;

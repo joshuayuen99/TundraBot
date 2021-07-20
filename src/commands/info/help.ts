@@ -69,6 +69,7 @@ export default class Help implements Command {
                 "music",
                 "utility",
                 "fun",
+                "owner"
             ];
 
             if (!catgeoryOrder.includes(a)) return 1;
