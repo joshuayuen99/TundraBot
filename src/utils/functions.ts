@@ -75,21 +75,19 @@ export async function getTextChannel(
     else return;
 }
 
-export async function getRole(guild: Guild, toFind: string): Promise<Role | void> {
+export async function getRole(
+    guild: Guild,
+    toFind: string
+): Promise<Role | void> {
     toFind = toFind.toLowerCase();
 
     await guild.roles.fetch();
 
     let role;
-    role = guild.roles.cache.find(
-        (role) => role.name === toFind
-    );
+    role = guild.roles.cache.find((role) => role.name === toFind);
     if (role) return role;
 
-    role = guild.roles.cache.find(
-        (role) =>
-            role.toString() === toFind
-    );
+    role = guild.roles.cache.find((role) => role.toString() === toFind);
     if (role) return role;
     else return;
 }
@@ -237,10 +235,13 @@ export async function sendMessage(
     channel: TextChannel
 ): Promise<Message | void> {
     if (!channel) return;
-    
+
     if (
         channel instanceof GuildChannel &&
-        !channel.permissionsFor(client.user).has("SEND_MESSAGES")
+        !(
+            channel.permissionsFor(client.user).has("VIEW_CHANNEL") &&
+            channel.permissionsFor(client.user).has("SEND_MESSAGES")
+        )
     )
         return;
 
@@ -254,9 +255,14 @@ export async function sendReply(
 ): Promise<Message | void> {
     if (
         message.channel instanceof GuildChannel &&
-        !(<TextChannel>message.channel)
-            .permissionsFor(client.user)
-            .has("SEND_MESSAGES")
+        !(
+            (<TextChannel>message.channel)
+                .permissionsFor(client.user)
+                .has("VIEW_CHANNEL") &&
+            (<TextChannel>message.channel)
+                .permissionsFor(client.user)
+                .has("SEND_MESSAGES")
+        )
     )
         return;
 
