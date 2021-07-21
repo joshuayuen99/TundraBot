@@ -72,7 +72,7 @@ export class DBMessage extends DBWrapper<Message, messageInterface> {
         if (message.content.startsWith(settings.prefix)) {
             const commandString = message.content
                 .split(" ")[0]
-                .slice((await settings).prefix.length)
+                .slice(settings.prefix.length)
                 .toLowerCase();
             if (commandString.length === 0) command = "";
             else {
