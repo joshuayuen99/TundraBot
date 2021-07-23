@@ -1,3 +1,4 @@
+import { PermissionString } from "discord.js";
 import { Command, CommandContext } from "../../base/Command";
 import { sendReply } from "../../utils/functions";
 
@@ -8,7 +9,7 @@ export default class Betrayal implements Command {
     usage = "betrayal";
     enabled = true;
     guildOnly = true;
-    botPermissions = [];
+    botPermissions: PermissionString[] = ["CONNECT", "SPEAK"];
     memberPermissions = [];
     ownerOnly = false;
     premiumOnly = false;
@@ -19,6 +20,18 @@ export default class Betrayal implements Command {
         const voice = ctx.member.voice.channel;
         if (!voice) {
             sendReply(ctx.client, "You must be connected to a voice channel!", ctx.msg);
+            return;
+        }
+
+        // Check bot permissions
+        const perms = voice.permissionsFor(ctx.client.user);
+        if (!perms.has("VIEW_CHANNEL")) {
+            sendReply(ctx.client, "I need permission to view your voice channel!", ctx.msg);
+            return;
+        }
+
+        if (!perms.has("CONNECT")) {
+            sendReply(ctx.client, "I need permission to join your voice channel!", ctx.msg);
             return;
         }
 

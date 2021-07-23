@@ -212,19 +212,22 @@ export default class Soundboard implements Command {
 
         // Check bot permissions
         const perms = voice.permissionsFor(ctx.client.user);
+        if (!perms.has("VIEW_CHANNEL")) {
+            sendReply(ctx.client, "I need permission to view your voice channel!", ctx.msg);
+            return;
+        }
         if (!perms.has("CONNECT")) {
             sendReply(
                 ctx.client,
-                "I don't have permission to join your voice channel!",
+                "I need permission to join your voice channel!",
                 ctx.msg
             );
             return;
         }
-
         if (!perms.has("SPEAK")) {
             sendReply(
                 ctx.client,
-                "I don't have permission to speak in your voice channel!",
+                "I need permission to speak in your voice channel!",
                 ctx.msg
             );
             return;
