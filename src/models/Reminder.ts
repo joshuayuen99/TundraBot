@@ -15,7 +15,7 @@ const reminderSchema = new Schema<reminderInterface>({
     endTime: Date,
 });
 
-export const reminderModel = model("Reminder", reminderSchema);
+export const reminderModel = model<reminderInterface>("Reminder", reminderSchema);
 
 export class DBReminder extends DBWrapper<
     Partial<reminderInterface>,

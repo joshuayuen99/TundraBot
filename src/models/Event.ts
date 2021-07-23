@@ -25,7 +25,7 @@ const eventSchema = new Schema<eventInterface>({
     endTime: Date,
 });
 
-export const eventModel = model("Event", eventSchema);
+export const eventModel = model<eventInterface>("Event", eventSchema);
 
 export class DBEvent extends DBWrapper<
     Partial<eventInterface>,
@@ -49,8 +49,9 @@ export class DBEvent extends DBWrapper<
 
         return savedEvent ?? this.create(event);
     }
+
     async create(event: Partial<eventInterface>): Promise<eventInterface> {
-        return await new eventModel(event).save().then((newEvent) => {
+        return new eventModel(event).save().then((newEvent) => {
             // Update cache
             this.client.databaseCache.events.set(event.messageID, newEvent);
 

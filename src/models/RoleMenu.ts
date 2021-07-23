@@ -27,7 +27,7 @@ const roleMenuSchema = new Schema<roleMenuInterface>({
     ],
 });
 
-export const roleMenuModel = model("RoleMenu", roleMenuSchema);
+export const roleMenuModel = model<roleMenuInterface>("RoleMenu", roleMenuSchema);
 
 export class DBRoleMenu extends DBWrapper<Partial<roleMenuInterface>, roleMenuInterface> {
     protected async getOrCreate (roleMenu: Partial<roleMenuInterface>): Promise<roleMenuInterface> {

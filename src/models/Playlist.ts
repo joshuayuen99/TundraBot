@@ -18,7 +18,7 @@ const playlistSchema = new Schema<playlistInterface>({
     filters: [{ type: String }]
 });
 
-export const playlistModel = model("Playlist", playlistSchema);
+export const playlistModel = model<playlistInterface>("Playlist", playlistSchema);
 
 export class DBPlaylist extends DBWrapper<Partial<playlistInterface>, playlistInterface> {
     protected async getOrCreate (playlist: Partial<playlistInterface>): Promise<playlistInterface> {

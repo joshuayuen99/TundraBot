@@ -23,7 +23,7 @@ const userSchema = new Schema<userInterface>({
     },
 });
 
-export const userModel = model("User", userSchema);
+export const userModel = model<userInterface>("User", userSchema);
 
 export class DBUser extends DBWrapper<User, userInterface> {
     protected async getOrCreate(user: User): Promise<userInterface> {

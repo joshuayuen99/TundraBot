@@ -14,7 +14,7 @@ const soundEffectSchema = new Schema<soundEffectInterface>({
     guildID: String,
 });
 
-export const soundEffectModel = model("SoundEffect", soundEffectSchema);
+export const soundEffectModel = model<soundEffectInterface>("SoundEffect", soundEffectSchema);
 
 export class DBSoundEffect extends DBWrapper<
     Partial<soundEffectInterface>,

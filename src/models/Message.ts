@@ -42,7 +42,7 @@ const messageSchema = new Schema<messageInterface>(
     }
 );
 
-export const messageModel = model("Message", messageSchema);
+export const messageModel = model<messageInterface>("Message", messageSchema);
 
 export class DBMessage extends DBWrapper<Message, messageInterface> {
     protected DBGuildManager: DBGuild;

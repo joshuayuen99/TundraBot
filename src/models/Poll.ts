@@ -23,7 +23,7 @@ const pollSchema = new Schema<pollInterface>({
     endTime: Date,
 });
 
-export const pollModel = model("Poll", pollSchema);
+export const pollModel = model<pollInterface>("Poll", pollSchema);
 
 export class DBPoll extends DBWrapper<Partial<pollInterface>, pollInterface> {
     protected async getOrCreate (poll: Partial<pollInterface>): Promise<pollInterface> {

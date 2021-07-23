@@ -45,7 +45,7 @@ const memberSchema = new Schema<memberInterface>({
     },
 });
 
-export const memberModel = model("Member", memberSchema);
+export const memberModel = model<memberInterface>("Member", memberSchema);
 
 export class DBMember extends DBWrapper<GuildMember, memberInterface> {
     protected async getOrCreate(member: GuildMember): Promise<memberInterface> {
