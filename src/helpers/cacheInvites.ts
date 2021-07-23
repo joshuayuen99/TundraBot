@@ -71,7 +71,7 @@ export default class CacheInvites extends StartupHelper {
                 inviteCount += invites.size;
             })
             .catch((err) => {
-                Logger.log("error", `fetchInvites error:\n${err}`);
+                Logger.log("error", `fetchInvites error (${guild.id}):\n${err}`);
             });
         return inviteCount;
     }
