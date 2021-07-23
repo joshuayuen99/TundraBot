@@ -21,7 +21,7 @@ export default class Deps {
 
     static removeCommand(commandName: string): boolean {
         try {
-            this.deps = this.deps.filter((dep) => !(dep instanceof Command) && dep.name === commandName);
+            this.deps = this.deps.filter((dep) => !(dep instanceof Command && dep.name === commandName));
 
             return true;
         } catch {
@@ -45,7 +45,7 @@ export default class Deps {
 
     static get<T>(type: any): T {
         const service = this.deps.find(t => t instanceof type);
-        return service || this.add(new type());
+        return service;
     }
 
     private static add<T>(instance: T): T {
