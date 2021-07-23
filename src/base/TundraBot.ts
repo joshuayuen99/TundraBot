@@ -103,6 +103,33 @@ export class TundraBot extends Client {
 
         this.player.use("YOUTUBE_DL", youtubeDownloader);
 
+        // // Map with guilds' cached rulesets
+        // client.rulesets = new Map();
+
+        // // Map with guilds' cached rules
+        // client.rules = new Map();
+
+        // let triggers = [
+        //     {
+        //         type: "SlowmodeTrigger",
+        //         settings: {
+        //             threshold: 5,
+        //             interval: 30000,
+        //             userSpecific: true,
+        //         },
+        //     },
+        // ];
+        // let conditions = null;
+        // let effects = [
+        //     {
+        //         type: "DELETE_MESSAGE",
+        //         settings: null,
+        //     },
+        // ];
+
+        // let spamRule = new Rule("spam", triggers, conditions, effects);
+        // client.rules.set("770547365978701834", [spamRule]);
+
         this.soundboardGuilds = new Map();
         this.gameMembers = new Map();
         this.activeEmojiStealing = new Set();
@@ -124,10 +151,10 @@ export class TundraBot extends Client {
             memberSoundEffects: new Collection(),
         };
 
-        ["commands", "events"].forEach((handler) => {
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
-            import(`../handlers/${handler}`).then((module) => {
-                module.default(this);
+        import("../handlers/commands").then(async (module) => {
+            await module.default(this);
+            import("../handlers/events").then(async (module) => {
+                await module.default(this);
             });
         });
     }
