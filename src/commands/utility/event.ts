@@ -301,12 +301,6 @@ export default class Event implements Command {
             postChannel
         )) as Message;
 
-        sendReply(
-            ctx.client,
-            `Event created! Check the ${postChannel} channel to find it.`,
-            timeOfDayMessage
-        );
-
         await eventMessage.react(HAND_EMOJI);
 
         const eventObject = {
@@ -322,16 +316,31 @@ export default class Event implements Command {
         } as eventInterface;
 
         // Save event to database
-        this.DBEventManager.create(eventObject).catch((err) => {
-            Logger.log("error", `Error saving new event in database:\n${err}`);
-        });
-
-        setTimeout(() => {
-            this.eventHandleFinish(
+        this.DBEventManager.create(eventObject).then(() => {
+            sendReply(
                 ctx.client,
-                ctx.client.databaseCache.events.get(eventObject.messageID)
+                `Event created! Check the ${postChannel} channel to find it.`,
+                timeOfDayMessage
             );
-        }, endTime.toDate().valueOf() - startTime.valueOf());
+
+            setTimeout(() => {
+                this.eventHandleFinish(
+                    ctx.client,
+                    ctx.client.databaseCache.events.get(eventObject.messageID)
+                );
+            }, endTime.toDate().valueOf() - startTime.valueOf());
+        }).catch((err) => {
+            Logger.log("error", `Error saving new event in database:\n${err}`);
+
+            // remove event from database and cache
+            this.DBEventManager.delete(eventObject);
+            eventMessage.delete();
+            sendReply(
+                ctx.client,
+                `Failed to create event. Please join my support server with \`${ctx.guildSettings.prefix}invite\` and report this to my developer.`,
+                timeOfDayMessage
+            );
+        });
 
         return;
     }
