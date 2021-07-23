@@ -135,8 +135,6 @@ export default class Poll implements Command {
             emojisList.push(standardEmoji);
         });
 
-        console.log(emojisList);
-
         sendMessage(
             ctx.client,
             "How long should the poll last? eg. 30s, 30m, 2h",

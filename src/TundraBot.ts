@@ -4,7 +4,6 @@ import Logger from "./utils/logger";
 import * as dotenv from "dotenv";
 import Server from "./dashboard/server";
 
-import fetch from "node-fetch";
 import { exit } from "process";
 
 function setup() {
