@@ -1,17 +1,17 @@
-[![Build Status](https://travis-ci.com/joshuayuen99/discordbot.svg?token=EpUAuzH5nzhMPCzTTrCx&branch=master)](https://travis-ci.com/joshuayuen99/discordbot)
+[![Build Status](https://travis-ci.com/joshuayuen99/TundraBot.svg?token=EpUAuzH5nzhMPCzTTrCx&branch=master)](https://travis-ci.com/joshuayuen99/TundraBot)
 
 # TundraBot
 
 A personal Discord bot made in my free time and used by me and my friends. I've been developing it in chunks ever since November 2019, and still plan to continue improving it and adding new features moving forward. Updated for Discord.js v12.
 
-TundraBot features a [dashboard](https://tundrabot.herokuapp.com) for server admins and moderators for high levels of configuration and general stats about the server, with new features constantly being added!
+TundraBot features a [dashboard](https://tundrabot.xyz) for server admins and moderators for high levels of configuration and general stats about the server, with new features constantly being added!
 
 ![Dashboard Statistics](/images/message_stats.png)
 ![Dashboard General Configuration](/images/dashboard_general.png)
 
 Main features include playing music, server moderation, organizing events and polls, configurable role menus, configurable soundboard effects, and general info commands about the server and its members.
 
-[Check out my official website and dashboard!](https://tundrabot.herokuapp.com)
+[Check out my official website and dashboard!](https://tundrabot.xyz)
 
 To add me to your server click [here](https://discord.com/api/oauth2/authorize?client_id=647196546492006423&permissions=309587062&scope=bot)!
 
@@ -87,10 +87,10 @@ ffmpeg -version
 
 Download or clone this repository with the command:
 ```
-git clone https://github.com/joshuayuen99/discordbot.git
+git clone https://github.com/joshuayuen99/TundraBot.git
 ```
 
-Navigate to the newly created `discordbot` directory and type the following command:
+Navigate to the newly created `TundraBot` directory and type the following command:
 ```
 npm install
 ```
@@ -110,7 +110,7 @@ To start using the bot, you will first need to generate a Discord API token.
 3) Click the "Bot" tab on the left.
 4) Click the "Add Bot" button at the top right and give it a name.
 5) Where it says "Token", click the "Copy" button.
-6) Open up the `.env` file in your `discordbot` directory and paste your token directly after `DISCORDTOKEN=`
+6) Open up the `.env` file in your `TundraBot` directory and paste your token directly after `DISCORDTOKEN=`
 
 Secondly, for the music playing functionality to work correctly, you will need to provide a YouTube API key as well.
 
@@ -126,13 +126,13 @@ Secondly, for the music playing functionality to work correctly, you will need t
 10) Select "Public data" for which type of data you will be accessing.
 11) Click "What credentials will I need?".
 12) Copy your new API key and click done.
-13) Open up the `.env` file in your `discordbot` directory and paste your key directly after `YOUTUBEKEY=`
+13) Open up the `.env` file in your `TundraBot` directory and paste your key directly after `YOUTUBEKEY=`
 
 ## Starting the Bot
 
 Once you've set up your Discord and YouTube APIs, you're ready to start the bot.
 
-To start the bot, simply navigate to your `discordbot` directory and enter the command:
+To start the bot, simply navigate to your `TundraBot` directory and enter the command:
 ```
 npm start
 ```
@@ -151,7 +151,7 @@ You're done! All you need now is to copy the link at the bottom of the "Scopes" 
 
 # Commands
 
-For a full list of commands visit [my commands page](https://tundrabot.herokuapp.com/commands)!
+For a full list of commands visit [my commands page](https://tundrabot.xyz/commands)!
 
 `<>`s in commands indicate required arguments.
 

@@ -1,0 +1,19 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+      "downlevelIteration": true,
+      "esModuleInterop": true,
+      "allowSyntheticDefaultImports": true,
+      "inlineSourceMap": true,
+      "lib": ["es2020"],
+      "module": "CommonJS",
+      "noImplicitAny": false,
+      "outDir": "./dist",
+      "resolveJsonModule": true,
+      "strict": true,
+      "strictNullChecks": false,
+      "target": "ES6",
+      "typeRoots": ["@types"],
+    },
+    "include": ["src"]
+  }

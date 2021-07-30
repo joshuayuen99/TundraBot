@@ -1,37 +1,46 @@
 {
-  "name": "discordbot",
+  "name": "tundrabot",
   "version": "1.0.0",
   "engines": {
-    "node": ">=12.0.0"
+    "node": "14.16.1",
+    "npm": ">=7.19.1"
   },
   "description": "",
-  "main": "index.js",
+  "main": "TundraBot.ts",
   "scripts": {
-    "start": "node index",
-    "dev": "nodemon index",
+    "start": "node dist/TundraBot.js",
+    "build": "npx tsc && npm run copy-files",
+    "copy-files": "copyfiles -u 1 \"src/dashboard/**/*.pug\" \"src/dashboard/assets/**/*\" dist/",
+    "dev": "ts-node-dev src/TundraBot.ts",
     "test": "mocha"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/joshuayuen99/discordbot.git"
+    "url": "git+https://github.com/joshuayuen99/tundrabot.git"
   },
   "author": "Joshua Yuen",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/joshuayuen99/discordbot/issues"
+    "url": "https://github.com/joshuayuen99/tundrabot/issues"
   },
-  "homepage": "https://github.com/joshuayuen99/discordbot#readme",
+  "homepage": "https://github.com/joshuayuen99/tundrabot#readme",
   "dependencies": {
+    "@babel/core": "^7.14.6",
+    "@discord-player/downloader": "^2.0.3",
+    "@discord-player/extractor": "^3.0.2",
     "@discordjs/opus": "^0.3.3",
     "aki-api": "^5.2.1",
     "ascii-table": "0.0.9",
     "assert": "^2.0.0",
     "body-parser": "^1.19.0",
+    "chalk": "^4.1.1",
     "common-tags": "^1.8.0",
     "cookies": "^0.8.0",
     "css-element-queries": "^1.2.3",
     "d3": "^6.2.0",
     "disco-oauth": "^4.2.7",
+    "discord-player": "github:joshuayuen99/discord-player#tundrabot",
+    "discord-together": "^1.1.14",
     "discord.js": "^12.5.3",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
@@ -49,15 +58,26 @@
     "node-gyp": "^5.1.1",
     "node-opus": "^0.3.3",
     "pug": "^3.0.0",
+    "ts-node": "^10.0.0",
+    "typescript": "^4.3.4",
     "youtube-search": "^1.1.6",
+    "youtube-sr": "^4.1.7",
     "ytdl-core": "^4.8.3"
   },
   "devDependencies": {
+    "@types/cookies": "^0.7.7",
+    "@types/express": "^4.17.13",
+    "@types/mongoose": "^5.11.97",
+    "@types/node": "^15.12.4",
+    "@typescript-eslint/eslint-plugin": "^4.28.0",
+    "@typescript-eslint/parser": "^4.28.0",
     "babel-eslint": "^10.1.0",
     "chai": "^4.2.0",
+    "copyfiles": "^2.4.1",
     "eslint": "^7.14.0",
     "mocha": "^7.2.0",
     "nodemon": "^2.0.6",
-    "sinon": "^9.2.1"
+    "sinon": "^9.2.1",
+    "ts-node-dev": "^1.1.6"
   }
 }
