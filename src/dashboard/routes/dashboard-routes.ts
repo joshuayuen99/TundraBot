@@ -8,6 +8,7 @@ import { Route } from "./Route";
 
 import { messageModel } from "../../models/Message";
 import { DBGuild, guildInterface, guildModel } from "../../models/Guild";
+import Logger from "../../utils/logger";
 
 // const { Rule } = require("../../automod/models");
 // const Triggers = require("../../automod/triggers");
@@ -322,7 +323,7 @@ export default class DashboardRoutes extends Route {
                     res.redirect(`/servers/${id}/${module}`);
                 } catch (err) {
                     res.render("errors/400");
-                    console.error(err);
+                    Logger.log("error", `Error saving settings from dashboard (guildID: ${req.params.id}):\n${err}`);
                 }
             }
         );

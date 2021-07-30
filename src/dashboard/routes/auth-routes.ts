@@ -1,6 +1,7 @@
 import express, { Router } from "express";
 import { TundraBot } from "../../base/TundraBot";
 import Deps from "../../utils/deps";
+import Logger from "../../utils/logger";
 import AuthClient from "../modules/auth-client";
 import Sessions from "../modules/sessions";
 import { Route } from "./Route";
@@ -49,7 +50,7 @@ export default class AuthRoutes extends Route {
                         res.redirect("/dashboard");
                     })
                     .catch((err) => {
-                        console.error(`${err.statusCode} :: ${err.message}`);
+                        Logger.log("error", `/auth error:\n${err.statusCode} :: ${err.message}`);
                         res.render("errors/400");
                     });
             } catch (err) {
