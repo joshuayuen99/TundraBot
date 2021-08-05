@@ -593,6 +593,13 @@ export default class Soundboard implements Command {
             volume: 2,
             playing: true,
         } as SoundboardQueue;
+
+        // Check bot permissions
+        const perms = voiceChannel.permissionsFor(client.user);
+        if (!perms.has("VIEW_CHANNEL") || !perms.has("CONNECT") || !perms.has("SPEAK")) {
+            return;
+        }
+
         // Add song to queue
         queueConstruct.effects.push(effect);
 
