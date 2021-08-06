@@ -19,9 +19,11 @@ export default class Remind implements Command {
         "Schedule a reminder to be DM'd to you after a certain amount of time.";
     usage = "remind <timer> <reminder>";
     examples = [
-        "remind 2h Game night",
         "remind 15m Walk dog",
-        "remind 2d Football game",
+        "remind 2h30m Game night",
+        "remind 2.5d Football game",
+        "remind 2 hours 15 minutes Make a call",
+        "remind 6h 30m Laundry"
     ];
     enabled = true;
     guildOnly = false;
@@ -42,17 +44,23 @@ export default class Remind implements Command {
             return;
         }
 
-        if (isNaN(ms(args[0]))) {
-            sendReply(
-                ctx.client,
-                "I couldn't recognize that duration. Cancelling reminder.",
-                ctx.msg
-            );
-            return;
+        const pattern = /([0-9]+(\.[0-9])*)+ *[A-z]+/gm;
+        const joinedArgs = args.join(" ");
+
+        let reminderDuration = 0;
+        const timeUnits = joinedArgs.match(pattern);
+        for (const timeUnit of timeUnits) {
+            const unitDuration = ms(timeUnit);
+            if (isNaN(unitDuration)) {
+                sendReply(ctx.client, "I couldn't recognize that duration. Cancelling poll.", ctx.msg);
+                return;
+            } else {
+                reminderDuration += unitDuration;
+            }
         }
 
         const startTime = ctx.msg.createdAt;
-        const endTime = new Date(startTime.getTime() + ms(args[0]));
+        const endTime = new Date(startTime.getTime() + reminderDuration);
 
         // User entered a negative time
         if (endTime <= startTime) {
@@ -64,7 +72,16 @@ export default class Remind implements Command {
             return;
         }
 
-        const reminder = args.splice(1).join(" ");
+        let finalTimeUnitIndex = 0;
+        while (pattern.exec(joinedArgs) != null) {
+            finalTimeUnitIndex = pattern.lastIndex;
+        }
+
+        const reminder = joinedArgs.substring(finalTimeUnitIndex);
+        if (!reminder) {
+            sendReply(ctx.client, `Usage: \`${this.usage}\``, ctx.msg);
+            return;
+        }
 
         const embedMsg = new MessageEmbed()
             .setColor("YELLOW")

@@ -152,13 +152,20 @@ export default class Poll implements Command {
             return;
         }
 
-        if (isNaN(ms(durationMessage.content))) {
-            sendReply(ctx.client, "I couldn't recognize that duration. Cancelling poll.", postChannelMessage);
-            return;
+        let pollDuration = 0;
+        const timeUnits = durationMessage.content.match(/([0-9]+(\.[0-9])*)+ *[A-z]+/gm);
+        for (const timeUnit of timeUnits) {
+            const unitDuration = ms(timeUnit);
+            if (isNaN(unitDuration)) {
+                sendReply(ctx.client, "I couldn't recognize that duration. Cancelling poll.", postChannelMessage);
+                return;
+            } else {
+                pollDuration += unitDuration;
+            }
         }
 
         const startTime = ctx.msg.createdAt;
-        const endTime = new Date(startTime.getTime() + ms(durationMessage.content));
+        const endTime = new Date(startTime.getTime() + pollDuration);
 
         // User entered a negative time
         if (endTime <= startTime) {
