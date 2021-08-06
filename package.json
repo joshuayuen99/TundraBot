@@ -62,7 +62,7 @@
     "typescript": "^4.3.4",
     "youtube-search": "^1.1.6",
     "youtube-sr": "^4.1.7",
-    "ytdl-core": "^4.8.3"
+    "ytdl-core": "^4.9.1"
   },
   "devDependencies": {
     "@types/cookies": "^0.7.7",
