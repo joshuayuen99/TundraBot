@@ -1,6 +1,5 @@
 import { TextChannel } from "discord.js";
 import { TundraBot } from "../base/TundraBot";
-import Rolemenu from "../commands/utility/rolemenu";
 import { DBRoleMenu, roleMenuModel } from "../models/RoleMenu";
 import Deps from "../utils/deps";
 import Logger from "../utils/logger";
@@ -8,11 +7,9 @@ import { StartupHelper } from "./startupHelper";
 
 export default class LoadRoleMenus extends StartupHelper {
     DBRolemenuManager: DBRoleMenu;
-    RolemenuCommand: Rolemenu;
     constructor(client: TundraBot) {
         super(client);
         this.DBRolemenuManager = Deps.get<DBRoleMenu>(DBRoleMenu);
-        this.RolemenuCommand = Deps.get<Rolemenu>(Rolemenu);
     }
 
     async init(): Promise<void> {

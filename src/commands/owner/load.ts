@@ -10,6 +10,7 @@ export default class Load implements Command {
     usage = "load <category:command name>";
     examples = ["load info:help"];
     enabled = true;
+    slashCommandEnabled = false;
     guildOnly = false;
     botPermissions = [];
     memberPermissions = [];

@@ -13,30 +13,37 @@ import CheckMutes from "../helpers/checkMutes";
 import CheckBans from "../helpers/checkBans";
 import LoadRoleMenus from "../helpers/loadRoleMenus";
 import { PresenceData } from "discord.js";
+import { registerInteractiveCommands } from "../handlers/commands";
 
 export default class ReadyHandler extends EventHandler {
     botStatusState: number; // index of current status
     static botStatuses: PresenceData[] = [
         {
             status: "online",
-            activity: {
-                name: "~help (not -)!",
-                type: "WATCHING",
-            },
+            activities: [
+                {
+                    name: "~help (not -)!",
+                    type: "WATCHING",
+                },
+            ],
         },
         {
             status: "online",
-            activity: {
-                name: "tundrabot.xyz",
-                type: "WATCHING",
-            },
+            activities: [
+                {
+                    name: "tundrabot.xyz",
+                    type: "WATCHING",
+                },
+            ],
         },
         {
             status: "online",
-            activity: {
-                name: "audio filters | ~filter",
-                type: "LISTENING",
-            },
+            activities: [
+                {
+                    name: "audio filters | ~filter",
+                    type: "LISTENING",
+                },
+            ],
         },
     ];
     Player: PlayerInit;
@@ -82,6 +89,15 @@ export default class ReadyHandler extends EventHandler {
         this.CheckReminders.init();
         this.CacheInvites.init();
 
+        if (process.env.TESTING === "true") {
+            registerInteractiveCommands(this.client).catch((err) => {
+                Logger.log(
+                    "error",
+                    `Error registering interactive commands on startup:\n${err}`
+                );
+            });
+        }
+
         Logger.log(
             "ready",
             `I'm now online, my name is ${this.client.user.tag}`
@@ -89,12 +105,15 @@ export default class ReadyHandler extends EventHandler {
     }
 
     async cycleStatus(): Promise<void> {
-        this.client.user
-            .setPresence(ReadyHandler.botStatuses[this.botStatusState])
-            .catch((err) => {
-                Logger.log("error", `Error setting bot status: ${err}`);
-            });
+        try {
+            this.client.user.setPresence(
+                ReadyHandler.botStatuses[this.botStatusState]
+            );
+        } catch (err) {
+            Logger.log("error", `Error setting bot status: ${err}`);
+        }
 
-        this.botStatusState = (this.botStatusState + 1) % ReadyHandler.botStatuses.length;
+        this.botStatusState =
+            (this.botStatusState + 1) % ReadyHandler.botStatuses.length;
     }
 }

@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import { Message, Snowflake } from "discord.js";
 import { Document, model, Schema } from "mongoose";
 import { TundraBot } from "../base/TundraBot";
 import Deps from "../utils/deps";
@@ -7,14 +7,14 @@ import DBWrapper from "./db-wrapper";
 import { DBGuild } from "./Guild";
 
 export interface messageInterface extends Document {
-    messageID: string;
+    messageID: Snowflake;
     text: string;
     editedText: string[];
     attachments: string[];
     command: string;
-    userID: string;
-    guildID: string;
-    channelID: string;
+    userID: Snowflake;
+    guildID: Snowflake;
+    channelID: Snowflake;
     deleted: boolean;
 
     createdAt: Date;

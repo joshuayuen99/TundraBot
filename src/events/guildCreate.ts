@@ -58,23 +58,27 @@ export default class GuildCreateHandler extends EventHandler {
                 **\\> Created at:** ${formatDateLong(guild.createdAt)}
                 **\\> Joined at:** ${formatDateLong(guild.joinedAt)}`
             );
-        if (!guild.owner) {
-            await guild.members.fetch(guild.ownerID);
+        const guildOwner = await guild.fetchOwner();
+        if (guildOwner) {
+            embedMsg.addField(
+                "Server owner information",
+                stripIndents`**\\> ID:** ${guildOwner.user.id}
+                **\\> Username:** ${guildOwner.user.username}
+                **\\> Discord Tag:** ${guildOwner.user.tag}
+                **\\> Created account:** ${formatDateShort(guildOwner.user.createdAt)}`,
+                true
+            );
         }
-        embedMsg.addField(
-            "Server owner information",
-            stripIndents`**\\> ID:** ${guild.owner.user.id}
-            **\\> Username:** ${guild.owner.user.username}
-            **\\> Discord Tag:** ${guild.owner.user.tag}
-            **\\> Created account:** ${formatDateShort(guild.owner.user.createdAt)}`,
-            true
+
+        const supportGuild = await this.client.guilds.fetch(
+            process.env.SUPPORT_SERVER_ID
         );
 
-        const supportGuild = await this.client.guilds.fetch(process.env.SUPPORT_SERVER_ID);
-        
-        const joinChannel = supportGuild.channels.cache.get(process.env.SUPPORT_SERVER_JOIN_CHANNEL_ID) as TextChannel;
+        const joinChannel = supportGuild.channels.cache.get(
+            process.env.SUPPORT_SERVER_JOIN_CHANNEL_ID
+        ) as TextChannel;
 
-        sendMessage(this.client, embedMsg, joinChannel);
+        sendMessage(this.client, { embeds: [embedMsg] }, joinChannel);
     }
 
     async createChannels(guild: Guild): Promise<void> {
@@ -132,16 +136,14 @@ export default class GuildCreateHandler extends EventHandler {
             )
             .setColor("BLUE")
             .setThumbnail(this.client.user.displayAvatarURL());
-        sendMessage(this.client, embedGreeting, logChannel);
+        sendMessage(this.client, { embeds: [embedGreeting] }, logChannel);
     }
 
     async createRoles(guild: Guild): Promise<void> {
         // Create necessary roles for soundboard commands
-        const soundboardRole = await createRole(
-            guild,
-            defaults.defaultGuildSettings.soundboardRole,
-            null
-        );
+        const soundboardRole = await createRole(guild, {
+            name: defaults.defaultGuildSettings.soundboardRole,
+        });
 
         if (!soundboardRole) {
             this.DBGuildManager.update(guild, {

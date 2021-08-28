@@ -1,5 +1,5 @@
-import { PermissionString } from "discord.js";
-import { Command, CommandContext } from "../../base/Command";
+import { PermissionResolvable, Permissions } from "discord.js";
+import { Command, CommandContext, SlashCommandContext } from "../../base/Command";
 import { sendReply } from "../../utils/functions";
 
 export default class Chess implements Command {
@@ -8,12 +8,15 @@ export default class Chess implements Command {
     description = "Starts a new chess game for the current voice channel.";
     usage = "chess";
     enabled = true;
+    slashCommandEnabled = true;
     guildOnly = true;
-    botPermissions: PermissionString[] = ["CONNECT", "SPEAK"];
+    botPermissions: PermissionResolvable[] = [Permissions.FLAGS.CONNECT, Permissions.FLAGS.SPEAK];
     memberPermissions = [];
     ownerOnly = false;
     premiumOnly = false;
     cooldown = 10000; // 10 seconds
+    slashDescription = "Start a new chess game for the current voice channel";
+    commandOptions = [];
 
     async execute(ctx: CommandContext, args: string[]): Promise<void> {
         // Make sure user is in a voice channel
@@ -25,18 +28,44 @@ export default class Chess implements Command {
 
         // Check bot permissions
         const perms = voice.permissionsFor(ctx.client.user);
-        if (!perms.has("VIEW_CHANNEL")) {
+        if (!perms.has(Permissions.FLAGS.VIEW_CHANNEL)) {
             sendReply(ctx.client, "I need permission to view your voice channel!", ctx.msg);
             return;
         }
 
-        if (!perms.has("CONNECT")) {
+        if (!perms.has(Permissions.FLAGS.CONNECT)) {
             sendReply(ctx.client, "I need permission to join your voice channel!", ctx.msg);
             return;
         }
 
         ctx.client.discordTogether.createTogetherCode(voice.id, "chess").then(async (invite) => {
             sendReply(ctx.client, invite.code, ctx.msg);
+            return;
+        });
+    }
+
+    async slashCommandExecute(ctx: SlashCommandContext): Promise<void> {
+        // Make sure user is in a voice channel
+        const voice = ctx.member.voice.channel;
+        if (!voice) {
+            ctx.commandInteraction.reply({ content: "You must be connected to a voice channel!", ephemeral: true });
+            return;
+        }
+
+        // Check bot permissions
+        const perms = voice.permissionsFor(ctx.client.user);
+        if (!perms.has(Permissions.FLAGS.VIEW_CHANNEL)) {
+            ctx.commandInteraction.reply({ content: "I need permission to view your voice channel!", ephemeral: true });
+            return;
+        }
+
+        if (!perms.has(Permissions.FLAGS.CONNECT)) {
+            ctx.commandInteraction.reply({ content: "I need permission to join your voice channel!", ephemeral: true });
+            return;
+        }
+
+        ctx.client.discordTogether.createTogetherCode(voice.id, "chess").then(async (invite) => {
+            ctx.commandInteraction.reply(invite.code);
             return;
         });
     }

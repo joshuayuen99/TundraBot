@@ -1,4 +1,4 @@
-import { Guild } from "discord.js";
+import { Guild, Snowflake } from "discord.js";
 import { Document, model, Schema } from "mongoose";
 import defaults from "../config";
 import DBWrapper from "./db-wrapper";
@@ -6,32 +6,32 @@ import CacheInvites from "../helpers/cacheInvites";
 import Logger from "../utils/logger";
 
 export interface guildInterface extends Document {
-    guildID: string;
-    guildName: string;
+    guildID: Snowflake;
+    guildName: Snowflake;
     timeJoined: Date;
     prefix: string;
     welcomeMessage: {
         enabled: boolean;
         welcomeMessage: string;
-        channelID: string;
+        channelID: Snowflake;
     };
     joinMessages: {
         enabled: boolean;
-        channelID: string;
+        channelID: Snowflake;
         trackInvites: boolean;
     };
     leaveMessages: {
         enabled: boolean;
-        channelID: string;
+        channelID: Snowflake;
     };
-    soundboardRoleID: string;
+    soundboardRoleID: Snowflake;
     modRole: string;
     adminRole: string;
     logMessages: {
         enabled: boolean;
-        channelID: string;
+        channelID: Snowflake;
     };
-    blacklistedChannelIDs: string[];
+    blacklistedChannelIDs: Snowflake[];
 }
 
 const guildSchema = new Schema<guildInterface>({

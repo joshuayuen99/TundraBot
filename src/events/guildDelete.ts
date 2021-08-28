@@ -1,6 +1,10 @@
 import { EventHandler } from "../base/EventHandler";
 import { Guild, MessageEmbed, TextChannel } from "discord.js";
-import { formatDateShort, formatDateLong, sendMessage } from "../utils/functions";
+import {
+    formatDateShort,
+    formatDateLong,
+    sendMessage,
+} from "../utils/functions";
 import Deps from "../utils/deps";
 import { TundraBot } from "../base/TundraBot";
 import { DBGuild } from "../models/Guild";
@@ -44,21 +48,26 @@ export default class GuildDeleteHandler extends EventHandler {
                 **\\> Created at:** ${formatDateLong(guild.createdAt)}
                 **\\> Joined at:** ${formatDateLong(guild.joinedAt)}`
             );
-        if (guild.owner) {
+        const guildOwner = await guild.fetchOwner();
+        if (guildOwner) {
             embedMsg.addField(
                 "Server owner information",
-                stripIndents`**\\> ID:** ${guild.owner.user.id}
-                **\\> Username:** ${guild.owner.user.username}
-                **\\> Discord Tag:** ${guild.owner.user.tag}
-                **\\> Created account:** ${formatDateShort(guild.owner.user.createdAt)}`,
+                stripIndents`**\\> ID:** ${guildOwner.user.id}
+                    **\\> Username:** ${guildOwner.user.username}
+                    **\\> Discord Tag:** ${guildOwner.user.tag}
+                    **\\> Created account:** ${formatDateShort(guildOwner.user.createdAt)}`,
                 true
             );
         }
 
-        const supportGuild = await this.client.guilds.fetch(process.env.SUPPORT_SERVER_ID);
-        
-        const leaveChannel = supportGuild.channels.cache.get(process.env.SUPPORT_SERVER_LEAVE_CHANNEL_ID) as TextChannel;
+        const supportGuild = await this.client.guilds.fetch(
+            process.env.SUPPORT_SERVER_ID
+        );
 
-        sendMessage(this.client, embedMsg, leaveChannel);
+        const leaveChannel = supportGuild.channels.cache.get(
+            process.env.SUPPORT_SERVER_LEAVE_CHANNEL_ID
+        ) as TextChannel;
+
+        sendMessage(this.client, { embeds: [embedMsg] }, leaveChannel);
     }
 }

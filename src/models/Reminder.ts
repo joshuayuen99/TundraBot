@@ -1,8 +1,9 @@
+import { Snowflake } from "discord.js";
 import { Document, model, Schema } from "mongoose";
 import DBWrapper from "./db-wrapper";
 
 export interface reminderInterface extends Document {
-    userID: string;
+    userID: Snowflake;
     reminder: string;
     startTime: Date;
     endTime: Date;

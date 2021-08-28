@@ -1,4 +1,4 @@
-import { Invite } from "discord.js";
+import { Guild, Invite } from "discord.js";
 import { EventHandler } from "../base/EventHandler";
 import { TundraBot } from "../base/TundraBot";
 import { DBGuild } from "../models/Guild";
@@ -15,9 +15,9 @@ export default class InviteCreateHandler extends EventHandler {
 
     async invoke(invite: Invite): Promise<void> {
         try {
-            if (!invite.guild.available) return;
+            if (!(<Guild>invite.guild).available) return;
 
-            const settings = await this.DBGuildManager.get(invite.guild);
+            const settings = await this.DBGuildManager.get(<Guild>invite.guild);
 
             // Join messages are enabled and invite tracking is on
             if (

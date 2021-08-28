@@ -3,10 +3,11 @@ import {
     Guild,
     GuildMember,
     MessageEmbed,
-    PermissionString,
+    PermissionResolvable,
+    Permissions,
     TextChannel,
 } from "discord.js";
-import { promptMessage, sendMessage, sendReply } from "../../utils/functions";
+import { commandConfirmMessage, sendMessage, sendReply } from "../../utils/functions";
 import { stripIndents } from "common-tags";
 import Logger from "../../utils/logger";
 import { TundraBot } from "../../base/TundraBot";
@@ -21,9 +22,15 @@ export default class Kick implements Command {
     usage = "kick <mention | id> [reason]";
     examples = ["kick @TundraBot", "kick @TundraBot Spamming"];
     enabled = true;
+    slashCommandEnabled = false;
     guildOnly = true;
-    botPermissions: PermissionString[] = ["KICK_MEMBERS", "ADD_REACTIONS"];
-    memberPermissions: PermissionString[] = ["KICK_MEMBERS"];
+    botPermissions: PermissionResolvable[] = [
+        Permissions.FLAGS.KICK_MEMBERS,
+        Permissions.FLAGS.ADD_REACTIONS,
+    ];
+    memberPermissions: PermissionResolvable[] = [
+        Permissions.FLAGS.KICK_MEMBERS,
+    ];
     ownerOnly = false;
     premiumOnly = false;
     cooldown = 5000; // 5 seconds
@@ -36,9 +43,6 @@ export default class Kick implements Command {
     }
 
     async execute(ctx: CommandContext, args: string[]): Promise<void> {
-        const CONFIRM = "💯";
-        const CANCEL = "\u274c"; // red "X" emoji
-
         // No user specified
         if (!args[0]) {
             sendReply(
@@ -85,23 +89,12 @@ export default class Kick implements Command {
             return;
         }
 
-        const promptEmbed = new MessageEmbed()
-            .setColor("GREEN")
-            .setFooter("This verification becomes invalid after 30s")
-            .setDescription(`Do you want to kick ${kMember}?`);
+        const confirmDescription = `Do you want to kick ${kMember}?`;
 
-        const msg = await sendReply(ctx.client, promptEmbed, ctx.msg);
-        if (!msg) return;
+        const confirmResult = await commandConfirmMessage(ctx, confirmDescription);
 
-        const emoji = await promptMessage(ctx.client, msg, ctx.author, 30, [
-            CONFIRM,
-            CANCEL,
-        ]);
-
-        if (emoji === CONFIRM) {
-            msg.delete();
-
-            await this.kick(
+        if (confirmResult) {
+            await Kick.kick(
                 ctx.client,
                 ctx.guild,
                 ctx.guildSettings as guildInterface,
@@ -122,14 +115,12 @@ export default class Kick implements Command {
                 });
 
             return;
-        } else if (!emoji || emoji === CANCEL) {
-            msg.delete();
-
+        } else if (!confirmResult) {
             sendReply(ctx.client, "Not kicking after all...", ctx.msg);
         }
     }
 
-    async kick(
+    static async kick(
         client: TundraBot,
         guild: Guild,
         settings: guildInterface,
@@ -137,6 +128,8 @@ export default class Kick implements Command {
         reason: string,
         moderator: GuildMember
     ): Promise<void> {
+        const DBGuildManager = Deps.get<DBGuild>(DBGuild);
+
         if (!guild.available) return;
 
         kMember.kick(reason).then(() => {
@@ -147,7 +140,7 @@ export default class Kick implements Command {
                 ) as TextChannel;
                 if (!logChannel) {
                     // channel was removed, disable logging in settings
-                    this.DBGuildManager.update(guild, {
+                    DBGuildManager.update(guild, {
                         logMessages: {
                             enabled: false,
                             channelID: null,
@@ -185,7 +178,8 @@ export default class Kick implements Command {
                     }
                 }
 
-                if (logChannel) sendMessage(client, embedMsg, logChannel);
+                if (logChannel)
+                    sendMessage(client, { embeds: [embedMsg] }, logChannel);
             }
         });
 

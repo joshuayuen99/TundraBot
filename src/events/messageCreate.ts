@@ -18,8 +18,9 @@ import {
 import Logger from "../utils/logger";
 import { sendMessage, sendReply } from "../utils/functions";
 
-export default class MessageHandler extends EventHandler {
+export default class MessageCreateHandler extends EventHandler {
     cmdCooldown: string[] = []; // user's command cooldowns with userIDs as keys
+    slashCommandReminderCooldown: number[] = []; // guild slash command reminder cooldowns with guildIDs as keys
 
     protected DBGuildManager: DBGuild;
     protected DBMessageManager: DBMessage;
@@ -151,7 +152,7 @@ export default class MessageHandler extends EventHandler {
 
                     sendMessage(
                         ctx.client,
-                        cooldownEmbed,
+                        { embeds: [cooldownEmbed] },
                         message.channel as TextChannel
                     );
                     return;
@@ -162,14 +163,17 @@ export default class MessageHandler extends EventHandler {
                 if (!validateBotPermissions(ctx)) return;
                 if (!validateMemberPermissions(ctx)) return;
 
-                // Logger.log("cmd", `${cmd} ${args.join(" ")}`);
+                // Check if we should send slash command reminder
+                this.checkSlashCommandReminder(ctx);
+
+                Logger.log("cmd", `${cmd} ${args.join(" ")}`);
                 command.execute(ctx, args).catch((err) => {
                     Logger.log(
                         "error",
                         `Error running command <${cmd}>:\n${err}`
                     );
                 });
-            } else if (message.channel.type === "dm") {
+            } else if (message.channel.type === "DM") {
                 // Sent in a DM
                 const messageArray = message.content
                     .replace(/\s\s+/g, " ")
@@ -280,7 +284,31 @@ export default class MessageHandler extends EventHandler {
             }
             */
         } catch (err) {
-            Logger.log("error", `message event error:\n${err}`);
+            Logger.log("error", `messageCreate event error:\n${err}`);
         }
+    }
+
+    async checkSlashCommandReminder(ctx: CommandContext): Promise<void> {
+        const time = this.slashCommandReminderCooldown[ctx.guild.id] || 0;
+        if (
+            time === 0 ||
+            time <= Date.now()
+        ) {
+            const slashCommandReminder = new MessageEmbed()
+                .setColor("NOT_QUITE_BLACK")
+                .setTitle("Did you know?")
+                .setDescription(
+                    `Discord added a cool new way to use bot commands! To use them, just type \`/\` :blush: For example, \`/help\`. If you don't see any listed from me, you'll need to give me permissions to register my slash commands for this server [here](${process.env.BOT_INVITE_LINK}).`
+                );
+
+            sendMessage(
+                ctx.client,
+                { embeds: [slashCommandReminder] },
+                ctx.channel
+            );
+        }
+
+        this.slashCommandReminderCooldown[ctx.guild.id] =
+            Date.now() + 24 * 60 * 1000; // 24 hours from now
     }
 }

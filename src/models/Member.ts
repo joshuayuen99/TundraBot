@@ -1,4 +1,4 @@
-import { GuildMember } from "discord.js";
+import { GuildMember, Snowflake } from "discord.js";
 import { Document, model, Schema } from "mongoose";
 import DBWrapper from "./db-wrapper";
 import { soundEffectInterface } from "./SoundEffect";
@@ -9,8 +9,8 @@ export interface memberSettings {
 }
 
 export interface memberInterface extends Document {
-    userID: string;
-    guildID: string;
+    userID: Snowflake;
+    guildID: Snowflake;
     username: string;
     settings: memberSettings;
     ban: {

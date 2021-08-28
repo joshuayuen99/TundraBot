@@ -1,22 +1,27 @@
 /* eslint-disable no-case-declarations */
-import { MessageEmbed } from "discord.js";
+import { Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
 import { TundraBot } from "../base/TundraBot";
-import { sendMessage, sendReply } from "../utils/functions";
+import { sendMessage } from "../utils/functions";
 import Logger from "../utils/logger";
 import { StartupHelper } from "./startupHelper";
 
 export default class PlayerInit extends StartupHelper {
-    // <guildID, MusicStarting count>
-    musicStarting: Map<string, number>;
+    // <guildID, now playing message>
+    nowPlayingMessages: Map<Snowflake, Message>;
 
     constructor(client: TundraBot) {
         super(client);
-        this.musicStarting = new Map();
+        this.nowPlayingMessages = new Map();
     }
 
     async init(): Promise<void> {
         this.client.player
-            .on("trackStart", (message, track) => {
+            .on("trackStart", async (queue, track) => {
+                queue.options.leaveOnEmpty = false;
+                queue.options.autoSelfDeaf = true;
+                queue.options.leaveOnEnd = true;
+                queue.options.leaveOnStop = true;
+
                 const embedMsg = new MessageEmbed()
                     .setColor("BLUE")
                     .setDescription(
@@ -28,175 +33,113 @@ export default class PlayerInit extends StartupHelper {
                     )
                     .setTimestamp();
 
-                sendMessage(this.client, embedMsg, message.channel);
-            })
-            .on("playlistStart", (message, queue, playlist, track) => {
-                const embedMsg = new MessageEmbed()
-                    .setColor("GREEN")
-                    .setTitle("Playing playlist")
-                    .addField("Playlist title", playlist.title)
-                    .addField("Song name", track.name);
-                sendMessage(this.client, embedMsg, message.channel);
-            })
-            .on("searchResults", (message, query, tracks) => {
-                if (tracks.length > 10) tracks = tracks.slice(0, 10);
-
-                const embedMsg = new MessageEmbed()
-                    .setDescription(
-                        `Type \`1-${tracks.length}\` for the video result you want to play, \`cancel\` to cancel.`
-                    )
-                    .addField(
-                        "Results",
-                        tracks
-                            .map(
-                                (t, i) =>
-                                    `**${i + 1}:** ${t.title} **(${
-                                        t.duration
-                                    })**`
-                            )
-                            .join("\n")
-                    );
-
-                sendReply(this.client, embedMsg, message);
-            })
-            .on("searchCancel", (message, query, tracks) => {
-                sendReply(this.client, "Cancelling play request...", message);
-                return;
-            })
-            .on(
-                "searchInvalidResponse",
-                (message, query, tracks, content, collector) => {
-                    sendReply(
-                        this.client,
-                        `Please select a song by sending a number between 1 and ${tracks.length}`,
-                        message
-                    );
-                }
-            )
-            .on("noResults", (message) => {
-                sendReply(
+                sendMessage(
                     this.client,
-                    "I couldn't find any results with that title.",
-                    message
-                );
+                    { embeds: [embedMsg] },
+                    <TextChannel>queue.metadata
+                ).then((message) => {
+                    if (!message) return;
+                    this.nowPlayingMessages.set(queue.guild.id, message);
+                });
             })
-            .on("botDisconnect", (message) => {
+            .on("trackEnd", async (queue, track) => {
+                let nowPlayingMessage = this.nowPlayingMessages.get(queue.guild.id);
+                nowPlayingMessage = await nowPlayingMessage.fetch();
+
+                if (nowPlayingMessage && nowPlayingMessage.deletable) {
+                    nowPlayingMessage.delete().catch();
+                }
+            })
+            .on("botDisconnect", async (queue) => {
                 sendMessage(
                     this.client,
                     "I disconnected from the voice channel...",
-                    message.channel
+                    <TextChannel>queue.metadata
                 );
             })
-            .on("queueEnd", (message) => {
+            .on("queueEnd", async (queue) => {
                 // Just leave
             })
-            .on("trackAdd", (message, queue, track) => {
-                const embedMsg = new MessageEmbed()
-                    .setColor("BLUE")
-                    .setDescription(
-                        `🎵 [${track.title}](${
-                            track.url
-                        }) has been added to the queue! There ${
-                            queue.tracks.length > 1 ? "are" : "is"
-                        } currently \`${queue.tracks.length}\` song${
-                            queue.tracks.length > 1 ? "s" : ""
-                        } in queue.`
-                    );
-                sendMessage(this.client, embedMsg, message.channel);
+            .on("trackAdd", async (queue, track) => {
+                // do nothing, handle in play command
             })
-            .on("playlistAdd", (message, queue, playlist) => {
-                sendMessage(
-                    this.client,
-                    `**${
-                        playlist.tracks.length
-                    }** songs have been added to the queue! There are currently ${
-                        queue.tracks.length + playlist.tracks.length - 1
-                    } songs in queue.`,
-                    message.channel
-                );
+            .on("tracksAdd", async (queue, tracks) => {
+                // do nothing, handle in play command
             })
-            .on("channelEmpty", () => {
+            .on("channelEmpty", async () => {
                 // do nothing, leaveOnEmpty is not enabled
             })
-            .on("error", (error, message) => {
-                switch (error) {
+            .on("error", async (queue, error) => {
+                Logger.log(
+                    "error",
+                    `[${queue.guild.name}] Error emitted from the queue: ${error.message}`
+                );
+
+                switch (error.message) {
                     case "NotConnected":
                         sendMessage(
                             this.client,
                             "You must be connected to a voice channel!",
-                            message.channel
+                            <TextChannel>queue.metadata
                         );
                         break;
                     case "UnableToJoin":
                         sendMessage(
                             this.client,
                             "I can't connect to your voice channel!",
-                            message.channel
+                            <TextChannel>queue.metadata
                         );
                         break;
                     case "NotPlaying":
                         sendMessage(
                             this.client,
                             "No songs are currently playing in this server.",
-                            message.channel
+                            <TextChannel>queue.metadata
                         );
                         break;
                     case "ParseError":
                         sendMessage(
                             this.client,
                             "I had trouble parsing this song/playlist.",
-                            message.channel
+                            <TextChannel>queue.metadata
                         );
                         break;
                     case "LiveVideo":
                         sendMessage(
                             this.client,
                             "Live videos are not yet supported!",
-                            message.channel
+                            <TextChannel>queue.metadata
                         );
                         break;
                     case "VideoUnavailable":
                         sendMessage(
                             this.client,
                             "I'm unable to access this video.",
-                            message.channel
+                            <TextChannel>queue.metadata
                         );
                         break;
-                        // case "MusicStarting":
-                        //     // Not in the map yet
-                        //     if (!this.musicStarting.has(message.guild.id)) {
-                        //         this.musicStarting.set(message.guild.id, 1);
-                        //         break;
-                        //     }
-
-                        //     // Already got MusicStarting error in this guild before
-                        //     let musicStartingCount = this.musicStarting.get(
-                        //         message.guild.id
-                        //     );
-                        //     musicStartingCount++;
-
-                        //     // Probably stuck, skip song
-                        //     if (musicStartingCount > 2) {
-                        //         this.client.player.jump(message, 1);
-                        //         musicStartingCount = 0;
-
-                        //         sendReply(this.client, "I'm having trouble playing this song... skipping it.", message);
-                        //     }
-
-                        //     this.musicStarting.set(
-                        //         message.guild.id,
-                        //         musicStartingCount
-                        //     );
-                        //     break;
                     default:
                         Logger.log("error", error);
+
                         sendMessage(
                             this.client,
-                            `An error occurred... Code: \`${error}\``,
-                            message.channel
+                            `An error occurred... Code: \`${error.message}\``,
+                            <TextChannel>queue.metadata
                         );
                         break;
                 }
+            })
+            .on("connectionError", async (queue, error) => {
+                Logger.log(
+                    "error",
+                    `[${queue.guild.name}] Error emitted from the connection: ${error.message}`
+                );
+
+                sendMessage(
+                    this.client,
+                    `An error occurred... Code: \`${error.message}\``,
+                    <TextChannel>queue.metadata
+                );
             });
     }
 }

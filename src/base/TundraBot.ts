@@ -25,6 +25,9 @@ export class TundraBot extends Client {
     aliases: Collection<string, string>;
     categories: string[];
 
+    /** <command name, command module> */
+    interactiveCommands: Collection<string, Command>;
+
     // TODO: add types
     player: Player;
 
@@ -48,7 +51,7 @@ export class TundraBot extends Client {
     /** <guildID, <invite code, invite>> */
     guildInvites: Map<string, Map<string, Invite>>;
 
-    discordTogether: DiscordTogether;
+    discordTogether: DiscordTogether<{ "TundraBot" }>;
 
     databaseCache: {
         /** <guildID, guildInterface> */
@@ -64,12 +67,25 @@ export class TundraBot extends Client {
     };
 
     constructor() {
-        const intents = new Intents([Intents.NON_PRIVILEGED, "GUILD_MEMBERS"]);
-        super({ ws: { intents } });
+        const intents = new Intents([
+            Intents.FLAGS.DIRECT_MESSAGES,
+            Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
+            Intents.FLAGS.GUILDS,
+            Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+            Intents.FLAGS.GUILD_INVITES,
+            Intents.FLAGS.GUILD_MEMBERS,
+            Intents.FLAGS.GUILD_MESSAGES,
+            Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+            Intents.FLAGS.GUILD_PRESENCES, // TODO: remove for production
+            Intents.FLAGS.GUILD_VOICE_STATES,
+        ]);
+        super({ intents: intents, partials: ["CHANNEL"] });
 
         this.commands = new Collection();
         this.aliases = new Collection();
         this.categories = fs.readdirSync(__dirname + "/../commands");
+
+        this.interactiveCommands = new Collection();
 
         Deps.buildDB(
             this,
@@ -85,12 +101,7 @@ export class TundraBot extends Client {
         );
 
         this.player = new Player(this, {
-            leaveOnEmpty: false,
-            autoSelfDeaf: true,
-            enableLive: false,
-            leaveOnEnd: true,
-            leaveOnStop: true,
-            ytdlDownloadOptions: {
+            ytdlOptions: {
                 filter: "audioonly",
                 highWaterMark: 1 << 25,
             },

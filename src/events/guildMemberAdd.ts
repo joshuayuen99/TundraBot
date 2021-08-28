@@ -32,15 +32,15 @@ export default class GuildMemberAddHandler extends EventHandler {
                     .setThumbnail(micon)
                     .addField(
                         `${member.user.username} joined`,
-                        `${formatDateLong(member.joinedAt)} EST`
+                        `${formatDateLong(member.joinedAt)}`
                     )
-                    .addField("New total members", guild.memberCount)
+                    .addField("New total members", guild.memberCount.toString())
                     .setTimestamp();
 
                 // Invite tracker enabled
                 if (settings.joinMessages.trackInvites) {
-                    await guild
-                        .fetchInvites()
+                    await guild.invites
+                        .fetch()
                         .then((invites) => {
                             const cachedInvites = this.client.guildInvites.get(
                                 guild.id
@@ -86,7 +86,11 @@ export default class GuildMemberAddHandler extends EventHandler {
                 ) as TextChannel;
 
                 if (logChannel) {
-                    sendMessage(this.client, embedMsg, logChannel);
+                    sendMessage(
+                        this.client,
+                        { embeds: [embedMsg] },
+                        logChannel
+                    );
                 }
             }
 
@@ -104,7 +108,11 @@ export default class GuildMemberAddHandler extends EventHandler {
                 ) as TextChannel;
 
                 if (welcomeChannel) {
-                    sendMessage(this.client, parsedWelcomeMessage, welcomeChannel);
+                    sendMessage(
+                        this.client,
+                        parsedWelcomeMessage,
+                        welcomeChannel
+                    );
                 }
             }
         } catch (err) {
@@ -112,10 +120,14 @@ export default class GuildMemberAddHandler extends EventHandler {
         }
     }
 
-    parseWelcomeMessage(message: string, member: GuildMember, guild: Guild): string {
+    parseWelcomeMessage(
+        message: string,
+        member: GuildMember,
+        guild: Guild
+    ): string {
         let parsedMessage = message.replace("{{member}}", member.user.username);
         parsedMessage = parsedMessage.replace("{{server}}", guild.name);
-    
+
         return parsedMessage;
     }
 }

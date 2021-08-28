@@ -4,10 +4,16 @@ import {
     Guild,
     GuildMember,
     MessageEmbed,
-    PermissionString,
+    PermissionResolvable,
+    Permissions,
     TextChannel,
 } from "discord.js";
-import { promptMessage, sendMessage, sendReply } from "../../utils/functions";
+import {
+    commandConfirmMessage,
+    createRole,
+    sendMessage,
+    sendReply,
+} from "../../utils/functions";
 import ms from "ms";
 import { stripIndents } from "common-tags";
 import Logger from "../../utils/logger";
@@ -32,26 +38,29 @@ export default class Mute implements Command {
         "mute @TundraBot @TundraBot 12h Spamming",
     ];
     enabled = true;
+    slashCommandEnabled = false;
     guildOnly = true;
-    botPermissions: PermissionString[] = ["MUTE_MEMBERS", "MANAGE_ROLES", "ADD_REACTIONS"];
-    memberPermissions: PermissionString[] = ["MUTE_MEMBERS", "MANAGE_ROLES"];
+    botPermissions: PermissionResolvable[] = [
+        Permissions.FLAGS.MUTE_MEMBERS,
+        Permissions.FLAGS.MANAGE_ROLES,
+        Permissions.FLAGS.ADD_REACTIONS,
+    ];
+    memberPermissions: PermissionResolvable[] = [
+        Permissions.FLAGS.MUTE_MEMBERS,
+        Permissions.FLAGS.MANAGE_ROLES,
+    ];
     ownerOnly = false;
     premiumOnly = false;
     cooldown = 5000; // 5 seconds
 
     DBGuildManager: DBGuild;
     DBMemberManager: DBMember;
-    UnmuteCommand: Unmute;
     constructor() {
         this.DBGuildManager = Deps.get<DBGuild>(DBGuild);
         this.DBMemberManager = Deps.get<DBMember>(DBMember);
-        this.UnmuteCommand = Deps.get<Unmute>(Unmute);
     }
 
     async execute(ctx: CommandContext, args: string[]): Promise<void> {
-        const CONFIRM = "💯";
-        const CANCEL = "\u274c"; // red "X" emoji
-
         // No user specified
         if (!args[0]) {
             sendReply(
@@ -64,38 +73,9 @@ export default class Mute implements Command {
             return;
         }
 
-        let duration;
-        let reason;
-        if (args[1]) {
-            if (ms(args[1])) {
-                // duration specified
-                if (ms(args[1]) > 0 && ms(args[1]) <= ms("14 days")) {
-                    duration = ms(args[1]);
-                    reason = args.splice(2).join(" ");
-                } else {
-                    // outside range
-                    sendReply(
-                        ctx.client,
-                        "The duration must be between 0-14 days.",
-                        ctx.msg
-                    );
-                    return;
-                }
-            } else {
-                // duration not specified
-                duration = 0;
-                reason = args.splice(1).join(" ");
-            }
-        } else {
-            duration = 0;
-            reason = "";
-        }
-
         const mMember =
             ctx.msg.mentions.members.first() ||
-            await ctx.guild.members.fetch(args[0]).catch(() => {
-                throw new Error("Member is not in the server");
-            });
+            (await ctx.guild.members.fetch(args[0]).catch());
 
         // No member found
         if (!mMember) {
@@ -127,35 +107,64 @@ export default class Mute implements Command {
             return;
         }
 
-        const promptEmbed = new MessageEmbed()
-            .setColor("GREEN")
-            .setAuthor("This verification becomes invalid after 30s")
-            .setDescription(
-                `Do you want to mute ${mMember} ${
-                    duration == 0
-                        ? "permanently"
-                        : `for ${ms(duration, { long: true })}`
-                }?`
+        const pattern = /\b([0-9]{1,6}((\.[0-9]))*) *[A-z]+/gm;
+        const joinedArgs = args.join(" ");
+
+        let muteDuration = 0;
+        const timeUnits = joinedArgs.match(pattern) ?? ["0"];
+        for (const timeUnit of timeUnits) {
+            const unitDuration = ms(timeUnit);
+            if (isNaN(unitDuration)) {
+                sendReply(
+                    ctx.client,
+                    "I couldn't recognize that duration. Cancelling reminder.",
+                    ctx.msg
+                );
+                return;
+            } else {
+                muteDuration += unitDuration;
+            }
+        }
+
+        // outside range
+        if (!(muteDuration >= 0 && muteDuration <= ms("14 days"))) {
+            sendReply(
+                ctx.client,
+                "The duration must be between 0-14 days.",
+                ctx.msg
             );
+            return;
+        }
 
-        const msg = await sendReply(ctx.client, promptEmbed, ctx.msg);
-        if (!msg) return;
+        let finalTimeUnitIndex = 0;
+        while (pattern.exec(joinedArgs) != null) {
+            finalTimeUnitIndex = pattern.lastIndex;
+        }
 
-        const emoji = await promptMessage(ctx.client, msg, ctx.author, 30, [
-            CONFIRM,
-            CANCEL,
-        ]);
+        const reason =
+            finalTimeUnitIndex === 0
+                ? args.slice(1).join(" ")
+                : joinedArgs.substring(finalTimeUnitIndex);
 
-        if (emoji === CONFIRM) {
-            msg.delete();
+        const confirmDescription = `Do you want to mute ${mMember} ${
+            muteDuration == 0
+                ? "permanently"
+                : `for ${ms(muteDuration, { long: true })}`
+        }?`;
 
-            await this.mute(
+        const confirmResult = await commandConfirmMessage(
+            ctx,
+            confirmDescription
+        );
+
+        if (confirmResult) {
+            await Mute.mute(
                 ctx.client,
                 ctx.guild,
                 ctx.guildSettings as guildInterface,
                 mMember,
                 reason,
-                duration,
+                muteDuration,
                 ctx.member
             )
                 .then(() => {
@@ -171,14 +180,12 @@ export default class Mute implements Command {
                 });
 
             return;
-        } else if (!emoji || emoji === CANCEL) {
-            msg.delete();
-
+        } else if (!confirmResult) {
             sendReply(ctx.client, "Not muting after all...", ctx.msg);
         }
     }
 
-    async mute(
+    static async mute(
         client: TundraBot,
         guild: Guild,
         settings: guildInterface,
@@ -187,29 +194,35 @@ export default class Mute implements Command {
         duration: number,
         moderator: GuildMember
     ): Promise<void> {
+        const DBGuildManager = Deps.get<DBGuild>(DBGuild);
+        const DBMemberManager = Deps.get<DBMember>(DBMember);
+
         if (!guild.available) return;
 
         // If the role doesn't already exist, make it
-        if (!guild.roles.cache.some((role) => role.name === "tempmute")) {
-            await guild.roles.create({
-                data: {
-                    name: "tempmute",
-                    mentionable: false,
-                },
+        const muteRole = await createRole(guild, {
+            name: "tempmute",
+            mentionable: false,
+        });
+
+        // Set channel overwrites for the role
+        if (guild.me.permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) {
+            guild.channels.cache.forEach((channel) => {
+                const channelPerms = channel.permissionsFor(client.user);
+                if (
+                    (channel.type === "GUILD_TEXT" &&
+                        channelPerms.has(Permissions.FLAGS.SEND_MESSAGES)) ||
+                    (channel.type === "GUILD_VOICE" &&
+                        channelPerms.has(Permissions.FLAGS.SPEAK))
+                )
+                    channel.permissionOverwrites.create(muteRole, {
+                        SEND_MESSAGES: false,
+                        SPEAK: false,
+                    });
             });
         }
 
-        const role = guild.roles.cache.find((role) => role.name === "tempmute");
-
-        // Set channel overwrites for the role
-        guild.channels.cache.forEach((channel) => {
-            channel.createOverwrite(role, {
-                SEND_MESSAGES: false,
-                SPEAK: false,
-            });
-        });
-
-        await mMember.roles.add(role);
+        await mMember.roles.add(muteRole);
 
         if (mMember.voice.channel) mMember.voice.setMute(true);
 
@@ -220,7 +233,7 @@ export default class Mute implements Command {
             ) as TextChannel;
             if (!logChannel) {
                 // channel was removed, disable logging in settings
-                this.DBGuildManager.update(guild, {
+                DBGuildManager.update(guild, {
                     logMessages: {
                         enabled: false,
                         channelID: null,
@@ -233,6 +246,8 @@ export default class Mute implements Command {
                 .setTitle("Mute")
                 .setThumbnail(mMember.user.displayAvatarURL())
                 .setTimestamp();
+
+            // TODO: display more accurate timer
 
             if (moderator) {
                 if (reason) {
@@ -279,16 +294,17 @@ export default class Mute implements Command {
                 }
             }
 
-            if (logChannel) sendMessage(client, embedMsg, logChannel);
+            if (logChannel)
+                sendMessage(client, { embeds: [embedMsg] }, logChannel);
         }
 
         if (duration > 0) {
             const endTime = new Date(Date.now() + duration);
 
-            this.DBMemberManager.mute(mMember, endTime)
+            DBMemberManager.mute(mMember, endTime)
                 .then(() => {
                     setTimeout(() => {
-                        this.UnmuteCommand.unmute(
+                        Unmute.unmute(
                             client,
                             guild,
                             settings,

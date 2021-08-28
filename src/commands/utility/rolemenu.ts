@@ -3,7 +3,8 @@ import {
     Message,
     MessageEmbed,
     MessageReaction,
-    PermissionString,
+    PermissionResolvable,
+    Permissions,
     TextChannel,
     User,
 } from "discord.js";
@@ -26,7 +27,10 @@ import {
 } from "../../models/RoleMenu";
 import { TundraBot } from "../../base/TundraBot";
 
-export default class Rolemenu implements Command {
+// TODO: switch from emojis in edit subcommand to using buttons
+// TODO: switch from using emojis in confirm delete subcommand to using buttons
+
+export default class RoleMenu implements Command {
     name = "rolemenu";
     aliases = ["rm"];
     category = "utility";
@@ -38,9 +42,15 @@ export default class Rolemenu implements Command {
         "rolemenu delete 769504779809587230",
     ];
     enabled = true;
+    slashCommandEnabled = false;
     guildOnly = true;
-    botPermissions: PermissionString[] = ["MANAGE_ROLES", "ADD_REACTIONS"];
-    memberPermissions: PermissionString[] = ["MANAGE_ROLES"];
+    botPermissions: PermissionResolvable[] = [
+        Permissions.FLAGS.MANAGE_ROLES,
+        Permissions.FLAGS.ADD_REACTIONS,
+    ];
+    memberPermissions: PermissionResolvable[] = [
+        Permissions.FLAGS.MANAGE_ROLES,
+    ];
     ownerOnly = false;
     premiumOnly = false;
     cooldown = 10000; // 10 seconds
@@ -106,7 +116,7 @@ export default class Rolemenu implements Command {
 
         // Check to make sure we have permission to post in the channel
         const botPermissionsIn = ctx.guild.me.permissionsIn(postChannel);
-        if (!botPermissionsIn.has("SEND_MESSAGES")) {
+        if (!botPermissionsIn.has(Permissions.FLAGS.SEND_MESSAGES)) {
             sendReply(
                 ctx.client,
                 "I don't have permission to post in that channel. Contact your server admin to give me permission overrides.",
@@ -142,7 +152,7 @@ export default class Rolemenu implements Command {
 
         const roleMenuMessage = (await sendMessage(
             ctx.client,
-            roleMenuEmbed,
+            { embeds: [roleMenuEmbed] },
             postChannel
         )) as Message;
 
@@ -167,7 +177,7 @@ export default class Rolemenu implements Command {
 
             let queryMessage = (await sendMessage(
                 ctx.client,
-                emojiQueryEmbed,
+                { embeds: [emojiQueryEmbed] },
                 ctx.channel
             )) as Message;
             const responseEmojiMessage = await waitResponse(
@@ -177,7 +187,7 @@ export default class Rolemenu implements Command {
                 5 * 60
             );
             if (!responseEmojiMessage) {
-                queryMessage.delete();
+                if (queryMessage.deletable) queryMessage.delete();
                 sendReply(
                     ctx.client,
                     "Cancelling rolemenu",
@@ -186,13 +196,15 @@ export default class Rolemenu implements Command {
                 isDone = true;
                 continue;
             } else if (responseEmojiMessage.content.toLowerCase() == "done") {
-                queryMessage.delete();
-                responseEmojiMessage.delete();
-                roleMenuMessage.edit(
-                    roleMenuEmbed
-                        .setDescription(roleMenuString)
-                        .setColor("BLUE")
-                );
+                if (queryMessage.deletable) queryMessage.delete();
+                if (responseEmojiMessage.deletable) responseEmojiMessage.delete();
+                roleMenuMessage.edit({
+                    embeds: [
+                        roleMenuEmbed
+                            .setDescription(roleMenuString)
+                            .setColor("BLUE"),
+                    ],
+                });
 
                 const roleMenuObject = {
                     messageID: roleMenuMessage.id,
@@ -248,11 +260,11 @@ export default class Rolemenu implements Command {
 
             roleMenuString += `${responseEmojiMessage.content.trim()}: \`none\``;
             roleMenuEmbed.setDescription(roleMenuString);
-            roleMenuMessage.edit(roleMenuEmbed);
+            roleMenuMessage.edit({ embeds: [roleMenuEmbed] });
 
-            queryMessage.delete();
+            if (queryMessage.deletable) queryMessage.delete();
             const responseEmoji = responseEmojiMessage.content.trim();
-            responseEmojiMessage.delete();
+            if (responseEmojiMessage.deletable) responseEmojiMessage.delete();
 
             let roleFound = false;
             while (!roleFound) {
@@ -265,7 +277,7 @@ export default class Rolemenu implements Command {
 
                 queryMessage = (await sendMessage(
                     ctx.client,
-                    roleQueryEmbed,
+                    { embeds: [roleQueryEmbed] },
                     ctx.channel
                 )) as Message;
                 const roleMessage = await waitResponse(
@@ -275,7 +287,7 @@ export default class Rolemenu implements Command {
                     5 * 60
                 );
                 if (!roleMessage) {
-                    queryMessage.delete();
+                    if (queryMessage.deletable) queryMessage.delete();
                     sendReply(
                         ctx.client,
                         "Cancelling rolemenu",
@@ -321,10 +333,10 @@ export default class Rolemenu implements Command {
                 );
                 roleMenuString += `${role}\n`;
                 roleMenuEmbed.setDescription(roleMenuString);
-                roleMenuMessage.edit(roleMenuEmbed);
+                roleMenuMessage.edit({ embeds: [roleMenuEmbed] });
 
-                queryMessage.delete();
-                roleMessage.delete();
+                if (queryMessage.deletable) queryMessage.delete();
+                if (roleMessage.deletable) roleMessage.delete();
 
                 sendMessage(
                     ctx.client,
@@ -379,7 +391,7 @@ export default class Rolemenu implements Command {
                     "React with one of the above emojis to receive the specified role!"
                 );
 
-            await roleMenuMessage.edit(roleMenuEmbed);
+            await roleMenuMessage.edit({ embeds: [roleMenuEmbed] });
 
             const updateEmbed = new MessageEmbed()
                 .setTitle("Update Role Menu")
@@ -393,7 +405,7 @@ export default class Rolemenu implements Command {
 
             const updateEmbedMessage = await sendReply(
                 ctx.client,
-                updateEmbed,
+                { embeds: [updateEmbed] },
                 ctx.msg
             );
             if (!updateEmbedMessage) return;
@@ -410,14 +422,14 @@ export default class Rolemenu implements Command {
                 [ONE_EMOJI, TWO_EMOJI, THREE_EMOJI]
             );
 
-            updateEmbedMessage.delete();
+            if (updateEmbedMessage.deletable) updateEmbedMessage.delete();
 
             switch (emoji) {
                 case ONE_EMOJI: {
                     updateEmbed.setDescription("Please enter the new title.");
                     const updateEmbedMessage = (await sendMessage(
                         ctx.client,
-                        updateEmbed,
+                        { embeds: [updateEmbed] },
                         ctx.channel
                     )) as Message;
                     const newTitleMessage = (await waitResponse(
@@ -431,9 +443,9 @@ export default class Rolemenu implements Command {
                         .setTitle(newTitleMessage.content)
                         .setColor("BLUE");
 
-                    roleMenuMessage.edit(roleMenuEmbed);
-                    updateEmbedMessage.delete();
-                    newTitleMessage.delete();
+                    roleMenuMessage.edit({ embeds: [roleMenuEmbed] });
+                    if (updateEmbedMessage.deletable) updateEmbedMessage.delete();
+                    if (newTitleMessage.deletable) newTitleMessage.delete();
 
                     cachedRoleMenu.roleMenuTitle = newTitleMessage.content;
 
@@ -442,7 +454,10 @@ export default class Rolemenu implements Command {
                         cachedRoleMenu.messageID,
                         cachedRoleMenu
                     ).catch((err) => {
-                        Logger.log("error", `Error updating role menu (${cachedRoleMenu.messageID}):\n${err}`);
+                        Logger.log(
+                            "error",
+                            `Error updating role menu (${cachedRoleMenu.messageID}):\n${err}`
+                        );
                     });
 
                     sendReply(ctx.client, "Rolemenu updated!", ctx.msg);
@@ -462,7 +477,7 @@ export default class Rolemenu implements Command {
 
                         let queryMessage = (await sendMessage(
                             ctx.client,
-                            emojiQueryEmbed,
+                            { embeds: [emojiQueryEmbed] },
                             ctx.channel
                         )) as Message;
                         const responseEmojiMessage = await waitResponse(
@@ -472,27 +487,29 @@ export default class Rolemenu implements Command {
                             5 * 60
                         );
                         if (!responseEmojiMessage) {
-                            queryMessage.delete();
+                            if (queryMessage.deletable) queryMessage.delete();
                             sendReply(
                                 ctx.client,
                                 "Cancelling rolemenu",
                                 ctx.msg
                             );
-                            roleMenuMessage.edit(
-                                roleMenuEmbed.setColor("BLUE")
-                            );
+                            roleMenuMessage.edit({
+                                embeds: [roleMenuEmbed.setColor("BLUE")],
+                            });
                             isDone = true;
                             continue;
                         } else if (
                             responseEmojiMessage.content.toLowerCase() == "done"
                         ) {
-                            queryMessage.delete();
-                            responseEmojiMessage.delete();
-                            roleMenuMessage.edit(
-                                roleMenuEmbed
-                                    .setDescription(roleMenuString)
-                                    .setColor("BLUE")
-                            );
+                            if (queryMessage.deletable) queryMessage.delete();
+                            if (responseEmojiMessage.deletable) responseEmojiMessage.delete();
+                            roleMenuMessage.edit({
+                                embeds: [
+                                    roleMenuEmbed
+                                        .setDescription(roleMenuString)
+                                        .setColor("BLUE"),
+                                ],
+                            });
                             sendReply(ctx.client, "Rolemenu updated!", ctx.msg);
 
                             isDone = true;
@@ -526,11 +543,11 @@ export default class Rolemenu implements Command {
 
                         roleMenuString += `${responseEmojiMessage.content}: \`none\``;
                         roleMenuEmbed.setDescription(roleMenuString);
-                        roleMenuMessage.edit(roleMenuEmbed);
+                        roleMenuMessage.edit({ embeds: [roleMenuEmbed] });
 
-                        queryMessage.delete();
+                        if (queryMessage.deletable) queryMessage.delete();
                         const responseEmoji = responseEmojiMessage.content;
-                        responseEmojiMessage.delete();
+                        if (responseEmojiMessage.deletable) responseEmojiMessage.delete();
 
                         let roleFound = false;
                         while (!roleFound) {
@@ -543,7 +560,7 @@ export default class Rolemenu implements Command {
 
                             queryMessage = (await sendMessage(
                                 ctx.client,
-                                roleQueryEmbed,
+                                { embeds: [roleQueryEmbed] },
                                 ctx.channel
                             )) as Message;
                             const roleMessage = await waitResponse(
@@ -553,15 +570,15 @@ export default class Rolemenu implements Command {
                                 5 * 60
                             );
                             if (!roleMessage) {
-                                queryMessage.delete();
+                                if (queryMessage.deletable) queryMessage.delete();
                                 sendReply(
                                     ctx.client,
                                     "Cancelling rolemenu",
                                     ctx.msg
                                 );
-                                roleMenuMessage.edit(
-                                    roleMenuEmbed.setColor("BLUE")
-                                );
+                                roleMenuMessage.edit({
+                                    embeds: [roleMenuEmbed.setColor("BLUE")],
+                                });
                                 isDone = true;
                                 continue;
                             }
@@ -603,7 +620,10 @@ export default class Rolemenu implements Command {
                                 cachedRoleMenu.messageID,
                                 cachedRoleMenu
                             ).catch((err) => {
-                                Logger.log("error", `Error updating role menu (${cachedRoleMenu.messageID}):\n${err}`);
+                                Logger.log(
+                                    "error",
+                                    `Error updating role menu (${cachedRoleMenu.messageID}):\n${err}`
+                                );
                             });
 
                             // Edit rolemenu text
@@ -613,10 +633,10 @@ export default class Rolemenu implements Command {
                             );
                             roleMenuString += `${role}\n`;
                             roleMenuEmbed.setDescription(roleMenuString);
-                            roleMenuMessage.edit(roleMenuEmbed);
+                            roleMenuMessage.edit({ embeds: [roleMenuEmbed] });
 
-                            queryMessage.delete();
-                            roleMessage.delete();
+                            if (queryMessage.deletable) queryMessage.delete();
+                            if (roleMessage.deletable) roleMessage.delete();
 
                             sendMessage(
                                 ctx.client,
@@ -626,7 +646,9 @@ export default class Rolemenu implements Command {
                         }
                     }
 
-                    roleMenuMessage.edit(roleMenuEmbed.setColor("BLUE"));
+                    roleMenuMessage.edit({
+                        embeds: [roleMenuEmbed.setColor("BLUE")],
+                    });
                     break;
                 }
                 case THREE_EMOJI: {
@@ -641,7 +663,7 @@ export default class Rolemenu implements Command {
 
                         const queryMessage = (await sendMessage(
                             ctx.client,
-                            emojiQueryEmbed,
+                            { embeds: [emojiQueryEmbed] },
                             ctx.channel
                         )) as Message;
                         const responseEmojiMessage = await waitResponse(
@@ -651,27 +673,29 @@ export default class Rolemenu implements Command {
                             5 * 60
                         );
                         if (!responseEmojiMessage) {
-                            queryMessage.delete();
+                            if (queryMessage.deletable) queryMessage.delete();
                             sendReply(
                                 ctx.client,
                                 "Cancelling rolemenu",
                                 ctx.msg
                             );
-                            roleMenuMessage.edit(
-                                roleMenuEmbed.setColor("BLUE")
-                            );
+                            roleMenuMessage.edit({
+                                embeds: [roleMenuEmbed.setColor("BLUE")],
+                            });
                             isDone = true;
                             continue;
                         } else if (
                             responseEmojiMessage.content.toLowerCase() == "done"
                         ) {
-                            queryMessage.delete();
-                            responseEmojiMessage.delete();
-                            roleMenuMessage.edit(
-                                roleMenuEmbed
-                                    .setDescription(roleMenuString)
-                                    .setColor("BLUE")
-                            );
+                            if (queryMessage.deletable) queryMessage.delete();
+                            if (responseEmojiMessage.deletable) responseEmojiMessage.delete();
+                            roleMenuMessage.edit({
+                                embeds: [
+                                    roleMenuEmbed
+                                        .setDescription(roleMenuString)
+                                        .setColor("BLUE"),
+                                ],
+                            });
 
                             sendReply(ctx.client, "Rolemenu updated!", ctx.msg);
 
@@ -716,7 +740,10 @@ export default class Rolemenu implements Command {
                             cachedRoleMenu.messageID,
                             cachedRoleMenu
                         ).catch((err) => {
-                            Logger.log("error", `Error updating role menu (${cachedRoleMenu.messageID}):\n${err}`);
+                            Logger.log(
+                                "error",
+                                `Error updating role menu (${cachedRoleMenu.messageID}):\n${err}`
+                            );
                         });
 
                         roleMenuString = "";
@@ -724,11 +751,11 @@ export default class Rolemenu implements Command {
                             roleMenuString += `${option.emoji}: <@&${option.roleID}>\n`;
                         }
                         roleMenuEmbed.setDescription(roleMenuString);
-                        roleMenuMessage.edit(roleMenuEmbed);
+                        roleMenuMessage.edit({ embeds: [roleMenuEmbed] });
 
-                        queryMessage.delete();
+                        if (queryMessage.deletable) queryMessage.delete();
                         const responseEmoji = responseEmojiMessage.content;
-                        responseEmojiMessage.delete();
+                        if (responseEmojiMessage.deletable) responseEmojiMessage.delete();
 
                         sendMessage(
                             ctx.client,
@@ -737,7 +764,9 @@ export default class Rolemenu implements Command {
                         );
                     }
 
-                    roleMenuMessage.edit(roleMenuEmbed.setColor("BLUE"));
+                    roleMenuMessage.edit({
+                        embeds: [roleMenuEmbed.setColor("BLUE")],
+                    });
                     break;
                 }
                 default: {
@@ -800,7 +829,7 @@ export default class Rolemenu implements Command {
 
             const confirmDeleteMessage = await sendReply(
                 ctx.client,
-                confirmDeleteEmbed,
+                { embeds: [confirmDeleteEmbed] },
                 ctx.msg
             );
             if (!confirmDeleteMessage) return;
@@ -813,7 +842,7 @@ export default class Rolemenu implements Command {
                 [CONFIRM, CANCEL]
             );
 
-            confirmDeleteMessage.delete();
+            if (confirmDeleteMessage.deletable) confirmDeleteMessage.delete();
             switch (emoji) {
                 case CONFIRM:
                     {
@@ -858,7 +887,11 @@ export default class Rolemenu implements Command {
                                 );
 
                             if (logChannel)
-                                sendMessage(ctx.client, logEmbed, logChannel);
+                                sendMessage(
+                                    ctx.client,
+                                    { embeds: [logEmbed] },
+                                    logChannel
+                                );
                         }
                     }
                     break;
@@ -881,7 +914,7 @@ export default class Rolemenu implements Command {
         }
     }
 
-    async roleMenuHandleMessageReactionAdd(
+    static async roleMenuHandleMessageReactionAdd(
         client: TundraBot,
         reaction: MessageReaction,
         user: User
@@ -909,7 +942,7 @@ export default class Rolemenu implements Command {
         }
     }
 
-    async roleMenuHandleMessageReactionRemove(
+    static async roleMenuHandleMessageReactionRemove(
         client: TundraBot,
         reaction: MessageReaction,
         user: User

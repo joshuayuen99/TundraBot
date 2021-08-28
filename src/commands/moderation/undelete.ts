@@ -1,7 +1,11 @@
 import { Command, CommandContext } from "../../base/Command";
-import { MessageEmbed } from "discord.js";
+import { MessageEmbed, Permissions } from "discord.js";
 import moment from "moment";
-import { formatDateLong, getTextChannel, sendReply } from "../../utils/functions";
+import {
+    formatDateLong,
+    getTextChannel,
+    sendReply,
+} from "../../utils/functions";
 import { messageInterface, messageModel } from "../../models/Message";
 import { FilterQuery } from "mongoose";
 import Logger from "../../utils/logger";
@@ -22,6 +26,7 @@ export default class Undelete implements Command {
         "undelete @TundraBot -c #general -n 5",
     ];
     enabled = true;
+    slashCommandEnabled = false;
     guildOnly = true;
     botPermissions = [];
     memberPermissions = [];
@@ -68,7 +73,11 @@ export default class Undelete implements Command {
         if (args[0]) {
             // Give "all" option
             if (args[0].toLowerCase() === "all") {
-                if (!ctx.member.hasPermission("MANAGE_MESSAGES")) {
+                if (
+                    !ctx.member.permissions.has(
+                        Permissions.FLAGS.MANAGE_MESSAGES
+                    )
+                ) {
                     sendReply(
                         ctx.client,
                         "Only members with the `Manage Messages` permission can see deleted messages from other users.",
@@ -77,7 +86,11 @@ export default class Undelete implements Command {
                     return;
                 }
             } else if (ctx.msg.mentions && ctx.msg.mentions.users.size > 0) {
-                if (ctx.member.hasPermission("MANAGE_MESSAGES")) {
+                if (
+                    ctx.member.permissions.has(
+                        Permissions.FLAGS.MANAGE_MESSAGES
+                    )
+                ) {
                     searchOptions.userID = ctx.msg.mentions.users.first().id;
                 } else {
                     sendReply(
@@ -89,7 +102,11 @@ export default class Undelete implements Command {
                 }
             } else if (/[0-9]+/.exec(args[0])) {
                 // If they give an ID
-                if (ctx.member.hasPermission("MANAGE_MESSAGES")) {
+                if (
+                    ctx.member.permissions.has(
+                        Permissions.FLAGS.MANAGE_MESSAGES
+                    )
+                ) {
                     searchOptions.userID = args[0];
                 } else {
                     sendReply(
@@ -147,7 +164,9 @@ export default class Undelete implements Command {
                 messages.forEach((savedMessage) => {
                     deletedMessagesCount += 1;
                     const messageDeleteTime = moment(savedMessage.updatedAt);
-                    const messageDeleteTimeDiscordDate = formatDateLong(messageDeleteTime.toDate());
+                    const messageDeleteTimeDiscordDate = formatDateLong(
+                        messageDeleteTime.toDate()
+                    );
                     const timeSinceDeletion = messageDeleteTime.fromNow();
                     let messageText = savedMessage.text;
                     const editText = savedMessage.editedText;
@@ -161,7 +180,7 @@ export default class Undelete implements Command {
                     }
 
                     deletedMessagesString += `**[${deletedMessagesCount}] ${timeSinceDeletion} (${messageDeleteTimeDiscordDate})**\n`;
-                    
+
                     deletedMessagesString += `Author: ${author}\n`;
 
                     if (!searchOptions.channelID)
@@ -211,22 +230,21 @@ export default class Undelete implements Command {
 
                 if (headerString.length + deletedMessagesString.length > 2048) {
                     // TODO: convert to util function
-                    ctx.channel.send(
-                        "Output exceeded 2048 characters. Exported to the attached file.",
-                        {
-                            files: [
-                                {
-                                    attachment: Buffer.from(
-                                        headerString + deletedMessagesString
-                                    ),
-                                    name: "output.txt",
-                                },
-                            ],
-                        }
-                    );
+                    ctx.channel.send({
+                        content:
+                            "Output exceeded 2048 characters. Exported to the attached file.",
+                        files: [
+                            {
+                                attachment: Buffer.from(
+                                    headerString + deletedMessagesString
+                                ),
+                                name: "output.txt",
+                            },
+                        ],
+                    }).catch();
                     return;
                 } else {
-                    sendReply(ctx.client, embedMsg, ctx.msg);
+                    sendReply(ctx.client, { embeds: [embedMsg] }, ctx.msg);
                 }
             });
         return;

@@ -8,11 +8,9 @@ import { StartupHelper } from "./startupHelper";
 
 export default class CheckEvents extends StartupHelper {
     DBPollManager: DBPoll;
-    PollCommand: Poll;
     constructor(client: TundraBot) {
         super(client);
         this.DBPollManager = Deps.get<DBPoll>(DBPoll);
-        this.PollCommand = Deps.get<Poll>(Poll);
     }
 
     async init(): Promise<void> {
@@ -35,10 +33,10 @@ export default class CheckEvents extends StartupHelper {
                     // Poll is still ongoing
                     if (poll.endTime > dateNow) {
                         setTimeout(() => {
-                            this.PollCommand.pollHandleFinish(this.client, poll);
+                            Poll.pollHandleFinish(this.client, poll);
                         }, poll.endTime.valueOf() - dateNow.valueOf());
                     } else { // Poll is finished
-                        this.PollCommand.pollHandleFinish(this.client, poll);
+                        Poll.pollHandleFinish(this.client, poll);
                     }
                 } catch (err) {
                     // remove poll from database

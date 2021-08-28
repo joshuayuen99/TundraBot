@@ -1,12 +1,12 @@
 import { Track } from "discord-player";
-import { Guild } from "discord.js";
+import { Guild, Snowflake } from "discord.js";
 import { Document, model, Schema } from "mongoose";
 import DBWrapper from "./db-wrapper";
 import { guildInterface } from "./Guild";
 
 export interface playlistInterface extends Document {
     name: string;
-    guildID: string;
+    guildID: Snowflake;
     tracks: Track[];
     filters: string[];
 }

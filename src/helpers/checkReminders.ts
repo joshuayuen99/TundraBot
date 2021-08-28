@@ -7,11 +7,9 @@ import { StartupHelper } from "./startupHelper";
 
 export default class CheckReminders extends StartupHelper {
     DBReminderManager: DBReminder;
-    RemindCommand: Remind;
     constructor(client: TundraBot) {
         super(client);
         this.DBReminderManager = Deps.get<DBReminder>(DBReminder);
-        this.RemindCommand = Deps.get<Remind>(Remind);
     }
 
     async init(): Promise<void> {
@@ -33,14 +31,14 @@ export default class CheckReminders extends StartupHelper {
                         // Reminder is in the future
                         if (reminder.endTime > dateNow) {
                             setTimeout(async () => {
-                                this.RemindCommand.remind(
+                                Remind.remind(
                                     this.client,
                                     reminder
                                 );
                             }, reminder.endTime.getTime() - dateNow.getTime());
                         } else {
                             // Reminder end time has passed
-                            this.RemindCommand.remind(this.client, reminder);
+                            Remind.remind(this.client, reminder);
                         }
                     } catch (err) {
                         // user left all servers with bot in it

@@ -8,12 +8,10 @@ import { StartupHelper } from "./startupHelper";
 
 export default class CheckBans extends StartupHelper {
     DBMemberManager: DBMember;
-    BanCommand: Ban;
     DBGuildManager: DBGuild;
     constructor(client: TundraBot) {
         super(client);
         this.DBMemberManager = Deps.get<DBMember>(DBMember);
-        this.BanCommand = Deps.get<Ban>(Ban);
         this.DBGuildManager = Deps.get<DBGuild>(DBGuild);
     }
 
@@ -40,7 +38,7 @@ export default class CheckBans extends StartupHelper {
                                 try {
                                     const settings =
                                         await this.DBGuildManager.get(guild);
-                                    this.BanCommand.unban(
+                                    Ban.unban(
                                         this.client,
                                         guild,
                                         settings,
@@ -61,7 +59,7 @@ export default class CheckBans extends StartupHelper {
                                 const settings = await this.DBGuildManager.get(
                                     guild
                                 );
-                                this.BanCommand.unban(
+                                Ban.unban(
                                     this.client,
                                     guild,
                                     settings,

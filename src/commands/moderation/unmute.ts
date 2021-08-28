@@ -6,7 +6,14 @@ import { TundraBot } from "../../base/TundraBot";
 import { DBGuild, guildInterface } from "../../models/Guild";
 import Deps from "../../utils/deps";
 import { DBMember } from "../../models/Member";
-import { Guild, GuildMember, MessageEmbed, PermissionString, TextChannel } from "discord.js";
+import {
+    Guild,
+    GuildMember,
+    MessageEmbed,
+    PermissionResolvable,
+    Permissions,
+    TextChannel,
+} from "discord.js";
 import { sendMessage, sendReply } from "../../utils/functions";
 
 export default class Unmute implements Command {
@@ -16,9 +23,16 @@ export default class Unmute implements Command {
     usage = "unmute <mention | id> [reason]";
     examples = ["unmute @TundraBot", "unmute @TundraBot Felt nice"];
     enabled = true;
+    slashCommandEnabled = false;
     guildOnly = true;
-    botPermissions: PermissionString[] = ["MUTE_MEMBERS", "MANAGE_ROLES"];
-    memberPermissions: PermissionString[] = ["MUTE_MEMBERS", "MANAGE_ROLES"];
+    botPermissions: PermissionResolvable[] = [
+        Permissions.FLAGS.MUTE_MEMBERS,
+        Permissions.FLAGS.MANAGE_ROLES,
+    ];
+    memberPermissions: PermissionResolvable[] = [
+        Permissions.FLAGS.MUTE_MEMBERS,
+        Permissions.FLAGS.MANAGE_ROLES,
+    ];
     ownerOnly = false;
     premiumOnly = false;
     cooldown = 5000; // 5 seconds
@@ -47,9 +61,9 @@ export default class Unmute implements Command {
 
         const mMember =
             ctx.msg.mentions.members.first() ||
-            await ctx.guild.members.fetch(args[0]).catch(() => {
+            (await ctx.guild.members.fetch(args[0]).catch(() => {
                 throw new Error("Member is not in the server");
-            });
+            }));
 
         // No member found
         if (!mMember) {
@@ -73,33 +87,40 @@ export default class Unmute implements Command {
 
         // If user isn't muted
         if (!mMember.roles.cache.some((role) => role.name === "tempmute")) {
-            sendReply(
-                ctx.client,
-                "They aren't muted!",
-                ctx.msg
-            );
+            sendReply(ctx.client, "They aren't muted!", ctx.msg);
             return;
         }
 
-        await this.unmute(ctx.client, ctx.guild, ctx.guildSettings as guildInterface, mMember, reason, ctx.member).then(() => {
-            sendReply(
-                ctx.client,
-                "Member unmuted!",
-                ctx.msg
-            );
-            return;
-        }).catch((err) => {
-            Logger.log("error", `Unmute command unmute error:\n${err}`);
-            sendReply(
-                ctx.client,
-                "Well... something went wrong?",
-                ctx.msg
-            );
-            return;
-        });
+        await Unmute.unmute(
+            ctx.client,
+            ctx.guild,
+            ctx.guildSettings as guildInterface,
+            mMember,
+            reason,
+            ctx.member
+        )
+            .then(() => {
+                sendReply(ctx.client, "Member unmuted!", ctx.msg);
+                return;
+            })
+            .catch((err) => {
+                Logger.log("error", `Unmute command unmute error:\n${err}`);
+                sendReply(ctx.client, "Well... something went wrong?", ctx.msg);
+                return;
+            });
     }
 
-    async unmute(client: TundraBot, guild: Guild, settings: guildInterface, mMember: GuildMember, reason: string, moderator: GuildMember): Promise<void> {
+    static async unmute(
+        client: TundraBot,
+        guild: Guild,
+        settings: guildInterface,
+        mMember: GuildMember,
+        reason: string,
+        moderator: GuildMember
+    ): Promise<void> {
+        const DBGuildManager = Deps.get<DBGuild>(DBGuild);
+        const DBMemberManager = Deps.get<DBMember>(DBMember);
+
         if (!guild.available) return;
 
         const role = guild.roles.cache.find((role) => role.name === "tempmute");
@@ -114,11 +135,12 @@ export default class Unmute implements Command {
                 // Logs enabled
                 if (settings.logMessages.enabled) {
                     const logChannel = guild.channels.cache.find(
-                        (channel) => channel.id === settings.logMessages.channelID
+                        (channel) =>
+                            channel.id === settings.logMessages.channelID
                     ) as TextChannel;
                     if (!logChannel) {
                         // channel was removed, disable logging in settings
-                        this.DBGuildManager.update(guild, {
+                        DBGuildManager.update(guild, {
                             logMessages: {
                                 enabled: false,
                                 channelID: null,
@@ -157,20 +179,30 @@ export default class Unmute implements Command {
                         }
                     }
 
-                    if (logChannel) sendMessage(client, embedMsg, logChannel);
+                    if (logChannel)
+                        sendMessage(client, { embeds: [embedMsg] }, logChannel);
                 }
 
                 // Remove mute from database
-                this.DBMemberManager.unmute(mMember).catch((err) => {
-                    Logger.log("error", `Error unmuting member in database:\n${err}`);
+                DBMemberManager.unmute(mMember).catch((err) => {
+                    Logger.log(
+                        "error",
+                        `Error unmuting member in database:\n${err}`
+                    );
                 });
             })
             .catch((err) => {
-                Logger.log("error", `Error removing muted role from member:\n${err}`);
+                Logger.log(
+                    "error",
+                    `Error removing muted role from member:\n${err}`
+                );
 
                 // Remove mute from database
-                this.DBMemberManager.unmute(mMember).catch((err) => {
-                    Logger.log("error", `Error unmuting member in database:\n${err}`);
+                DBMemberManager.unmute(mMember).catch((err) => {
+                    Logger.log(
+                        "error",
+                        `Error unmuting member in database:\n${err}`
+                    );
                 });
             });
     }
