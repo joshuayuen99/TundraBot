@@ -10,10 +10,10 @@ export default class RootRoutes extends Route {
 
         this.router.get("/", (req, res) => {
             res.render("index", {
-                subtitle: "Home"
+                subtitle: "Home",
             });
         });
-        
+
         this.router.get("/commands", (req, res) => {
             const commands = [...this.client.commands.values()];
 
@@ -24,9 +24,14 @@ export default class RootRoutes extends Route {
                     { name: "Info", icon: "fas fa-question-circle" },
                     { name: "Moderation", icon: "fas fa-gavel" },
                     { name: "Utility", icon: "fas fa-tools" },
-                    { name: "Fun", icon: "fas fa-star" }],
+                    { name: "Fun", icon: "fas fa-star" },
+                ],
                 commands: commands,
-                commandsString: JSON.stringify(commands)
+                commandsString: JSON.stringify(
+                    commands,
+                    (key, value) =>
+                        typeof value === "bigint" ? value.toString() : value // return everything else unchanged)
+                ),
             });
         });
     }
