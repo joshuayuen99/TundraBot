@@ -32,8 +32,7 @@ export default class Middleware {
                     // owner has access to everything
 
 
-                    res.locals.guilds = req.app.get("client").guilds.cache
-                        .array()
+                    res.locals.guilds = [...req.app.get("client").guilds.cache.values()]
                         .sort((a, b) => {
                             if (a.name.toLowerCase() < b.name.toLowerCase())
                                 return -1;

@@ -1,10 +1,11 @@
 import { Command, CommandContext } from "../../base/Command";
 import {
     MessageEmbed,
+    Permissions,
     PermissionString,
-    VoiceChannel,
-    VoiceConnection,
+    VoiceChannel
 } from "discord.js";
+import { VoiceConnection } from "@discordjs/voice";
 import { sendReply } from "../../utils/functions";
 import { stripIndents } from "common-tags";
 import { DBSoundEffect, soundEffectInterface } from "../../models/SoundEffect";
@@ -12,8 +13,7 @@ import Deps from "../../utils/deps";
 import defaults from "../../config";
 import Logger from "../../utils/logger";
 import { DBMember } from "../../models/Member";
-import { TundraBot } from "../../base/TundraBot";
-import ytdl from "ytdl-core";
+import { QueryType } from "discord-player";
 
 export interface SoundboardQueue {
     voiceChannel: VoiceChannel;
@@ -47,6 +47,7 @@ export default class Soundboard implements Command {
         "soundboard leave RickRoll",
     ];
     enabled = true;
+    slashCommandEnabled = false;
     guildOnly = true;
     botPermissions: PermissionString[] = ["CONNECT", "SPEAK"];
     memberPermissions = [];
@@ -69,7 +70,7 @@ export default class Soundboard implements Command {
             !ctx.member.roles.cache.some(
                 (role) => role.id === ctx.guildSettings.soundboardRoleID
             ) &&
-            !ctx.member.hasPermission("MANAGE_GUILD")
+            !ctx.member.permissions.has(Permissions.FLAGS.MANAGE_GUILD)
         ) {
             // The server doesn't have the soundboardRole
             if (
@@ -148,7 +149,7 @@ export default class Soundboard implements Command {
                 );
         } else {
             let soundEffectsString = soundEffects
-                .map((soundEffect) => `\`${soundEffect.name}\``)
+                .map((soundEffect) => `[${soundEffect.name}](${soundEffect.link})`)
                 .join(" ");
 
             const memberSoundEffects =
@@ -185,7 +186,7 @@ export default class Soundboard implements Command {
                 );
         }
 
-        sendReply(ctx.client, soundEffectsEmbed, ctx.msg);
+        sendReply(ctx.client, { embeds: [soundEffectsEmbed] }, ctx.msg);
     }
 
     async playEffectCommand(
@@ -206,17 +207,17 @@ export default class Soundboard implements Command {
         // Not in a voice channel
         const voice = ctx.member.voice.channel;
         if (!voice) {
-            sendReply(ctx.client, "You must be in a voice channel!", ctx.msg);
+            sendReply(ctx.client, "You must be connected to a voice channel!", ctx.msg);
             return;
         }
 
         // Check bot permissions
         const perms = voice.permissionsFor(ctx.client.user);
-        if (!perms.has("VIEW_CHANNEL")) {
+        if (!perms.has(Permissions.FLAGS.VIEW_CHANNEL)) {
             sendReply(ctx.client, "I need permission to view your voice channel!", ctx.msg);
             return;
         }
-        if (!perms.has("CONNECT")) {
+        if (!perms.has(Permissions.FLAGS.CONNECT)) {
             sendReply(
                 ctx.client,
                 "I need permission to join your voice channel!",
@@ -224,7 +225,7 @@ export default class Soundboard implements Command {
             );
             return;
         }
-        if (!perms.has("SPEAK")) {
+        if (!perms.has(Permissions.FLAGS.SPEAK)) {
             sendReply(
                 ctx.client,
                 "I need permission to speak in your voice channel!",
@@ -246,7 +247,37 @@ export default class Soundboard implements Command {
             return;
         }
 
-        await ctx.client.player.play(ctx.msg, soundEffect.link);
+        const queue = ctx.client.player.createQueue(ctx.guild, { metadata: ctx.channel });
+
+        try {
+            if (!queue.connection) await queue.connect(voice);
+        } catch {
+            ctx.client.player.deleteQueue(ctx.guild.id);
+            sendReply(
+                ctx.client,
+                "I couldn't join your voice channel!",
+                ctx.msg
+            );
+            return;
+        }
+
+        const searchResult = await ctx.client.player.search(soundEffect.link, {
+            requestedBy: ctx.author,
+            searchEngine: QueryType.AUTO,
+        });
+
+        if (!searchResult || searchResult.tracks.length === 0) {
+            sendReply(
+                ctx.client,
+                `I had trouble playing [${soundEffect.name}](${soundEffect.link})... maybe it got deleted?`,
+                ctx.msg
+            );
+            return;
+        }
+
+        queue.addTrack(searchResult.tracks[0]);
+        
+        if (!queue.playing) await queue.play();
     }
 
     async addEffect(ctx: CommandContext, args: string[]): Promise<void> {
@@ -562,109 +593,5 @@ export default class Soundboard implements Command {
         });
 
         return;
-    }
-
-    async queueEffect(
-        client: TundraBot,
-        guildID: string,
-        voiceChannel: VoiceChannel,
-        effect: soundEffectInterface
-    ): Promise<void> {
-        const serverQueue = client.soundboardGuilds.get(guildID);
-        // If a queue does not already exist for the server
-        if (!serverQueue) {
-            await this.createQueue(client, guildID, voiceChannel, effect);
-        } else {
-            serverQueue.effects.push(effect);
-        }
-    }
-
-    async createQueue(
-        client: TundraBot,
-        guildID: string,
-        voiceChannel: VoiceChannel,
-        effect: soundEffectInterface
-    ): Promise<void> {
-        // Create queue struct
-        const queueConstruct = {
-            voiceChannel: voiceChannel,
-            connection: null,
-            effects: [],
-            volume: 2,
-            playing: true,
-        } as SoundboardQueue;
-
-        // Check bot permissions
-        const perms = voiceChannel.permissionsFor(client.user);
-        if (!perms.has("VIEW_CHANNEL") || !perms.has("CONNECT") || !perms.has("SPEAK")) {
-            return;
-        }
-
-        // Add song to queue
-        queueConstruct.effects.push(effect);
-
-        // Add queue struct to list of server playing soundboard effects
-        client.soundboardGuilds.set(guildID, queueConstruct);
-
-        try {
-            const connection = await queueConstruct.voiceChannel.join();
-            connection.voice.setSelfDeaf(true);
-            queueConstruct.connection = connection;
-            this.playEffect(client, guildID);
-        } catch (err) {
-            Logger.log(
-                "error",
-                `Failed to join channel (${voiceChannel.id}) and start playing soundboard effect (${effect.name}: ${effect.link}):\n${err}`
-            );
-            client.soundboardGuilds.delete(guildID);
-            return;
-        }
-    }
-
-    async playEffect(client: TundraBot, guildID: string): Promise<void> {
-        const serverQueue = client.soundboardGuilds.get(guildID);
-        const effect = serverQueue.effects[0];
-
-        // No more effects left in queue
-        if (!effect) {
-            serverQueue.voiceChannel.leave();
-            client.soundboardGuilds.delete(guildID);
-            return;
-        }
-
-        let dispatcher;
-        // YouTube link
-        if (ytdl.validateURL(effect.link)) {
-            dispatcher = serverQueue.connection
-                .play(ytdl(effect.link))
-                .on("finish", () => {
-                    serverQueue.effects.shift();
-                    this.playEffect(client, guildID);
-                })
-                .on("error", (err) => {
-                    Logger.log(
-                        "error",
-                        `Error playing YouTube soundboard effect:\n${err}`
-                    );
-                    serverQueue.effects.shift();
-                    this.playEffect(client, guildID);
-                });
-        } else {
-            dispatcher = serverQueue.connection
-                .play(effect.link)
-                .on("finish", () => {
-                    serverQueue.effects.shift();
-                    this.playEffect(client, guildID);
-                })
-                .on("error", (err) => {
-                    Logger.log(
-                        "error",
-                        `Error playing non-YouTube soundboard effect:\n${err}`
-                    );
-                    serverQueue.effects.shift();
-                    this.playEffect(client, guildID);
-                });
-        }
-        dispatcher.setVolumeLogarithmic(serverQueue.volume / 10);
     }
 }

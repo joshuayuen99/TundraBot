@@ -3,7 +3,7 @@ import Logger from "../utils/logger";
 import { TundraBot } from "../base/TundraBot";
 import { DBGuild, guildModel } from "../models/Guild";
 import Deps from "../utils/deps";
-import { Guild } from "discord.js";
+import { Guild, Permissions } from "discord.js";
 
 export default class CacheInvites extends StartupHelper {
     DBGuildManager: DBGuild;
@@ -54,13 +54,13 @@ export default class CacheInvites extends StartupHelper {
      */
     static async cacheInvites(client: TundraBot, guild: Guild): Promise<number> {
         // Check if we have the permissions we need
-        if (!guild.me.hasPermission("MANAGE_GUILD")) {
+        if (!guild.me.permissions.has(Permissions.FLAGS.MANAGE_GUILD)) {
             return 0;
         }
 
         let inviteCount = 0;
         await guild
-            .fetchInvites()
+            .invites.fetch()
             .then((invites) => {
                 for (const invite of invites) {
                     let currentInvites = client.guildInvites.get(guild.id);

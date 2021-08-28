@@ -1,14 +1,15 @@
+import { Snowflake } from "discord.js";
 import { Document, model, Schema } from "mongoose";
 import DBWrapper from "./db-wrapper";
 
 export interface eventInterface extends Document {
-    messageID: string;
-    guildID: string;
-    channelID: string;
+    messageID: Snowflake;
+    guildID: Snowflake;
+    channelID: Snowflake;
     event: string;
     maxParticipants: number;
-    participants: string[];
-    creatorID: string;
+    participants: Snowflake[];
+    creatorID: Snowflake;
     startTime: Date;
     endTime: Date;
 }

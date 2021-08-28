@@ -8,12 +8,10 @@ import { StartupHelper } from "./startupHelper";
 
 export default class CheckMutes extends StartupHelper {
     DBMemberManager: DBMember;
-    UnmuteCommand: Unmute;
     DBGuildManager: DBGuild;
     constructor(client: TundraBot) {
         super(client);
         this.DBMemberManager = Deps.get<DBMember>(DBMember);
-        this.UnmuteCommand = Deps.get<Unmute>(Unmute);
         this.DBGuildManager = Deps.get<DBGuild>(DBGuild);
     }
 
@@ -45,7 +43,7 @@ export default class CheckMutes extends StartupHelper {
                                                 await this.DBGuildManager.get(
                                                     guild
                                                 );
-                                            this.UnmuteCommand.unmute(
+                                            Unmute.unmute(
                                                 this.client,
                                                 guild,
                                                 settings,
@@ -67,7 +65,7 @@ export default class CheckMutes extends StartupHelper {
                                             await this.DBGuildManager.get(
                                                 guild
                                             );
-                                        this.UnmuteCommand.unmute(
+                                        Unmute.unmute(
                                             this.client,
                                             guild,
                                             settings,

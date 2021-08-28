@@ -27,7 +27,7 @@ section#overviewModule.module.css-transitions-only-after-page-load
                     p.uppercase
                         i.fas.fa-hashtag
                         strong.ml-1 Channels
-                    p.mb-0 #{guild.channels.cache.filter(c => c.type === "text" || c.type === "voice").size}
+                    p.mb-0 #{guild.channels.cache.filter(c => c.type === "GUILD_TEXT" || c.type === "GUILD_VOICE").size}
         .row.text-center
             .col-lg-3.col-md-6.pb-3
                 .border.rounded.p-1

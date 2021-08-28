@@ -1,7 +1,16 @@
-import { Command, CommandContext } from "../../base/Command";
+import {
+    Command,
+    CommandContext,
+    SlashCommandContext,
+} from "../../base/Command";
 
-import { MessageEmbed, PermissionString } from "discord.js";
-import { sendMessage } from "../../utils/functions";
+import {
+    ApplicationCommandOption,
+    MessageEmbed,
+    PermissionResolvable,
+    Permissions,
+} from "discord.js";
+import { sendReply } from "../../utils/functions";
 import { stripIndents } from "common-tags";
 
 export default class Help implements Command {
@@ -9,27 +18,54 @@ export default class Help implements Command {
     aliases = ["h", "commands"];
     category = "info";
     description =
-        "Returns all commands, or detailed info about a specific command.";
+        "Displays all commands, or detailed info about a specific command.";
     usage = "help [command | alias]";
     enabled = true;
+    slashCommandEnabled = true;
     guildOnly = false;
-    botPermissions: PermissionString[] = ["EMBED_LINKS"];
+    botPermissions: PermissionResolvable[] = [Permissions.FLAGS.EMBED_LINKS];
     memberPermissions = [];
     ownerOnly = false;
     premiumOnly = false;
     cooldown = 5000; // 5 seconds
+    slashDescription =
+        "Displays all commands, or detailed info about a specific command";
+    commandOptions: ApplicationCommandOption[] = [
+        {
+            name: "command",
+            type: "STRING",
+            description: "The command to get info about",
+            required: false,
+        },
+    ];
 
     async execute(ctx: CommandContext, args: string[]): Promise<void> {
         if (args[0]) {
-            this.getCommand(ctx, args[0]);
+            const embedMsg = this.getCommand(ctx, args[0]);
+            sendReply(ctx.client, { embeds: [embedMsg] }, ctx.msg);
             return;
         } else {
-            this.getAll(ctx);
+            const embedMsg = this.getAll(ctx);
+            sendReply(ctx.client, { embeds: [embedMsg] }, ctx.msg);
             return;
         }
     }
 
-    getAll(ctx: CommandContext): string {
+    async slashCommandExecute(ctx: SlashCommandContext): Promise<void> {
+        const command = ctx.commandInteraction.options.getString("command");
+
+        if (command) {
+            const embedMsg = this.getCommand(ctx, command);
+            ctx.commandInteraction.reply({ embeds: [embedMsg] });
+            return;
+        } else {
+            const embedMsg = this.getAll(ctx);
+            ctx.commandInteraction.reply({ embeds: [embedMsg] });
+            return;
+        }
+    }
+
+    getAll(ctx: CommandContext | SlashCommandContext): MessageEmbed {
         const embedMsg = new MessageEmbed()
             .setColor("RANDOM")
             .setDescription("**Commands**");
@@ -38,7 +74,11 @@ export default class Help implements Command {
         const commands = (category) => {
             let commands = ctx.client.commands;
             // Make sure command is enabled
-            commands = commands.filter((cmd) => cmd.enabled);
+            if (ctx instanceof CommandContext) {
+                commands = commands.filter((cmd) => cmd.enabled);
+            } else if (ctx instanceof SlashCommandContext) {
+                commands = commands.filter((cmd) => cmd.slashCommandEnabled);
+            }
 
             // Get command per category
             commands = commands.filter((cmd) => cmd.category === category);
@@ -55,13 +95,7 @@ export default class Help implements Command {
 
             return commands.map((cmd) => `- \`${cmd.name}\``).join("\n");
         };
-        /*
-        const info = client.categories
-            .map(cat => stripIndents`**${cat[0].toUpperCase() + cat.slice(1)}** \n${commands(cat)}`)
-            .reduce((string, category) => string + "\n" + category);
-    
-        return message.channel.send(embedMsg.setDescription(info));
-        */
+        
         ctx.client.categories.sort((a, b) => {
             const catgeoryOrder = [
                 "info",
@@ -69,7 +103,7 @@ export default class Help implements Command {
                 "music",
                 "utility",
                 "fun",
-                "owner"
+                "owner",
             ];
 
             if (!catgeoryOrder.includes(a)) return 1;
@@ -91,30 +125,55 @@ export default class Help implements Command {
 
         embedMsg.addField(
             "Detailed usage",
-            `Type \`${ctx.guildSettings.prefix}help <command>\` to get detailed information about the given command.`
+            `Type \`${
+                ctx instanceof CommandContext ? ctx.guildSettings.prefix : "/"
+            }help <command>\` to get detailed information about the given command.`
         );
 
-        sendMessage(ctx.client, embedMsg, ctx.channel);
-        return;
+        return embedMsg;
     }
 
-    getCommand(ctx: CommandContext, input: string): void {
+    getCommand(
+        ctx: CommandContext | SlashCommandContext,
+        input: string
+    ): MessageEmbed {
         const embedMsg = new MessageEmbed();
 
         // Get the cmd from the commands list
-        let cmd = ctx.client.commands.get(input.toLowerCase());
-        if (!cmd) {
-            // If the command wasn't found, check aliases
-            cmd = ctx.client.commands.get(ctx.client.aliases.get(input.toLowerCase()));
+        let cmd: Command;
+        if (ctx instanceof CommandContext) {
+            cmd = ctx.client.commands.get(input.toLowerCase());
+            if (!cmd) {
+                // If the command wasn't found, check aliases
+                cmd = ctx.client.commands.get(
+                    ctx.client.aliases.get(input.toLowerCase())
+                );
+            }
+        } else if (ctx instanceof SlashCommandContext) {
+            cmd = ctx.client.interactiveCommands.get(input.toLowerCase());
         }
 
         if (!cmd) {
-            // If the command still wasn't found
-            const info = `No information found for command \`${input.toLowerCase()}\``;
+            let info: string;
+            if (
+                ctx instanceof CommandContext &&
+                ctx.client.interactiveCommands.get(input.toLowerCase())
+            ) {
+                info = `\`${input.toLowerCase()}\` is disabled as a regular command`;
+            } else if (
+                ctx instanceof SlashCommandContext &&
+                (ctx.client.commands.get(input.toLowerCase()) ||
+                    ctx.client.aliases.get(input.toLowerCase()))
+            ) {
+                info = `\`${input.toLowerCase()}\` is disabled as a slash command`;
+            } else {
+                // If the command still wasn't found
+                info = `No information found for command \`${input.toLowerCase()}\``;
+            }
 
             embedMsg.setColor("RED").setDescription(info);
-            sendMessage(ctx.client, embedMsg, ctx.channel);
-            return;
+
+            return embedMsg;
         }
 
         // Getting info for a guild only command
@@ -122,8 +181,7 @@ export default class Help implements Command {
             const info = `\`${input.toLowerCase()}\` can't be used in a DM`;
 
             embedMsg.setColor("RED").setDescription(info);
-            sendMessage(ctx.client, embedMsg, ctx.channel);
-            return;
+            return embedMsg;
         }
 
         // Non-owner getting info for an owner-only command
@@ -131,13 +189,12 @@ export default class Help implements Command {
             const info = `\`${input.toLowerCase()}\` can only be used by my owners`;
 
             embedMsg.setColor("RED").setDescription(info);
-            sendMessage(ctx.client, embedMsg, ctx.channel);
-            return;
+            return embedMsg;
         }
 
         let info;
         if (cmd.name) info = `**Command name**: \`${cmd.name}\``; // Command name
-        if (cmd.aliases)
+        if (ctx instanceof CommandContext && cmd.aliases)
             info += `\n**Aliases**: ${cmd.aliases
                 .map((a) => `\`${a}\``)
                 .join(", ")}`; // Aliases for the command
@@ -155,7 +212,7 @@ export default class Help implements Command {
         }
 
         embedMsg.setColor("GREEN").setDescription(info);
-        sendMessage(ctx.client, embedMsg, ctx.channel);
-        return;
+
+        return embedMsg;
     }
 }

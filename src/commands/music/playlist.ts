@@ -1,4 +1,4 @@
-import { Command, CommandContext } from "../../base/Command";
+import { Command, CommandContext, SlashCommandContext } from "../../base/Command";
 import { stripIndents } from "common-tags";
 import { MessageEmbed } from "discord.js";
 import { DBPlaylist } from "../../models/Playlist";
@@ -26,12 +26,14 @@ export default class Playlist implements Command {
         "playlist delete MyPlaylist",
     ];
     enabled = false;
+    slashCommandEnabled = false;
     guildOnly = true;
     botPermissions = [];
     memberPermissions = [];
     ownerOnly = true;
     premiumOnly = true;
     cooldown = 5000; // 5 seconds
+    commandOptions = [];
 
     DBPlaylistManager: DBPlaylist;
     constructor() {
@@ -75,8 +77,12 @@ export default class Playlist implements Command {
                 );
         }
 
-        sendReply(ctx.client, embedMsg, ctx.msg);
+        sendReply(ctx.client, { embeds: [embedMsg] }, ctx.msg);
         return;
+    }
+
+    async slashCommandExecute(ctx: SlashCommandContext): Promise<void> {
+        //
     }
 
     async savePlaylist(ctx: CommandContext, args: string[]): Promise<void> {}

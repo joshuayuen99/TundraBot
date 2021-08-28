@@ -1,7 +1,19 @@
-import { Command, CommandContext } from "../../base/Command";
-import { promptMessage, sendMessage } from "../../utils/functions";
-import { MessageEmbed, PermissionString } from "discord.js";
-import Logger from "../../utils/logger";
+import {
+    Command,
+    CommandContext,
+    SlashCommandContext,
+} from "../../base/Command";
+import { sendReply } from "../../utils/functions";
+import {
+    ButtonInteraction,
+    CollectorFilter,
+    Message,
+    MessageActionRow,
+    MessageButton,
+    MessageEmbed,
+    PermissionResolvable,
+    Permissions,
+} from "discord.js";
 
 const ROCK = "⛰️";
 const PAPER = "📰";
@@ -16,12 +28,15 @@ export default class Rps implements Command {
         "Rock paper scissors game. React to one of the emojis to play!";
     usage = "rps";
     enabled = true;
+    slashCommandEnabled = true;
     guildOnly = false;
-    botPermissions: PermissionString[] = ["ADD_REACTIONS"];
+    botPermissions: PermissionResolvable[] = [Permissions.FLAGS.ADD_REACTIONS];
     memberPermissions = [];
     ownerOnly = false;
     premiumOnly = false;
     cooldown = 5000; // 5 seconds
+    slashDescription = "Rock paper scissors game";
+    commandOptions = [];
 
     async execute(ctx: CommandContext, args: string[]): Promise<void> {
         const embedMsg = new MessageEmbed()
@@ -31,39 +46,160 @@ export default class Rps implements Command {
                 ctx.member?.displayName || ctx.author.username,
                 ctx.author.displayAvatarURL()
             )
-            .setDescription("React to one of these emojis to play the game!")
+            .setDescription(
+                "Click one of the buttons below to make your choice!"
+            )
             .setTimestamp();
 
-        const msg = await sendMessage(ctx.client, embedMsg, ctx.channel);
-        if (!msg) return;
-
-        const reacted = await promptMessage(
-            ctx.client,
-            msg,
-            ctx.author,
-            30,
-            emojiArray
+        const row = new MessageActionRow().addComponents(
+            new MessageButton()
+                .setCustomId(ROCK)
+                .setLabel("Rock")
+                .setStyle("SECONDARY"),
+            new MessageButton()
+                .setCustomId(PAPER)
+                .setLabel("Paper")
+                .setStyle("SECONDARY"),
+            new MessageButton()
+                .setCustomId(SCISSORS)
+                .setLabel("Scissors")
+                .setStyle("SECONDARY")
         );
-        // If they didn't respond back in time
-        if (!reacted) {
-            msg.reactions.removeAll();
-            msg.edit(`Guess I win by default ${DISAPPOINTED}`);
+
+        const gameMessage = await sendReply(
+            ctx.client,
+            {
+                embeds: [embedMsg],
+                components: [row],
+            },
+            ctx.msg
+        );
+        if (!gameMessage) return;
+
+        const filter: CollectorFilter<[ButtonInteraction]> = (i) => {
+            const intendedUser = i.user.id === ctx.author.id;
+            if (!intendedUser) {
+                i.reply({
+                    content: "These buttons aren't for you!",
+                    ephemeral: true,
+                });
+            }
+
+            return intendedUser;
+        };
+
+        let choice: ButtonInteraction;
+        try {
+            choice = await gameMessage.awaitMessageComponent({
+                filter,
+                componentType: "BUTTON",
+                time: 30 * 1000,
+            });
+        } catch (err) {
+            // No button was clicked
+            embedMsg.setDescription(`Guess I win by default ${DISAPPOINTED}`);
+
+            gameMessage.edit({
+                embeds: [embedMsg],
+                components: [],
+            });
             return;
         }
 
         const botChoice =
             emojiArray[Math.floor(Math.random() * emojiArray.length)];
-
-        const result = await this.getResult(reacted, botChoice);
-        await msg.reactions.removeAll().catch((err) => {
-            Logger.log("error", `Failed to remove reactions:\n${err}`);
-        });
+        const result = this.getResult(choice.customId, botChoice);
 
         embedMsg
             .setDescription("")
-            .addField(result, `${reacted} vs ${botChoice}`);
+            .addField(result, `${choice.customId} vs ${botChoice}`);
 
-        msg.edit(embedMsg);
+        gameMessage.edit({
+            embeds: [embedMsg],
+            components: [],
+        });
+
+        return;
+    }
+
+    async slashCommandExecute(ctx: SlashCommandContext): Promise<void> {
+        await ctx.commandInteraction.deferReply();
+
+        const embedMsg = new MessageEmbed()
+            .setColor("#ffffff")
+            .setTitle("Rock Paper Scissors!")
+            .setFooter(
+                ctx.member?.displayName || ctx.author.username,
+                ctx.author.displayAvatarURL()
+            )
+            .setDescription(
+                "Click one of the buttons below to make your choice!"
+            )
+            .setTimestamp();
+
+        const row = new MessageActionRow().addComponents(
+            new MessageButton()
+                .setCustomId(ROCK)
+                .setLabel("Rock")
+                .setStyle("SECONDARY"),
+            new MessageButton()
+                .setCustomId(PAPER)
+                .setLabel("Paper")
+                .setStyle("SECONDARY"),
+            new MessageButton()
+                .setCustomId(SCISSORS)
+                .setLabel("Scissors")
+                .setStyle("SECONDARY")
+        );
+
+        const gameMessage = (await ctx.commandInteraction.editReply({
+            embeds: [embedMsg],
+            components: [row],
+        })) as Message;
+
+        const filter: CollectorFilter<[ButtonInteraction]> = (i) => {
+            const intendedUser = i.user.id === ctx.author.id;
+            if (!intendedUser) {
+                i.reply({
+                    content: "These buttons aren't for you!",
+                    ephemeral: true,
+                });
+            }
+
+            return intendedUser;
+        };
+
+        let choice: ButtonInteraction;
+        try {
+            choice = await gameMessage.awaitMessageComponent({
+                filter,
+                componentType: "BUTTON",
+                time: 30 * 1000,
+            });
+        } catch (err) {
+            // No button was clicked
+            embedMsg.setDescription(`Guess I win by default ${DISAPPOINTED}`);
+
+            ctx.commandInteraction.editReply({
+                embeds: [embedMsg],
+                components: [],
+            });
+            return;
+        }
+
+        const botChoice =
+            emojiArray[Math.floor(Math.random() * emojiArray.length)];
+        const result = this.getResult(choice.customId, botChoice);
+
+        embedMsg
+            .setDescription("")
+            .addField(result, `${choice.customId} vs ${botChoice}`);
+
+        ctx.commandInteraction.editReply({
+            embeds: [embedMsg],
+            components: [],
+        });
+
         return;
     }
 

@@ -1,17 +1,27 @@
 import {
+    ButtonInteraction,
     CollectorFilter,
+    CreateRoleOptions,
     Guild,
     GuildChannel,
     GuildMember,
     Message,
+    MessageActionRow,
+    MessageButton,
+    MessageEmbed,
+    MessageOptions,
+    MessagePayload,
+    MessageReaction,
     OverwriteResolvable,
-    PermissionString,
+    Permissions,
+    ReplyMessageOptions,
     Role,
-    StringResolvable,
     TextChannel,
+    ThreadChannel,
     User,
 } from "discord.js";
 import moment from "moment";
+import { CommandContext } from "../base/Command";
 import { TundraBot } from "../base/TundraBot";
 import Logger from "./logger";
 
@@ -63,13 +73,15 @@ export async function getTextChannel(
 
     let channel;
     channel = guild.channels.cache.find(
-        (channel) => `<#${channel.id}>` === toFind && channel.type === "text"
+        (channel) =>
+            `<#${channel.id}>` === toFind && channel.type === "GUILD_TEXT"
     );
     if (channel) return channel;
 
     channel = guild.channels.cache.find(
         (channel) =>
-            channel.name.toLowerCase() === toFind && channel.type === "text"
+            channel.name.toLowerCase() === toFind &&
+            channel.type === "GUILD_TEXT"
     );
     if (channel) return channel;
     else return;
@@ -99,19 +111,19 @@ export async function createChannel(
 ): Promise<TextChannel> {
     if (
         guild.channels.cache.some(
-            (channel) => channel.type === "text" && channel.name === name
+            (channel) => channel.type === "GUILD_TEXT" && channel.name === name
         )
     ) {
         return guild.channels.cache.find(
-            (channel) => channel.type === "text" && channel.name === name
+            (channel) => channel.type === "GUILD_TEXT" && channel.name === name
         ) as TextChannel;
     }
 
-    if (guild.me.hasPermission("MANAGE_CHANNELS")) {
+    if (guild.me.permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) {
         return guild.channels.create(name, {
-            type: "text",
+            type: "GUILD_TEXT",
             permissionOverwrites: permissions,
-        });
+        }) as Promise<TextChannel>;
     }
 
     return;
@@ -119,20 +131,14 @@ export async function createChannel(
 
 export async function createRole(
     guild: Guild,
-    name: string,
-    permissions: PermissionString
+    createRoleOptions: CreateRoleOptions,
 ): Promise<Role> {
-    if (guild.roles.cache.some((role) => role.name === name)) {
-        return guild.roles.cache.find((role) => role.name === name);
+    if (guild.roles.cache.some((role) => role.name === createRoleOptions.name)) {
+        return guild.roles.cache.find((role) => role.name === createRoleOptions.name);
     }
 
-    if (guild.me.hasPermission("MANAGE_CHANNELS")) {
-        return guild.roles.create({
-            data: {
-                name: name,
-                permissions: permissions,
-            },
-        });
+    if (guild.me.permissions.has(Permissions.FLAGS.MANAGE_ROLES)) {
+        return guild.roles.create(createRoleOptions);
     }
 
     return;
@@ -152,6 +158,59 @@ export function formatDateLong(date: Date): string {
     return discordDate;
 }
 
+export function generateMessageLink(message: Message): string {
+    return `https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`;
+}
+
+export async function commandConfirmMessage(
+    ctx: CommandContext,
+    description: string
+): Promise<boolean> {
+    const promptEmbed = new MessageEmbed()
+        .setColor("GREEN")
+        .setAuthor("This verification becomes invalid after 30s")
+        .setDescription(description);
+
+    const row = new MessageActionRow().addComponents(
+        new MessageButton()
+            .setCustomId("confirm")
+            .setLabel("Confirm")
+            .setStyle("SUCCESS"),
+        new MessageButton()
+            .setCustomId("cancel")
+            .setLabel("Cancel")
+            .setStyle("DANGER")
+    );
+
+    const embedMessage = await sendMessage(
+        ctx.client,
+        {
+            embeds: [promptEmbed],
+            components: [row],
+        },
+        ctx.channel
+    );
+    if (!embedMessage) return false;
+
+    const filter: CollectorFilter<[ButtonInteraction]> = (button) =>
+        button.user.id === ctx.author.id;
+
+    return embedMessage
+        .awaitMessageComponent({
+            filter: filter,
+            componentType: "BUTTON",
+            time: 30 * 1000,
+        })
+        .then((collected) => {
+            if (embedMessage.deletable) embedMessage.delete();
+            return collected.customId === "confirm" ? true : false;
+        })
+        .catch(() => {
+            if (embedMessage.deletable) embedMessage.delete();
+            return false;
+        });
+}
+
 /**
  *
  * @param message message to add emojis to
@@ -169,7 +228,7 @@ export async function promptMessage(
 ): Promise<string | void> {
     time *= 1000; // Convert from s to ms
 
-    if (!message.guild.me.hasPermission("ADD_REACTIONS")) {
+    if (!message.guild.me.permissions.has(Permissions.FLAGS.ADD_REACTIONS)) {
         return;
     }
 
@@ -188,11 +247,11 @@ export async function promptMessage(
         Logger.log("error", `promptMessage error:\n${err}`);
     });
 
-    const filter = (reaction, user) =>
+    const filter: CollectorFilter<[MessageReaction, User]> = (reaction, user) =>
         validReactions.includes(reaction.emoji.name) && user.id === author.id;
 
     return message
-        .awaitReactions(filter, { max: 1, time: time })
+        .awaitReactions({ filter, max: 1, time: time })
         .then((collected) => collected.first() && collected.first().emoji.name)
         .catch((err) => {
             Logger.log("error", `Error in promptMessage:\n${err}`);
@@ -209,17 +268,18 @@ export async function promptMessage(
  */
 export async function waitResponse(
     client: TundraBot,
-    channel: TextChannel,
+    channel: TextChannel | ThreadChannel,
     author: User,
     time: number
 ): Promise<Message | void> {
     client.waitingResponse.add(author.id);
     time *= 1000; // Convert from s to ms
 
-    const filter: CollectorFilter = (msg) => msg.author.id === author.id;
+    const filter: CollectorFilter<[Message]> = (msg) =>
+        msg.author.id === author.id;
 
     return channel
-        .awaitMessages(filter, { max: 1, time: time })
+        .awaitMessages({ filter, max: 1, time: time })
         .then((collected) => {
             client.waitingResponse.delete(author.id);
             return collected.first();
@@ -231,26 +291,32 @@ export async function waitResponse(
 
 export async function sendMessage(
     client: TundraBot,
-    message: StringResolvable,
-    channel: TextChannel
+    message: string | MessagePayload | MessageOptions,
+    channel: TextChannel | ThreadChannel
 ): Promise<Message | void> {
     if (!channel) return;
 
     if (
         channel instanceof GuildChannel &&
         !(
-            channel.permissionsFor(client.user).has("VIEW_CHANNEL") &&
-            channel.permissionsFor(client.user).has("SEND_MESSAGES")
+            channel
+                .permissionsFor(client.user)
+                .has(Permissions.FLAGS.VIEW_CHANNEL) &&
+            channel
+                .permissionsFor(client.user)
+                .has(Permissions.FLAGS.SEND_MESSAGES)
         )
     )
         return;
 
-    return channel.send(message);
+    return channel.send(message).catch((err) => {
+        Logger.log("error", `sendMessage error:\n${err}`);
+    });
 }
 
 export async function sendReply(
     client: TundraBot,
-    reply: StringResolvable,
+    reply: string | MessagePayload | ReplyMessageOptions,
     message: Message
 ): Promise<Message | void> {
     if (
@@ -258,15 +324,17 @@ export async function sendReply(
         !(
             (<TextChannel>message.channel)
                 .permissionsFor(client.user)
-                .has("VIEW_CHANNEL") &&
+                .has(Permissions.FLAGS.VIEW_CHANNEL) &&
             (<TextChannel>message.channel)
                 .permissionsFor(client.user)
-                .has("SEND_MESSAGES")
+                .has(Permissions.FLAGS.SEND_MESSAGES)
         )
     )
         return;
 
-    return message.reply(reply);
+    return message.reply(reply).catch((err) => {
+        Logger.log("error", `sendReply error:\n${err}`);
+    });
 }
 
 /**

@@ -15,7 +15,7 @@ export default class RootRoutes extends Route {
         });
         
         this.router.get("/commands", (req, res) => {
-            const commands = this.client.commands.array();
+            const commands = [...this.client.commands.values()];
 
             res.render("commands", {
                 subtitle: "Commands",

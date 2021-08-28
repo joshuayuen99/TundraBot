@@ -3,7 +3,8 @@ import { Command, CommandContext } from "../../base/Command";
 import {
     Message,
     MessageEmbed,
-    PermissionString,
+    PermissionResolvable,
+    Permissions,
     TextChannel,
 } from "discord.js";
 import { stripIndents } from "common-tags";
@@ -23,6 +24,8 @@ import { TundraBot } from "../../base/TundraBot";
 
 const splitter = new GraphemeSplitter();
 
+// TODO: possibly switch from response emojis to using buttons with options text
+
 export default class Poll implements Command {
     name = "poll";
     category = "utility";
@@ -31,7 +34,7 @@ export default class Poll implements Command {
     usage = "poll";
     enabled = true;
     guildOnly = true;
-    botPermissions: PermissionString[] = ["ADD_REACTIONS"];
+    botPermissions: PermissionResolvable[] = [Permissions.FLAGS.ADD_REACTIONS];
     memberPermissions = [];
     ownerOnly = false;
     premiumOnly = false;
@@ -52,7 +55,12 @@ export default class Poll implements Command {
         )
             return;
 
-        const postChannelMessage = await waitResponse(ctx.client, ctx.channel, ctx.author, 120);
+        const postChannelMessage = await waitResponse(
+            ctx.client,
+            ctx.channel,
+            ctx.author,
+            120
+        );
         if (!postChannelMessage) {
             sendReply(ctx.client, "Cancelling poll.", ctx.msg);
             return;
@@ -80,7 +88,7 @@ export default class Poll implements Command {
 
         // Check to make sure we have permission to post in the channel
         const botPermissionsIn = ctx.guild.me.permissionsIn(postChannel);
-        if (!botPermissionsIn.has("SEND_MESSAGES")) {
+        if (!botPermissionsIn.has(Permissions.FLAGS.SEND_MESSAGES)) {
             sendReply(
                 ctx.client,
                 "I don't have permission to post in that channel. Contact your server admin to give me permission overrides.",
@@ -123,17 +131,23 @@ export default class Poll implements Command {
             return;
         }
         const emojisList: string[] = [];
-        const emojisListIterator = responseEmojisMessage.content.match(/<:[A-z0-9]+:[0-9]+>/g);
-        const standardEmojisList = responseEmojisMessage.content.replace(/<:[A-z0-9]+:[0-9]+>/g, "");
+        const emojisListIterator =
+            responseEmojisMessage.content.match(/<:[A-z0-9]+:[0-9]+>/g);
+        const standardEmojisList = responseEmojisMessage.content.replace(
+            /<:[A-z0-9]+:[0-9]+>/g,
+            ""
+        );
         if (emojisListIterator) {
             for (const customEmoji of emojisListIterator) {
                 emojisList.push(customEmoji);
             }
         }
 
-        splitter.splitGraphemes(standardEmojisList.replace(/\s/g, "")).forEach((standardEmoji) => {
-            emojisList.push(standardEmoji);
-        });
+        splitter
+            .splitGraphemes(standardEmojisList.replace(/\s/g, ""))
+            .forEach((standardEmoji) => {
+                emojisList.push(standardEmoji);
+            });
 
         sendMessage(
             ctx.client,
@@ -153,11 +167,17 @@ export default class Poll implements Command {
         }
 
         let pollDuration = 0;
-        const timeUnits = durationMessage.content.match(/([0-9]+(\.[0-9])*)+ *[A-z]+/gm);
+        const timeUnits = durationMessage.content.match(
+            /([0-9]+(\.[0-9])*)+ *[A-z]+/gm
+        );
         for (const timeUnit of timeUnits) {
             const unitDuration = ms(timeUnit);
             if (isNaN(unitDuration)) {
-                sendReply(ctx.client, "I couldn't recognize that duration. Cancelling poll.", postChannelMessage);
+                sendReply(
+                    ctx.client,
+                    "I couldn't recognize that duration. Cancelling poll.",
+                    postChannelMessage
+                );
                 return;
             } else {
                 pollDuration += unitDuration;
@@ -179,21 +199,37 @@ export default class Poll implements Command {
             .setTimestamp(endTime)
             .setTitle("Poll")
             .addField("Question", pollQuestionMessage.content)
-            .addField("Created by", ctx.member)
+            .addField("Created by", ctx.member.toString())
             .addField("Poll ends", formatDateLong(endTime));
 
-        const pollMessage = (await sendMessage(ctx.client, promptEmbed, postChannel)) as Message;
+        const pollMessage = (await sendMessage(
+            ctx.client,
+            { embeds: [promptEmbed] },
+            postChannel
+        )) as Message;
 
-        const pollCreationMessage = (await sendMessage(ctx.client, `Poll created! Check the ${postChannel} channel to find it.`, ctx.channel)) as Message;
+        const pollCreationMessage = (await sendReply(
+            ctx.client,
+            `Poll created! Check the ${postChannel} channel to find it.`,
+            ctx.msg
+        )) as Message;
 
         try {
             for (const reaction of emojisList) {
                 await pollMessage.react(reaction).catch((err) => {
-                    Logger.log("error", `poll reacting error (${reaction}):\n${err}`);
-                    
+                    Logger.log(
+                        "error",
+                        `poll reacting error (${reaction}):\n${err}`
+                    );
+
                     if (pollMessage.deletable) pollMessage.delete();
-                    if (pollCreationMessage.deletable) pollCreationMessage.delete();
-                    sendMessage(ctx.client, `I had trouble reacting with \`${reaction}\`... removing the poll.`, ctx.channel);
+                    if (pollCreationMessage.deletable)
+                        pollCreationMessage.delete();
+                    sendMessage(
+                        ctx.client,
+                        `I had trouble reacting with \`${reaction}\`... removing the poll.`,
+                        ctx.channel
+                    );
                 });
             }
 
@@ -205,19 +241,24 @@ export default class Poll implements Command {
                 emojisList: emojisList,
                 creatorID: ctx.author.id,
                 startTime: startTime,
-                endTime: endTime
+                endTime: endTime,
             } as pollInterface;
 
-            this.DBPollManager.create(pollObject).then(() => {
-                setTimeout(() => {
-                    this.pollHandleFinish(ctx.client, pollObject);
-                    // Poll.deleteOne(pollObject).catch((err) => {
-                    //     console.error("Couldn't delete poll from database: ", err);
-                    // });
-                }, endTime.valueOf() - startTime.valueOf());
-            }).catch((err) => {
-                Logger.log("error", `Error saving poll to database:\n${err}`);
-            });
+            this.DBPollManager.create(pollObject)
+                .then(() => {
+                    setTimeout(() => {
+                        Poll.pollHandleFinish(ctx.client, pollObject);
+                        // Poll.deleteOne(pollObject).catch((err) => {
+                        //     console.error("Couldn't delete poll from database: ", err);
+                        // });
+                    }, endTime.valueOf() - startTime.valueOf());
+                })
+                .catch((err) => {
+                    Logger.log(
+                        "error",
+                        `Error saving poll to database:\n${err}`
+                    );
+                });
         } catch (err) {
             // Trouble reacting with emojis
         }
@@ -225,7 +266,12 @@ export default class Poll implements Command {
         return;
     }
 
-    async pollHandleFinish(client: TundraBot, poll: pollInterface): Promise<void> {
+    static async pollHandleFinish(
+        client: TundraBot,
+        poll: pollInterface
+    ): Promise<void> {
+        const DBPollManager = Deps.get<DBPoll>(DBPoll);
+
         const guild = client.guilds.cache.get(poll.guildID);
         if (!guild || !guild.available) return;
         const channel = guild.channels.cache.get(poll.channelID) as TextChannel;
@@ -239,22 +285,30 @@ export default class Poll implements Command {
             const reactions = msg.reactions.cache.get(emoji);
             if (reactions) {
                 await reactions.users.fetch();
-                if (reactions.me) { // if the bot has reacted with this emoji
+                if (reactions.me) {
+                    // if the bot has reacted with this emoji
                     resultsString += `${emoji}: ${reactions.count - 1}\n`;
-                } else { // if someone removed the bot's own reactions
+                } else {
+                    // if someone removed the bot's own reactions
                     resultsString += `${emoji}: ${reactions.count}\n`;
                 }
                 for (const [userKey, userValue] of reactions.users.cache) {
-                    if (userKey != msg.author.id && !(participants.includes(userKey))) {
+                    if (
+                        userKey != msg.author.id &&
+                        !participants.includes(userKey)
+                    ) {
                         participants.push(userKey);
                     }
                 }
-            } else { // there were no reactions left of the specified emoji
+            } else {
+                // there were no reactions left of the specified emoji
                 resultsString += `${emoji}: 0\n`;
             }
         }
 
         const pollCreatorMember = `<@${poll.creatorID}>`;
+
+        const pollMessageLink = `https://discord.com/channels/${poll.guildID}/${poll.channelID}/${poll.messageID}`;
 
         const personalEmbed = new MessageEmbed()
             .setColor("BLUE")
@@ -262,6 +316,7 @@ export default class Poll implements Command {
             .setTitle("Poll Results")
             .addField("Question", poll.pollQuestion)
             .addField("Results", resultsString)
+            .addField("Link to poll", `[Link](${pollMessageLink})`)
             .addField("Created by", pollCreatorMember);
 
         // Let everyone who responded know the results
@@ -270,20 +325,31 @@ export default class Poll implements Command {
             const respondent = await client.users.fetch(user);
             if (respondent.bot) continue;
 
-            respondent.send("You recently responded to a poll. Here are the results!", personalEmbed).catch(() => {
-                // user can't receive DM's from the bot
-            });
+            respondent
+                .send({
+                    content:
+                        "You recently responded to a poll. Here are the results!",
+                    embeds: [personalEmbed],
+                })
+                .catch();
         }
 
         // Let the author know the results
-        client.users.fetch(poll.creatorID).then((pollCreator) => {
-            if (!pollCreator.bot) {
-                pollCreator.send("A poll you recently created has concluded. Here are the results!", personalEmbed);
-            }
-        }).catch(() => {
-            // poll creator left the server
-        });
-        
+        client.users
+            .fetch(poll.creatorID)
+            .then((pollCreator) => {
+                if (!pollCreator.bot) {
+                    pollCreator.send({
+                        content:
+                            "A poll you recently created has concluded. Here are the results!",
+                        embeds: [personalEmbed],
+                    }).catch();
+                }
+            })
+            .catch(() => {
+                // poll creator left the server
+            });
+
         const resultsEmbed = new MessageEmbed()
             .setColor("BLUE")
             .setFooter("Poll ended")
@@ -294,9 +360,9 @@ export default class Poll implements Command {
             .addField("Created by", pollCreatorMember)
             .addField("Poll ended", formatDateLong(poll.endTime));
 
-        msg.edit(resultsEmbed);
+        msg.edit({ embeds: [resultsEmbed] });
 
-        this.DBPollManager.delete(poll);
+        DBPollManager.delete(poll);
         return;
     }
 }

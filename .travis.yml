@@ -1,7 +1,6 @@
 language: node_js
 node_js:
-  - 14
-before_install: if [[ `npm -v` != 7* ]]; then npm i -g npm@7; fi
+  - 16
 install:
   - npm install
 

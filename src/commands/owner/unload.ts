@@ -10,6 +10,7 @@ export default class Unload implements Command {
     usage = "unload <category:command name>";
     examples = ["unload info:help"];
     enabled = true;
+    slashCommandEnabled = false;
     guildOnly = false;
     botPermissions = [];
     memberPermissions = [];

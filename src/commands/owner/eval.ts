@@ -14,6 +14,7 @@ export default class Eval implements Command {
     description = "Evaluate Javascript commands.";
     usage = "eval <Javascript>";
     enabled = true;
+    slashCommandEnabled = false;
     guildOnly = false;
     botPermissions = [];
     memberPermissions = [];
@@ -27,7 +28,7 @@ export default class Eval implements Command {
         const code = args.join(" ");
 
         const startTime = moment();
-        
+
         try {
             let evaled = await eval(code);
 
@@ -39,16 +40,22 @@ export default class Eval implements Command {
 
             const clean = await this.clean(ctx.client, evaled);
 
-            const description = `Input:\n\`\`\`js\n${code}\`\`\`\nOutput:\n\`\`\`js\n${clean}\`\`\`\nType: \`${resultType}\` | Took: \`${ms(endTime.diff(startTime))}\``;
+            const description = `Input:\n\`\`\`js\n${code}\`\`\`\nOutput:\n\`\`\`js\n${clean}\`\`\`\nType: \`${resultType}\` | Took: \`${ms(
+                endTime.diff(startTime)
+            )}\``;
 
             // Exceeds max embed message description length
             if (description.length > 2048) {
-                ctx.channel.send("Output exceeded 2048 characters. Exported to the attached file.", {
-                    files: [{
-                        attachment: Buffer.from(description),
-                        name: "output.txt"
-                    }]
-                });
+                ctx.channel.send({
+                    content:
+                        "Output exceeded 2048 characters. Exported to the attached file.",
+                    files: [
+                        {
+                            attachment: Buffer.from(description),
+                            name: "output.txt",
+                        },
+                    ],
+                }).catch();
                 return;
             } else {
                 const embedMsg = new MessageEmbed()
@@ -57,7 +64,7 @@ export default class Eval implements Command {
                     .setDescription(description)
                     .setTimestamp(endTime.toDate());
 
-                sendMessage(ctx.client, embedMsg, ctx.channel);
+                sendMessage(ctx.client, { embeds: [embedMsg] }, ctx.channel);
                 return;
             }
         } catch (err) {
@@ -67,16 +74,22 @@ export default class Eval implements Command {
 
             const clean = await this.clean(ctx.client, err);
 
-            const description = `Input:\n\`\`\`js\n${code}\`\`\`\nOutput:\n\`\`\`js\n${clean}\`\`\`\nType: \`${resultType}\` | Took: \`${ms(endTime.diff(startTime))}\``;
+            const description = `Input:\n\`\`\`js\n${code}\`\`\`\nOutput:\n\`\`\`js\n${clean}\`\`\`\nType: \`${resultType}\` | Took: \`${ms(
+                endTime.diff(startTime)
+            )}\``;
 
             // Exceeds max embed message description length
             if (description.length > 2048) {
-                ctx.channel.send("Output exceeded 2048 characters. Exported to the attached file.", {
-                    files: [{
-                        attachment: Buffer.from(description),
-                        name: "output.txt"
-                    }]
-                });
+                ctx.channel.send({
+                    content:
+                        "Output exceeded 2048 characters. Exported to the attached file.",
+                    files: [
+                        {
+                            attachment: Buffer.from(description),
+                            name: "output.txt",
+                        },
+                    ],
+                }).catch();
                 return;
             } else {
                 const embedMsg = new MessageEmbed()
@@ -85,14 +98,14 @@ export default class Eval implements Command {
                     .setDescription(description)
                     .setTimestamp(endTime.toDate());
 
-                sendMessage(ctx.client, embedMsg, ctx.channel);
+                sendMessage(ctx.client, { embeds: [embedMsg] }, ctx.channel);
                 return;
             }
         }
     }
 
     async clean(client: TundraBot, text: string): Promise<string> {
-        if (typeof (text) === "string") {
+        if (typeof text === "string") {
             text = text
                 .replace(/`/g, "`" + String.fromCharCode(8203))
                 .replace(/@/g, "@" + String.fromCharCode(8203))

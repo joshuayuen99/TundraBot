@@ -4,10 +4,11 @@ import {
     Guild,
     GuildMember,
     MessageEmbed,
-    PermissionString,
+    PermissionResolvable,
+    Permissions,
     TextChannel,
 } from "discord.js";
-import { promptMessage, sendMessage, sendReply } from "../../utils/functions";
+import { commandConfirmMessage, sendMessage, sendReply } from "../../utils/functions";
 import { stripIndents } from "common-tags";
 import Logger from "../../utils/logger";
 import { TundraBot } from "../../base/TundraBot";
@@ -28,9 +29,13 @@ export default class Ban implements Command {
         "ban @TundraBot 12h Spamming",
     ];
     enabled = true;
+    slashCommandEnabled = false;
     guildOnly = true;
-    botPermissions: PermissionString[] = ["BAN_MEMBERS", "ADD_REACTIONS"];
-    memberPermissions: PermissionString[] = ["BAN_MEMBERS"];
+    botPermissions: PermissionResolvable[] = [
+        Permissions.FLAGS.BAN_MEMBERS,
+        Permissions.FLAGS.ADD_REACTIONS,
+    ];
+    memberPermissions: PermissionResolvable[] = [Permissions.FLAGS.BAN_MEMBERS];
     ownerOnly = false;
     premiumOnly = false;
     cooldown = 5000; // 5 seconds
@@ -43,9 +48,6 @@ export default class Ban implements Command {
     }
 
     async execute(ctx: CommandContext, args: string[]): Promise<void> {
-        const CONFIRM = "💯";
-        const CANCEL = "\u274c"; // red "X" emoji
-
         // No user specified
         if (!args[0]) {
             sendReply(
@@ -58,44 +60,19 @@ export default class Ban implements Command {
             return;
         }
 
-        let duration;
-        let reason;
-        if (args[1]) {
-            if (ms(args[1])) {
-                // duration specified
-                if (ms(args[1]) > 0 && ms(args[1]) <= ms("14 days")) {
-                    duration = ms(args[1]);
-                    reason = args.splice(2).join(" ");
-                } else {
-                    // outside range
-                    sendReply(
-                        ctx.client,
-                        "The duration must be between 0-14 days.",
-                        ctx.msg
-                    );
-                    return;
-                }
-            } else {
-                // duration not specified
-                duration = 0;
-                reason = args.splice(1).join(" ");
-            }
-        } else {
-            duration = 0;
-            reason = "";
-        }
-
         const bMember =
             ctx.msg.mentions.members.first() ||
-            (await ctx.guild.members.fetch(args[0]).catch(() => {
-                // No member found
-                sendReply(
-                    ctx.client,
-                    "Couldn't find that member, try again!",
-                    ctx.msg
-                );
-                throw new Error("Member is not in the server");
-            }));
+            (await ctx.guild.members.fetch(args[0]).catch());
+
+        // No member found
+        if (!bMember) {
+            sendReply(
+                ctx.client,
+                "Couldn't find that member, try again!",
+                ctx.msg
+            );
+            return;
+        }
 
         // Can't ban yourself
         if (bMember.id === ctx.author.id) {
@@ -117,35 +94,64 @@ export default class Ban implements Command {
             return;
         }
 
-        const promptEmbed = new MessageEmbed()
-            .setColor("GREEN")
-            .setFooter("This verification becomes invalid after 30s")
-            .setDescription(
-                `Do you want to ban ${bMember} ${
-                    duration == 0
-                        ? "permanently"
-                        : `for ${ms(duration, { long: true })}`
-                }?`
+        const pattern = /\b([0-9]{1,6}((\.[0-9]))*) *[A-z]+/gm;
+        const joinedArgs = args.join(" ");
+
+        let banDuration = 0;
+        const timeUnits = joinedArgs.match(pattern) ?? ["0"];
+        for (const timeUnit of timeUnits) {
+            const unitDuration = ms(timeUnit);
+            if (isNaN(unitDuration)) {
+                sendReply(
+                    ctx.client,
+                    "I couldn't recognize that duration. Cancelling reminder.",
+                    ctx.msg
+                );
+                return;
+            } else {
+                banDuration += unitDuration;
+            }
+        }
+
+        // outside range
+        if (!(banDuration >= 0 && banDuration <= ms("14 days"))) {
+            sendReply(
+                ctx.client,
+                "The duration must be between 0-14 days.",
+                ctx.msg
             );
+            return;
+        }
 
-        const msg = await sendReply(ctx.client, promptEmbed, ctx.msg);
-        if (!msg) return;
+        let finalTimeUnitIndex = 0;
+        while (pattern.exec(joinedArgs) != null) {
+            finalTimeUnitIndex = pattern.lastIndex;
+        }
 
-        const emoji = await promptMessage(ctx.client, msg, ctx.author, 30, [
-            CONFIRM,
-            CANCEL,
-        ]);
+        const reason =
+            finalTimeUnitIndex === 0
+                ? args.slice(1).join(" ")
+                : joinedArgs.substring(finalTimeUnitIndex);
 
-        if (emoji === CONFIRM) {
-            msg.delete();
+        const confirmDescription = `Do you want to ban ${bMember} ${
+            banDuration == 0
+                ? "permanently"
+                : `for ${ms(banDuration, { long: true })}`
+        }?`;
 
-            await this.ban(
+        const confirmResult = await commandConfirmMessage(
+            ctx,
+            confirmDescription
+        );
+
+        if (confirmResult) {
+            await Ban.ban(
                 ctx.client,
                 ctx.guild,
                 ctx.guildSettings as guildInterface,
                 bMember,
                 reason,
-                duration,
+                banDuration,
                 ctx.member
             )
                 .then(() => {
@@ -161,9 +167,7 @@ export default class Ban implements Command {
                 });
 
             return;
-        } else if (!emoji || emoji === CANCEL) {
-            msg.delete();
-
+        } else if (!confirmResult) {
             sendReply(ctx.client, "Not banning after all...", ctx.msg);
         }
     }
@@ -177,7 +181,7 @@ export default class Ban implements Command {
      * @param duration duration to ban for (0 for permanent)
      * @param moderator Discord Guild member that issued the ban
      */
-    async ban(
+    static async ban(
         client: TundraBot,
         guild: Guild,
         settings: guildInterface,
@@ -186,6 +190,9 @@ export default class Ban implements Command {
         duration: number,
         moderator: GuildMember
     ): Promise<void> {
+        const DBGuildManager = Deps.get<DBGuild>(DBGuild);
+        const DBMemberManager = Deps.get<DBMember>(DBMember);
+
         if (!guild.available) return;
 
         bMember
@@ -202,7 +209,7 @@ export default class Ban implements Command {
                     ) as TextChannel;
                     if (!logChannel) {
                         // channel was removed, disable logging in settings
-                        this.DBGuildManager.update(guild, {
+                        DBGuildManager.update(guild, {
                             logMessages: {
                                 enabled: false,
                                 channelID: null,
@@ -269,16 +276,17 @@ export default class Ban implements Command {
                         }
                     }
 
-                    if (logChannel) sendMessage(client, embedMsg, logChannel);
+                    if (logChannel)
+                        sendMessage(client, { embeds: [embedMsg] }, logChannel);
                 }
 
                 if (duration > 0) {
                     const endTime = new Date(Date.now() + duration);
 
-                    this.DBMemberManager.ban(bMember, endTime)
+                    DBMemberManager.ban(bMember, endTime)
                         .then(() => {
                             setTimeout(() => {
-                                this.unban(
+                                Ban.unban(
                                     client,
                                     guild,
                                     settings,
@@ -300,7 +308,7 @@ export default class Ban implements Command {
         return;
     }
 
-    async unban(
+    static async unban(
         client: TundraBot,
         guild: Guild,
         settings: guildInterface,
@@ -308,6 +316,9 @@ export default class Ban implements Command {
         reason: string,
         moderator: GuildMember
     ): Promise<void> {
+        const DBGuildManager = Deps.get<DBGuild>(DBGuild);
+        const DBMemberManager = Deps.get<DBMember>(DBMember);
+
         guild.members
             .unban(bUserID, reason)
             .then((user) => {
@@ -319,7 +330,7 @@ export default class Ban implements Command {
                     ) as TextChannel;
                     if (!logChannel) {
                         // channel was removed, disable logging in settings
-                        this.DBGuildManager.update(guild, {
+                        DBGuildManager.update(guild, {
                             logMessages: {
                                 enabled: false,
                                 channelID: null,
@@ -356,11 +367,12 @@ export default class Ban implements Command {
                         }
                     }
 
-                    if (logChannel) sendMessage(client, embedMsg, logChannel);
+                    if (logChannel)
+                        sendMessage(client, { embeds: [embedMsg] }, logChannel);
                 }
 
                 // Remove ban from database
-                this.DBMemberManager.unban(user.id, guild.id).catch((err) => {
+                DBMemberManager.unban(user.id, guild.id).catch((err) => {
                     Logger.log(
                         "error",
                         `Error unbanning member in database:\n${err}`
@@ -371,7 +383,7 @@ export default class Ban implements Command {
                 Logger.log("error", `Error unbanning user:\n${err}`);
 
                 // Remove ban from database
-                this.DBMemberManager.unban(bUserID, guild.id).catch((err) => {
+                DBMemberManager.unban(bUserID, guild.id).catch((err) => {
                     Logger.log(
                         "error",
                         `Error unbanning member in database:\n${err}`

@@ -1,4 +1,9 @@
-import { Command, CommandContext } from "../../base/Command";
+import { QueueRepeatMode } from "discord-player";
+import {
+    Command,
+    CommandContext,
+    SlashCommandContext,
+} from "../../base/Command";
 import { sendReply } from "../../utils/functions";
 
 export default class Repeat implements Command {
@@ -7,15 +12,18 @@ export default class Repeat implements Command {
     description = "Toggles repeating the current song.";
     usage = "repeat";
     enabled = true;
+    slashCommandEnabled = true;
     guildOnly = true;
     botPermissions = [];
     memberPermissions = [];
     ownerOnly = false;
     premiumOnly = false;
     cooldown = 3000; // 3 seconds
+    slashDescription = "Toggle repeating the current song";
+    commandOptions = [];
 
     async execute(ctx: CommandContext, args: string[]): Promise<void> {
-        const queue = ctx.client.player.getQueue(ctx.msg);
+        const queue = ctx.client.player.getQueue(ctx.guild);
         if (!queue) {
             sendReply(
                 ctx.client,
@@ -25,14 +33,43 @@ export default class Repeat implements Command {
             return;
         }
 
-        ctx.client.player.setRepeatMode(ctx.msg, !queue.repeatMode);
+        const newRepeatMode =
+            queue.repeatMode === QueueRepeatMode.TRACK
+                ? QueueRepeatMode.OFF
+                : QueueRepeatMode.TRACK;
+
+        queue.setRepeatMode(newRepeatMode);
 
         sendReply(
             ctx.client,
-            queue.repeatMode
-                ? "Current song set to repeat."
-                : "Current song no longer repeating.",
+            newRepeatMode === QueueRepeatMode.TRACK
+                ? "Current song set to loop."
+                : "Current song is no longer looping.",
             ctx.msg
+        );
+        return;
+    }
+
+    async slashCommandExecute(ctx: SlashCommandContext): Promise<void> {
+        const queue = ctx.client.player.getQueue(ctx.guild);
+        if (!queue) {
+            ctx.commandInteraction.reply(
+                "There isn't a song currently playing."
+            );
+            return;
+        }
+
+        const newRepeatMode =
+            queue.repeatMode === QueueRepeatMode.TRACK
+                ? QueueRepeatMode.OFF
+                : QueueRepeatMode.TRACK;
+
+        queue.setRepeatMode(newRepeatMode);
+
+        ctx.commandInteraction.reply(
+            newRepeatMode === QueueRepeatMode.TRACK
+                ? "Current song set to loop."
+                : "Current song is no longer looping."
         );
         return;
     }

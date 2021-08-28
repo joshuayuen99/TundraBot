@@ -1,6 +1,6 @@
 /* eslint-disable no-case-declarations */
 import { Command, CommandContext } from "../../base/Command";
-import { MessageEmbed, PermissionString } from "discord.js";
+import { MessageEmbed, PermissionResolvable, Permissions } from "discord.js";
 import { getRole, getTextChannel, sendReply } from "../../utils/functions";
 import { stripIndents } from "common-tags";
 import Logger from "../../utils/logger";
@@ -19,9 +19,12 @@ export default class Config implements Command {
     usage = "config [setting] [new value]";
     examples = ["config", "config prefix", "config prefix !"];
     enabled = true;
+    slashCommandEnabled = false;
     guildOnly = true;
     botPermissions = [];
-    memberPermissions: PermissionString[] = ["MANAGE_GUILD"];
+    memberPermissions: PermissionResolvable[] = [
+        Permissions.FLAGS.MANAGE_GUILD,
+    ];
     ownerOnly = false;
     premiumOnly = false;
     cooldown = 5000; // 5 seconds
@@ -223,7 +226,7 @@ export default class Config implements Command {
                         .setTitle("Configuration Settings")
                         .setDescription(settingsString);
 
-                    sendReply(ctx.client, embedMsg, ctx.msg);
+                    sendReply(ctx.client, { embeds: [embedMsg] }, ctx.msg);
                     return;
                 } catch (err) {
                     Logger.log(

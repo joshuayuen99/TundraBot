@@ -1,4 +1,4 @@
-import { User } from "discord.js";
+import { Snowflake, User } from "discord.js";
 import { Document, model, Schema } from "mongoose";
 import DBWrapper from "./db-wrapper";
 
@@ -7,7 +7,7 @@ export interface userSettings {
 }
 
 export interface userInterface extends Document {
-    userID: string;
+    userID: Snowflake;
     username: string;
     settings: userSettings;
 }

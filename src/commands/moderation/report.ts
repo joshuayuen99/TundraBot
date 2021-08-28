@@ -1,6 +1,15 @@
-import { Command, CommandContext } from "../../base/Command";
+import {
+    Command,
+    CommandContext,
+    SlashCommandContext,
+} from "../../base/Command";
 import { sendMessage, sendReply } from "../../utils/functions";
-import { MessageEmbed, TextChannel } from "discord.js";
+import {
+    ApplicationCommandOption,
+    GuildMember,
+    MessageEmbed,
+    TextChannel,
+} from "discord.js";
 import Deps from "../../utils/deps";
 import { stripIndents } from "common-tags";
 import { DBGuild } from "../../models/Guild";
@@ -12,12 +21,28 @@ export default class Report implements Command {
     usage = "report <mention | id> <reason>";
     examples = ["report @TundraBot spamming"];
     enabled = true;
+    slashCommandEnabled = true;
     guildOnly = true;
     botPermissions = [];
     memberPermissions = [];
     ownerOnly = false;
     premiumOnly = false;
     cooldown = 10000; // 10 seconds
+    slashDescription = "Reports a member";
+    commandOptions: ApplicationCommandOption[] = [
+        {
+            name: "user",
+            type: "USER",
+            description: "The user to report",
+            required: true,
+        },
+        {
+            name: "reason",
+            type: "STRING",
+            description: "The reason for the report",
+            required: true,
+        },
+    ];
 
     DBGuildManager: DBGuild;
     constructor() {
@@ -33,9 +58,9 @@ export default class Report implements Command {
 
         const rMember =
             ctx.msg.mentions.members.first() ||
-            await ctx.guild.members.fetch(args[0]).catch(() => {
+            (await ctx.guild.members.fetch(args[0]).catch(() => {
                 throw new Error("Member is not in the server");
-            });
+            }));
 
         // If the reported member couldn't be found
         if (!rMember) {
@@ -69,7 +94,11 @@ export default class Report implements Command {
                 });
             }
 
-            const reportMessage = await sendMessage(ctx.client, embedMsg, logChannel);
+            const reportMessage = await sendMessage(
+                ctx.client,
+                { embeds: [embedMsg] },
+                logChannel
+            );
             if (reportMessage) {
                 sendReply(ctx.client, "Your report was submitted.", ctx.msg);
             } else {
@@ -80,6 +109,51 @@ export default class Report implements Command {
                 );
             }
             if (ctx.msg.deletable) ctx.msg.delete();
+        }
+
+        return;
+    }
+
+    async slashCommandExecute(ctx: SlashCommandContext): Promise<void> {
+        const rMember = ctx.commandInteraction.options.getMember("user") as GuildMember;
+        const reason = ctx.commandInteraction.options.getString("reason");
+
+        const embedMsg = new MessageEmbed()
+            .setColor("#ff0000")
+            .setTimestamp()
+            .setFooter(ctx.guild.name, ctx.guild.iconURL())
+            .setAuthor("Reported member", rMember.user.displayAvatarURL())
+            .setDescription(stripIndents`**\\> Member:** ${rMember} (${rMember.id})
+                            **\\> Reported by:** ${ctx.member} (${ctx.member.id})
+                            **\\> Reported in:** ${ctx.channel}
+                            **\\> Reason:** ${reason}`);
+
+        if (ctx.guildSettings.logMessages.enabled) {
+            // Log activity
+            const logChannel = ctx.guild.channels.cache.find(
+                (channel) =>
+                    channel.id === ctx.guildSettings.logMessages.channelID
+            ) as TextChannel;
+            if (!logChannel) {
+                // channel was removed, disable logging in settings
+                this.DBGuildManager.update(ctx.guild, {
+                    logMessages: {
+                        enabled: false,
+                        channelID: null,
+                    },
+                });
+            } else {
+                const reportMessage = await sendMessage(
+                    ctx.client,
+                    { embeds: [embedMsg] },
+                    logChannel
+                );
+                if (reportMessage) {
+                    ctx.commandInteraction.reply({ content: "Your report was submitted.", ephemeral: true });
+                } else {
+                    ctx.commandInteraction.reply({ content: "Your server admins haven't set up a log channel for me, or I don't have permission to type in it. Contact them to fix this.", ephemeral: true });
+                }
+            }
         }
 
         return;

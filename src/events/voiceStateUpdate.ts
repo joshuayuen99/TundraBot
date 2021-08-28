@@ -1,44 +1,68 @@
+import { QueryType } from "discord-player";
 import { VoiceState } from "discord.js";
 import { EventHandler } from "../base/EventHandler";
-import { TundraBot } from "../base/TundraBot";
-import Soundboard from "../commands/music/soundboard";
-import Deps from "../utils/deps";
 
-export default class MessageReactionAddHandler extends EventHandler {
-    SoundboardCommand: Soundboard;
-    constructor(client: TundraBot) {
-        super(client);
-        this.SoundboardCommand = Deps.get<Soundboard>(Soundboard);
-    }
-
+export default class VoiceStateUpdateHandler extends EventHandler {
     async invoke(oldState: VoiceState, newState: VoiceState): Promise<void> {
         if (!newState.guild.available) return;
 
         if (oldState.member.user.bot || newState.member.user.bot) return;
 
-        if (oldState.channel && !newState.channel) {
+        if (oldState.channel && !newState.channel && oldState.channel.type === "GUILD_VOICE") {
             // Left channel
             const memberSoundEffects =
                 this.client.databaseCache.memberSoundEffects.get(
                     `${oldState.guild.id}${oldState.member.id}`
                 );
             if (memberSoundEffects && memberSoundEffects.leaveSoundEffect) {
-                this.SoundboardCommand.queueEffect(this.client, oldState.guild.id, oldState.channel, memberSoundEffects.leaveSoundEffect);
-                // TODO: reimplement with Discord.js v13
-                // const dummyMessage = new Message(this.client, null, null);
-                // this.client.player.play()
+                const searchResult = await this.client.player.search(memberSoundEffects.leaveSoundEffect.link, {
+                    requestedBy: oldState.member.user,
+                    searchEngine: QueryType.AUTO,
+                });
+        
+                if (!searchResult || searchResult.tracks.length === 0) {
+                    return;
+                }
+
+                const queue = this.client.player.createQueue(oldState.guild);
+                try {
+                    if (!queue.connection) await queue.connect(oldState.channel);
+                } catch {
+                    this.client.player.deleteQueue(oldState.guild.id);
+                    return;
+                }
+
+                queue.addTrack(searchResult.tracks[0]);
+
+                if (!queue.playing) await queue.play();
             }
-        } else if (!oldState.channel && newState.channel) {
+        } else if (!oldState.channel && newState.channel && newState.channel.type === "GUILD_VOICE") {
             // Joined channel
             const memberSoundEffects =
                 this.client.databaseCache.memberSoundEffects.get(
                     `${newState.guild.id}${newState.member.id}`
                 );
             if (memberSoundEffects && memberSoundEffects.joinSoundEffect) {
-                this.SoundboardCommand.queueEffect(this.client, newState.guild.id, newState.channel, memberSoundEffects.joinSoundEffect);
-                // TODO: reimplement with Discord.js v13
-                // const dummyMessage = new Message(this.client, null, null);
-                // this.client.player.play()
+                const searchResult = await this.client.player.search(memberSoundEffects.joinSoundEffect.link, {
+                    requestedBy: newState.member.user,
+                    searchEngine: QueryType.AUTO,
+                });
+        
+                if (!searchResult || searchResult.tracks.length === 0) {
+                    return;
+                }
+
+                const queue = this.client.player.createQueue(newState.guild);
+                try {
+                    if (!queue.connection) await queue.connect(newState.channel);
+                } catch {
+                    this.client.player.deleteQueue(newState.guild.id);
+                    return;
+                }
+
+                queue.addTrack(searchResult.tracks[0]);
+
+                if (!queue.playing) await queue.play();
             }
         }
     }

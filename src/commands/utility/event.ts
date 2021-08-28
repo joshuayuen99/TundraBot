@@ -4,7 +4,8 @@ import {
     Message,
     MessageEmbed,
     MessageReaction,
-    PermissionString,
+    PermissionResolvable,
+    Permissions,
     TextChannel,
     User,
 } from "discord.js";
@@ -26,6 +27,10 @@ import Logger from "../../utils/logger";
 
 const HAND_EMOJI = "✋";
 
+// TODO: switch from using emojis to sign up to buttons
+// maybe add multiple buttons for signing up with/without notifications
+// maybe add optional early notification
+
 export default class Event implements Command {
     name = "event";
     category = "utility";
@@ -34,7 +39,7 @@ export default class Event implements Command {
     usage = "event";
     enabled = true;
     guildOnly = true;
-    botPermissions: PermissionString[] = ["ADD_REACTIONS"];
+    botPermissions: PermissionResolvable[] = [Permissions.FLAGS.ADD_REACTIONS];
     memberPermissions = [];
     ownerOnly = false;
     premiumOnly = false;
@@ -89,7 +94,7 @@ export default class Event implements Command {
 
         // Check to make sure we have permission to post in the channel
         const botPermissionsIn = ctx.guild.me.permissionsIn(postChannel);
-        if (!botPermissionsIn.has("SEND_MESSAGES")) {
+        if (!botPermissionsIn.has(Permissions.FLAGS.SEND_MESSAGES)) {
             sendReply(
                 ctx.client,
                 "I don't have permission to post in that channel. Contact your server admin to give me permission overrides.",
@@ -144,7 +149,9 @@ export default class Event implements Command {
         }
 
         // Get saved user settings
-        let userSettings: userInterface | void = await this.DBUserManager.get(ctx.author);
+        let userSettings: userInterface | void = await this.DBUserManager.get(
+            ctx.author
+        );
 
         // If we don't have a saved timezone for the user
         if (!userSettings.settings.timezone) {
@@ -187,8 +194,12 @@ export default class Event implements Command {
             });
 
             if (!userSettings) {
-                sendReply(ctx.client, `I had trouble updating your settings. Please try again later or contact my developer ${process.env.OWNERNAME}${process.env.OWNERTAG}`,timezoneMessage);
-                
+                sendReply(
+                    ctx.client,
+                    `I had trouble updating your settings. Please try again later or contact my developer ${process.env.OWNERNAME}${process.env.OWNERTAG}`,
+                    timezoneMessage
+                );
+
                 return;
             }
         }
@@ -297,7 +308,7 @@ export default class Event implements Command {
 
         const eventMessage = (await sendMessage(
             ctx.client,
-            promptEmbed,
+            { embeds: [promptEmbed] },
             postChannel
         )) as Message;
 
@@ -316,40 +327,49 @@ export default class Event implements Command {
         } as eventInterface;
 
         // Save event to database
-        this.DBEventManager.create(eventObject).then(() => {
-            sendReply(
-                ctx.client,
-                `Event created! Check the ${postChannel} channel to find it.`,
-                timeOfDayMessage
-            );
-
-            setTimeout(() => {
-                this.eventHandleFinish(
+        this.DBEventManager.create(eventObject)
+            .then(() => {
+                sendReply(
                     ctx.client,
-                    ctx.client.databaseCache.events.get(eventObject.messageID)
+                    `Event created! Check the ${postChannel} channel to find it.`,
+                    ctx.msg
                 );
-            }, endTime.toDate().valueOf() - startTime.valueOf());
-        }).catch((err) => {
-            Logger.log("error", `Error saving new event in database:\n${err}`);
 
-            // remove event from database and cache
-            this.DBEventManager.delete(eventObject);
-            eventMessage.delete();
-            sendReply(
-                ctx.client,
-                `Failed to create event. Please join my support server with \`${ctx.guildSettings.prefix}invite\` and report this to my developer.`,
-                timeOfDayMessage
-            );
-        });
+                setTimeout(() => {
+                    Event.eventHandleFinish(
+                        ctx.client,
+                        ctx.client.databaseCache.events.get(
+                            eventObject.messageID
+                        )
+                    );
+                }, endTime.toDate().valueOf() - startTime.valueOf());
+            })
+            .catch((err) => {
+                Logger.log(
+                    "error",
+                    `Error saving new event in database:\n${err}`
+                );
+
+                // remove event from database and cache
+                this.DBEventManager.delete(eventObject);
+                if (eventMessage.deletable) eventMessage.delete();
+                sendReply(
+                    ctx.client,
+                    `Failed to create event. Please join my support server with \`${ctx.guildSettings.prefix}invite\` and report this to my developer.`,
+                    timeOfDayMessage
+                );
+            });
 
         return;
     }
 
-    async eventHandleMessageReactionAdd(
+    static async eventHandleMessageReactionAdd(
         client: TundraBot,
         reaction: MessageReaction,
         user: User
     ): Promise<void> {
+        const DBEventManager = Deps.get<DBEvent>(DBEvent);
+
         if (!reaction.message.guild.available) return;
 
         // it was our own reaction
@@ -376,9 +396,14 @@ export default class Event implements Command {
         // add user to participants array
         cachedEvent.participants.push(user.id);
         // update database
-        this.DBEventManager.addParticipant(cachedEvent, user.id).catch((err) => {
-            Logger.log("error", `Error adding participant to event (messageID: ${cachedEvent.messageID}) in database:\n${err}`);
-        });
+        DBEventManager.addParticipant(cachedEvent, user.id).catch(
+            (err) => {
+                Logger.log(
+                    "error",
+                    `Error adding participant to event (messageID: ${cachedEvent.messageID}) in database:\n${err}`
+                );
+            }
+        );
 
         const [participantsString, waitingString] =
             await this.getParticipantsString(
@@ -435,15 +460,17 @@ export default class Event implements Command {
             );
         }
 
-        msg.edit(newEmbed);
+        msg.edit({ embeds: [newEmbed] });
         return;
     }
 
-    async eventHandleMessageReactionRemove(
+    static async eventHandleMessageReactionRemove(
         client: TundraBot,
         reaction: MessageReaction,
         user: User
     ): Promise<void> {
+        const DBEventManager = Deps.get<DBEvent>(DBEvent);
+
         if (!reaction.message.guild.available) return;
 
         // it was our own reaction
@@ -472,9 +499,14 @@ export default class Event implements Command {
             cachedEvent.participants.splice(index, 1);
         }
         // update database
-        this.DBEventManager.removeParticipant(cachedEvent, user.id).catch((err) => {
-            Logger.log("error", `Error removing participant from event (messageID: ${cachedEvent.messageID}) in database:\n${err}`);
-        });
+        DBEventManager.removeParticipant(cachedEvent, user.id).catch(
+            (err) => {
+                Logger.log(
+                    "error",
+                    `Error removing participant from event (messageID: ${cachedEvent.messageID}) in database:\n${err}`
+                );
+            }
+        );
 
         const [participantsString, waitingString] =
             await this.getParticipantsString(
@@ -529,14 +561,16 @@ export default class Event implements Command {
             );
         }
 
-        msg.edit(newEmbed);
+        msg.edit({ embeds: [newEmbed] });
         return;
     }
 
-    async eventHandleFinish(
+    static async eventHandleFinish(
         client: TundraBot,
         event: eventInterface
     ): Promise<void> {
+        const DBEventManager = Deps.get<DBEvent>(DBEvent);
+
         const guild = client.guilds.cache.get(event.guildID);
         if (!guild || !guild.available) return;
         const channel = guild.channels.cache.get(
@@ -582,7 +616,9 @@ export default class Event implements Command {
             );
         }
 
-        msg.edit(finalEmbed);
+        msg.edit({ embeds: [finalEmbed] });
+
+        const eventMessageLink = `https://discord.com/channels/${event.guildID}/${event.channelID}/${event.messageID}`;
 
         const personalEmbed = new MessageEmbed()
             .setColor("BLUE")
@@ -592,7 +628,7 @@ export default class Event implements Command {
             )
             .setTitle("Event starting now!")
             .setDescription(
-                stripIndents`The event you signed up for: **${event.event}** is starting now!`
+                stripIndents`The event you signed up for: [${event.event}](${eventMessageLink}) is starting now!`
             );
 
         // Let everyone who responded know the event is starting
@@ -606,10 +642,10 @@ export default class Event implements Command {
                 for (let i = 0; i < event.maxParticipants; i++) {
                     const respondent = await client.users.fetch(
                         iterator.next().value
-                    );
-                    if (respondent.bot) continue;
+                    ).catch();
+                    if (!respondent || respondent.bot) continue;
 
-                    respondent.send(personalEmbed);
+                    respondent.send({ embeds: [personalEmbed] }).catch();
                 }
             } else {
                 // Let everyone know
@@ -617,7 +653,7 @@ export default class Event implements Command {
                     const respondent = await client.users.fetch(userID);
                     if (respondent.bot) continue;
 
-                    respondent.send(personalEmbed);
+                    respondent.send({ embeds: [personalEmbed] }).catch();
                 }
             }
         }
@@ -625,10 +661,10 @@ export default class Event implements Command {
         alertParticipants();
 
         // remove event from database and cache
-        this.DBEventManager.delete(event);
+        DBEventManager.delete(event);
     }
 
-    async getParticipantsString(
+    static async getParticipantsString(
         participants: string[],
         maxParticipants: number
     ): Promise<[string, string]> {

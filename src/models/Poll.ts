@@ -1,13 +1,14 @@
+import { Snowflake } from "discord.js";
 import { Document, model, Schema } from "mongoose";
 import DBWrapper from "./db-wrapper";
 
 export interface pollInterface extends Document {
-    messageID: string;
-    guildID: string;
-    channelID: string;
+    messageID: Snowflake;
+    guildID: Snowflake;
+    channelID: Snowflake;
     pollQuestion: string;
     emojisList: string[];
-    creatorID: string;
+    creatorID: Snowflake;
     startTime: Date;
     endTime: Date;
 }

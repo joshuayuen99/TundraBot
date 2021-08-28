@@ -1,4 +1,9 @@
-import { Command, CommandContext } from "../../base/Command";
+import { QueueRepeatMode } from "discord-player";
+import {
+    Command,
+    CommandContext,
+    SlashCommandContext,
+} from "../../base/Command";
 import { sendReply } from "../../utils/functions";
 
 export default class Loop implements Command {
@@ -7,15 +12,18 @@ export default class Loop implements Command {
     description = "Toggles looping the current queue.";
     usage = "loop";
     enabled = true;
+    slashCommandEnabled = true;
     guildOnly = true;
     botPermissions = [];
     memberPermissions = [];
     ownerOnly = false;
     premiumOnly = false;
     cooldown = 3000; // 3 seconds
+    slashDescription = "Toggles looping the current queue";
+    commandOptions = [];
 
     async execute(ctx: CommandContext, args: string[]): Promise<void> {
-        const queue = ctx.client.player.getQueue(ctx.msg);
+        const queue = ctx.client.player.getQueue(ctx.guild);
         if (!queue) {
             sendReply(
                 ctx.client,
@@ -25,14 +33,43 @@ export default class Loop implements Command {
             return;
         }
 
-        ctx.client.player.setLoopMode(ctx.msg, !queue.loopMode);
+        const newRepeatMode =
+            queue.repeatMode === QueueRepeatMode.QUEUE
+                ? QueueRepeatMode.OFF
+                : QueueRepeatMode.QUEUE;
+
+        queue.setRepeatMode(newRepeatMode);
 
         sendReply(
             ctx.client,
-            queue.loopMode
+            newRepeatMode === QueueRepeatMode.QUEUE
                 ? "Current queue set to loop."
                 : "Current queue is no longer looping.",
             ctx.msg
+        );
+        return;
+    }
+
+    async slashCommandExecute(ctx: SlashCommandContext): Promise<void> {
+        const queue = ctx.client.player.getQueue(ctx.guild);
+        if (!queue) {
+            ctx.commandInteraction.reply(
+                "There isn't a song currently playing."
+            );
+            return;
+        }
+
+        const newRepeatMode =
+            queue.repeatMode === QueueRepeatMode.QUEUE
+                ? QueueRepeatMode.OFF
+                : QueueRepeatMode.QUEUE;
+
+        queue.setRepeatMode(newRepeatMode);
+
+        ctx.commandInteraction.reply(
+            newRepeatMode === QueueRepeatMode.QUEUE
+                ? "Current queue set to loop."
+                : "Current queue is no longer looping."
         );
         return;
     }

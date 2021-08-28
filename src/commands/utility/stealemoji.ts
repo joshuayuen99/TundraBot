@@ -4,10 +4,12 @@ import { sendMessage, sendReply } from "../../utils/functions";
 import Logger from "../../utils/logger";
 
 import {
+    CollectorFilter,
     GuildEmoji,
     MessageEmbed,
     MessageReaction,
-    PermissionString,
+    PermissionResolvable,
+    Permissions,
 } from "discord.js";
 
 import axios from "axios";
@@ -19,9 +21,15 @@ export default class StealEmoji implements Command {
     description = "Steal emojis for this server by reacting with them.";
     usage = "stealemoji [emoji name]";
     enabled = true;
+    slashCommandEnabled = false;
     guildOnly = true;
-    botPermissions: PermissionString[] = ["MANAGE_EMOJIS"];
-    memberPermissions: PermissionString[] = ["MANAGE_EMOJIS", "ADD_REACTIONS"];
+    botPermissions: PermissionResolvable[] = [
+        Permissions.FLAGS.MANAGE_EMOJIS_AND_STICKERS,
+    ];
+    memberPermissions: PermissionResolvable[] = [
+        Permissions.FLAGS.MANAGE_EMOJIS_AND_STICKERS,
+        Permissions.FLAGS.ADD_REACTIONS,
+    ];
     ownerOnly = false;
     premiumOnly = false;
     cooldown = 5000; // 5 seconds
@@ -39,7 +47,7 @@ export default class StealEmoji implements Command {
 
         const embedMessage = await sendMessage(
             ctx.client,
-            embedMsg,
+            { embeds: [embedMsg] },
             ctx.channel
         );
 
@@ -49,8 +57,31 @@ export default class StealEmoji implements Command {
         // add member to list of people currently stealing emojis
         ctx.client.activeEmojiStealing.add(`${ctx.guild.id}${ctx.author.id}`);
 
+        const filter: CollectorFilter<[MessageReaction]> = (reaction) => {
+            if (!reaction.emoji.url) return false; // Emoji won't be uploadable
+            if (reaction.partial) {
+                reaction.fetch().then((r) => {
+                    const emoji = r.emoji as GuildEmoji;
+
+                    if (emoji.guild.id === r.message.guild.id) return false; // Emoji is from this guild
+
+                    return true;
+                });
+            } else {
+                const emoji = reaction.emoji as GuildEmoji;
+                if (!emoji.guild) return true; // reaction comes from a server we don't know about (MessageReaction)
+                if (
+                    emoji.guild.id &&
+                    emoji.guild.id === reaction.message.guild.id
+                )
+                    return false; // Emoji is from this guild
+
+                return true;
+            }
+        };
+
         embedMessage
-            .awaitReactions(this.filter, { max: 1, time: 60 * 1000 })
+            .awaitReactions({ filter, max: 1, time: 60 * 1000 })
             .then(async (collected) => {
                 const reactions = collected.filter((emoji) =>
                     emoji.users.cache.has(ctx.author.id)
@@ -109,25 +140,5 @@ export default class StealEmoji implements Command {
                     `${ctx.guild.id}${ctx.author.id}`
                 );
             });
-    }
-
-    filter(reaction: MessageReaction): boolean {
-        if (!reaction.emoji.url) return false; // Emoji won't be uploadable
-        if (reaction.partial) {
-            reaction.fetch().then((r) => {
-                const emoji = r.emoji as GuildEmoji;
-
-                if (emoji.guild.id === r.message.guild.id) return false; // Emoji is from this guild
-
-                return true;
-            });
-        } else {
-            const emoji = reaction.emoji as GuildEmoji;
-            if (!emoji.guild) return true; // reaction comes from a server we don't know about (MessageReaction)
-            if (emoji.guild.id && emoji.guild.id === reaction.message.guild.id)
-                return false; // Emoji is from this guild
-
-            return true;
-        }
     }
 }

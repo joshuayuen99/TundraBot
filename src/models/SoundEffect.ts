@@ -1,11 +1,11 @@
-import { Guild } from "discord.js";
+import { Guild, Snowflake } from "discord.js";
 import { Document, model, Schema } from "mongoose";
 import DBWrapper from "./db-wrapper";
 
 export interface soundEffectInterface extends Document {
     name: string;
     link: string;
-    guildID: string;
+    guildID: Snowflake;
 }
 
 const soundEffectSchema = new Schema<soundEffectInterface>({

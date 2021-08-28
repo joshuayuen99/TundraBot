@@ -10,6 +10,7 @@ export default class Reload implements Command {
     usage = "reload <category:command name>";
     examples = ["reload info:help"];
     enabled = true;
+    slashCommandEnabled = false;
     guildOnly = false;
     botPermissions = [];
     memberPermissions = [];

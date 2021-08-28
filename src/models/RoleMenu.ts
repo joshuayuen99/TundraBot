@@ -1,9 +1,10 @@
+import { Snowflake } from "discord.js";
 import { Document, model, Schema } from "mongoose";
 import DBWrapper from "./db-wrapper";
 
 export interface RoleOption {
     emoji: string;
-    roleID: string;
+    roleID: Snowflake;
 }
 
 export interface roleMenuInterface extends Document {

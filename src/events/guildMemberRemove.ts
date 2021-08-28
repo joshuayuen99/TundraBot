@@ -32,9 +32,9 @@ export default class GuildMemberRemoveHandler extends EventHandler {
                     .setThumbnail(micon)
                     .addField(
                         `${member.user.username} joined`,
-                        `${formatDateLong(member.joinedAt)} EST`
+                        `${formatDateLong(member.joinedAt)}`
                     )
-                    .addField("New total members", guild.memberCount)
+                    .addField("New total members", guild.memberCount.toString())
                     .setTimestamp();
 
                 const logChannel = guild.channels.cache.find(
@@ -42,7 +42,7 @@ export default class GuildMemberRemoveHandler extends EventHandler {
                 ) as TextChannel;
 
                 if (logChannel) {
-                    sendMessage(this.client, embedMsg, logChannel);
+                    sendMessage(this.client, { embeds: [embedMsg] }, logChannel);
                 }
             }
         } catch (err) {

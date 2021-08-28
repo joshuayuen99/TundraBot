@@ -1,5 +1,5 @@
 import { Command, CommandContext } from "../../base/Command";
-import { MessageEmbed } from "discord.js";
+import { MessageEmbed, TextChannel } from "discord.js";
 import { sendMessage, sendReply } from "../../utils/functions";
 import { stripIndents } from "common-tags";
 
@@ -10,6 +10,7 @@ export default class Suggest implements Command {
     description = "Suggests a feature to implement.";
     usage = "suggest <suggestion>";
     enabled = true;
+    slashCommandEnabled = false;
     guildOnly = false;
     botPermissions = [];
     memberPermissions = [];
@@ -28,8 +29,6 @@ export default class Suggest implements Command {
             return;
         }        
 
-        const owner = await ctx.client.users.fetch(process.env.OWNERID);
-
         const embedMsg = new MessageEmbed()
             .setColor("#390645")
             .setTimestamp()
@@ -43,7 +42,15 @@ export default class Suggest implements Command {
             embedMsg.setDescription(`**\\> Suggestion:** ${args.join(" ")}`);
         }
 
-        owner.send(embedMsg);
+        const supportGuild = await ctx.client.guilds.fetch(
+            process.env.SUPPORT_SERVER_ID
+        );
+
+        const suggestionsChannel = supportGuild.channels.cache.get(
+            process.env.SUPPORT_SERVER_SUGGESTIONS_CHANNEL_ID
+        ) as TextChannel;
+
+        sendMessage(ctx.client, { embeds: [embedMsg] }, suggestionsChannel);
 
         sendReply(ctx.client, `Thanks! Your suggestion has been sent to my creator ${process.env.OWNERNAME}${process.env.OWNERTAG}.`, ctx.msg);
     }
