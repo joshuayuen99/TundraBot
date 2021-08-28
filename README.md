@@ -13,7 +13,7 @@ Main features include playing music, server moderation, organizing events and po
 
 [Check out my official website and dashboard!](https://tundrabot.xyz)
 
-To add me to your server click [here](https://discord.com/api/oauth2/authorize?client_id=647196546492006423&permissions=309587062&scope=bot)!
+To add me to your server click [here](https://discord.com/api/oauth2/authorize?client_id=647196546492006423&permissions=259241012342&scope=bot%20applications.commands)!
 
 # Table of Contents
 
@@ -41,7 +41,7 @@ To add me to your server click [here](https://discord.com/api/oauth2/authorize?c
 
 These instructions will get you a copy of the bot up and running on your local machine for development and testing purposes.
 
-If you'd like to just use my bot on your server without setting anything up yourself locally, invite my bot to your Discord server [here](https://discord.com/api/oauth2/authorize?client_id=647196546492006423&permissions=309587062&scope=bot)!
+If you'd like to just use my bot on your server without setting anything up yourself locally, invite my bot to your Discord server [here](https://discord.com/api/oauth2/authorize?client_id=647196546492006423&permissions=259241012342&scope=bot%20applications.commands)!
 
 ## Prerequisites
 
@@ -99,7 +99,7 @@ You are likely to get a ton of errors that look fatal, however this won't affect
 
 # Using the Bot
 
-If you'd like to just use my bot on your server without setting anything up yourself locally, invite my bot to your Discord server [here](https://discord.com/api/oauth2/authorize?client_id=647196546492006423&permissions=309587062&scope=bot)!
+If you'd like to just use my bot on your server without setting anything up yourself locally, invite my bot to your Discord server [here](https://discord.com/api/oauth2/authorize?client_id=647196546492006423&permissions=259241012342&scope=bot%20applications.commands)!
 
 ## Setting Up the Bot
 
