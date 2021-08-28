@@ -1,12 +1,12 @@
 const { assert, should, expect } = require("chai");
 const { config } = require("dotenv");
 
-const { Client } = require("discord.js");
+const { Client, Intents } = require("discord.js");
 const axios = require("axios");
 const search = require("youtube-search");
 
 config({
-	path: __dirname + "/../.env"
+    path: __dirname + "/../.env",
 });
 
 /*
@@ -19,20 +19,29 @@ describe('Array', function () {
 });
 */
 describe("API Connections", function () {
-	describe("Discord API", function () {
-		let client;
-		this.beforeAll(() => {
-			client = new Client({
-				disableEveryone: false
-			});
-		})
-		
-		this.afterAll(() => {
-			client.destroy();
-		})
+    describe("Discord API", function () {
+        let client;
+        this.beforeAll(() => {
+            const intents = new Intents([
+                Intents.FLAGS.DIRECT_MESSAGES,
+                Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
+                Intents.FLAGS.GUILDS,
+                Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+                Intents.FLAGS.GUILD_INVITES,
+                Intents.FLAGS.GUILD_MEMBERS,
+                Intents.FLAGS.GUILD_MESSAGES,
+                Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+                Intents.FLAGS.GUILD_VOICE_STATES,
+            ]);
+            client = new Client({ intents: intents, partials: ["CHANNEL"] });
+        });
 
-		it("Connects", function () {
-			return client.login(process.env.DISCORDTOKEN);
-		});
-	});
+        this.afterAll(() => {
+            client.destroy();
+        });
+
+        it("Connects", function () {
+            return client.login(process.env.DISCORDTOKEN);
+        });
+    });
 });
