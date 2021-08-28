@@ -44,7 +44,7 @@ export default class PlayerInit extends StartupHelper {
             })
             .on("trackEnd", async (queue, track) => {
                 let nowPlayingMessage = this.nowPlayingMessages.get(queue.guild.id);
-                nowPlayingMessage = await nowPlayingMessage.fetch();
+                if (nowPlayingMessage) nowPlayingMessage = await nowPlayingMessage.fetch();
 
                 if (nowPlayingMessage && nowPlayingMessage.deletable) {
                     nowPlayingMessage.delete().catch();
