@@ -2,7 +2,7 @@
 
 # TundraBot
 
-A personal Discord bot made in my free time and used by me and my friends. I've been developing it in chunks ever since November 2019, and still plan to continue improving it and adding new features moving forward. Updated for Discord.js v12.
+A personal Discord bot made in my free time and used by me and my friends. I've been developing it in chunks ever since November 2019, and still plan to continue improving it and adding new features moving forward. Updated for Discord.js v13.
 
 TundraBot features a [dashboard](https://tundrabot.xyz) for server admins and moderators for high levels of configuration and general stats about the server, with new features constantly being added!
 
