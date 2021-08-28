@@ -40,6 +40,15 @@ export default class ReadyHandler extends EventHandler {
             status: "online",
             activities: [
                 {
+                    name: "slash commands! /help",
+                    type: "WATCHING",
+                }
+            ]
+        },
+        {
+            status: "online",
+            activities: [
+                {
                     name: "audio filters | ~filter",
                     type: "LISTENING",
                 },
