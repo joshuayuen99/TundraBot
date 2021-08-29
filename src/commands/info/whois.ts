@@ -12,7 +12,7 @@ import {
     PermissionResolvable,
     Permissions,
 } from "discord.js";
-import { getMember, formatDateShort, sendMessage } from "../../utils/functions";
+import { getMember, formatDateShort, sendReply } from "../../utils/functions";
 import { stripIndents } from "common-tags";
 
 export default class WhoIs implements Command {
@@ -86,53 +86,55 @@ export default class WhoIs implements Command {
             );
 
         // User activities
-        for (const activity of member.presence.activities) {
-            switch (activity.type) {
-                case "PLAYING":
-                    embedMsg.addField(
-                        "Playing",
-                        stripIndents`**\\>** ${activity.name}`
-                    );
-                    break;
-                case "STREAMING":
-                    embedMsg.addField(
-                        `Streaming on ${activity.name}`,
-                        stripIndents`**\\>** ${activity.state}
-                **\\>** [${activity.details}](${activity.url})`
-                    );
-                    break;
-                case "LISTENING":
-                    embedMsg.addField(
-                        `Listening to ${activity.name}`,
-                        stripIndents`**\\> Song:** ${activity.details}
-                **\\> Artist:** ${activity.state}`
-                    );
-                    break;
-                case "WATCHING":
-                    embedMsg.addField(
-                        "Watching",
-                        stripIndents`**\\>** ${activity.name}`
-                    );
-                    break;
-                case "CUSTOM":
-                    let statusString = "";
-                    if (activity.emoji) {
-                        statusString += activity.emoji.name;
-                        if (activity.state) {
-                            statusString += ` ${activity.state}`;
-                        }
-                    } else statusString += activity.state;
-                    embedMsg.addField(
-                        "Custom status",
-                        stripIndents`**\\>** ${statusString}`
-                    );
-                    break;
-                default:
-                    break;
+        if (member.presence) {
+            for (const activity of member.presence.activities) {
+                switch (activity.type) {
+                    case "PLAYING":
+                        embedMsg.addField(
+                            "Playing",
+                            stripIndents`**\\>** ${activity.name}`
+                        );
+                        break;
+                    case "STREAMING":
+                        embedMsg.addField(
+                            `Streaming on ${activity.name}`,
+                            stripIndents`**\\>** ${activity.state}
+                    **\\>** [${activity.details}](${activity.url})`
+                        );
+                        break;
+                    case "LISTENING":
+                        embedMsg.addField(
+                            `Listening to ${activity.name}`,
+                            stripIndents`**\\> Song:** ${activity.details}
+                    **\\> Artist:** ${activity.state}`
+                        );
+                        break;
+                    case "WATCHING":
+                        embedMsg.addField(
+                            "Watching",
+                            stripIndents`**\\>** ${activity.name}`
+                        );
+                        break;
+                    case "CUSTOM":
+                        let statusString = "";
+                        if (activity.emoji) {
+                            statusString += activity.emoji.name;
+                            if (activity.state) {
+                                statusString += ` ${activity.state}`;
+                            }
+                        } else statusString += activity.state;
+                        embedMsg.addField(
+                            "Custom status",
+                            stripIndents`**\\>** ${statusString}`
+                        );
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
-        sendMessage(ctx.client, { embeds: [embedMsg] }, ctx.channel);
+        sendReply(ctx.client, { embeds: [embedMsg] }, ctx.msg);
         return;
     }
 
@@ -185,49 +187,51 @@ export default class WhoIs implements Command {
             );
 
         // User activities
-        for (const activity of member.presence.activities) {
-            switch (activity.type) {
-                case "PLAYING":
-                    embedMsg.addField(
-                        "Playing",
-                        stripIndents`**\\>** ${activity.name}`
-                    );
-                    break;
-                case "STREAMING":
-                    embedMsg.addField(
-                        `Streaming on ${activity.name}`,
-                        stripIndents`**\\>** ${activity.state}
-                **\\>** [${activity.details}](${activity.url})`
-                    );
-                    break;
-                case "LISTENING":
-                    embedMsg.addField(
-                        `Listening to ${activity.name}`,
-                        stripIndents`**\\> Song:** ${activity.details}
-                **\\> Artist:** ${activity.state}`
-                    );
-                    break;
-                case "WATCHING":
-                    embedMsg.addField(
-                        "Watching",
-                        stripIndents`**\\>** ${activity.name}`
-                    );
-                    break;
-                case "CUSTOM":
-                    let statusString = "";
-                    if (activity.emoji) {
-                        statusString += activity.emoji.name;
-                        if (activity.state) {
-                            statusString += ` ${activity.state}`;
-                        }
-                    } else statusString += activity.state;
-                    embedMsg.addField(
-                        "Custom status",
-                        stripIndents`**\\>** ${statusString}`
-                    );
-                    break;
-                default:
-                    break;
+        if (member.presence) {
+            for (const activity of member.presence.activities) {
+                switch (activity.type) {
+                    case "PLAYING":
+                        embedMsg.addField(
+                            "Playing",
+                            stripIndents`**\\>** ${activity.name}`
+                        );
+                        break;
+                    case "STREAMING":
+                        embedMsg.addField(
+                            `Streaming on ${activity.name}`,
+                            stripIndents`**\\>** ${activity.state}
+                    **\\>** [${activity.details}](${activity.url})`
+                        );
+                        break;
+                    case "LISTENING":
+                        embedMsg.addField(
+                            `Listening to ${activity.name}`,
+                            stripIndents`**\\> Song:** ${activity.details}
+                    **\\> Artist:** ${activity.state}`
+                        );
+                        break;
+                    case "WATCHING":
+                        embedMsg.addField(
+                            "Watching",
+                            stripIndents`**\\>** ${activity.name}`
+                        );
+                        break;
+                    case "CUSTOM":
+                        let statusString = "";
+                        if (activity.emoji) {
+                            statusString += activity.emoji.name;
+                            if (activity.state) {
+                                statusString += ` ${activity.state}`;
+                            }
+                        } else statusString += activity.state;
+                        embedMsg.addField(
+                            "Custom status",
+                            stripIndents`**\\>** ${statusString}`
+                        );
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
