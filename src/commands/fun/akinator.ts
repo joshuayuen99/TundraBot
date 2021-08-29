@@ -1,6 +1,6 @@
 import { Command, CommandContext, SlashCommandContext } from "../../base/Command";
 import { Aki, region } from "aki-api";
-import { ApplicationCommandOption, Message, MessageEmbed, ThreadChannel } from "discord.js";
+import { ApplicationCommandOption, Message, MessageEmbed, PermissionResolvable, Permissions, ThreadChannel } from "discord.js";
 import { sendMessage, sendReply, waitResponse } from "../../utils/functions";
 import Logger from "../../utils/logger";
 import { guess } from "aki-api/typings/src/functions";
@@ -20,7 +20,7 @@ export default class Akinator implements Command {
     enabled = true;
     slashCommandEnabled = true;
     guildOnly = true;
-    botPermissions = [];
+    botPermissions: PermissionResolvable[] = [Permissions.FLAGS.USE_PUBLIC_THREADS, Permissions.FLAGS.MANAGE_THREADS];
     memberPermissions = [];
     ownerOnly = true;
     premiumOnly = false;
@@ -66,7 +66,7 @@ export default class Akinator implements Command {
                     )
                     .setFooter(ctx.member.displayName, ctx.author.avatarURL());
 
-                sendMessage(ctx.client, { embeds: [embedMsg] }, ctx.channel);
+                sendReply(ctx.client, { embeds: [embedMsg] }, ctx.msg);
                 return;
             }
 
