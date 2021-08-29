@@ -1,6 +1,6 @@
 import { CommandContext, SlashCommandContext } from "../base/Command";
 import { sendMessage } from "./functions";
-import { MessageEmbed } from "discord.js";
+import { MessageEmbed, Permissions } from "discord.js";
 
 /**
  *
@@ -10,16 +10,16 @@ import { MessageEmbed } from "discord.js";
 export function validateBotPermissions(
     ctx: CommandContext | SlashCommandContext
 ): boolean {
-    const missingPermissions = [];
+    const missingPermissions: Permissions[] = [];
     for (const permission of ctx.command.botPermissions) {
         if (!ctx.guild.me.permissions.has(permission)) {
-            missingPermissions.push(permission);
+            missingPermissions.push(new Permissions(permission));
         }
     }
 
     if (missingPermissions.length > 0) {
         const missingPermissionsString = missingPermissions
-            .map((permission) => `\`${permission}\``)
+            .map((permission) => `\`${permission.toArray()[0]}\``)
             .join(" ");
 
         let errorString = "";
@@ -54,16 +54,16 @@ export function validateBotPermissions(
 export function validateMemberPermissions(
     ctx: CommandContext | SlashCommandContext
 ): boolean {
-    const missingPermissions = [];
+    const missingPermissions: Permissions[] = [];
     for (const permission of ctx.command.memberPermissions) {
         if (!ctx.member.permissions.has(permission)) {
-            missingPermissions.push(permission);
+            missingPermissions.push(new Permissions(permission));
         }
     }
 
     if (missingPermissions.length > 0) {
         const missingPermissionsString = missingPermissions
-            .map((permission) => `\`${permission}\``)
+            .map((permission) => `\`${permission.toArray()[0]}\``)
             .join(" ");
 
         let errorString = "";
