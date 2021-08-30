@@ -309,6 +309,6 @@ export default class MessageCreateHandler extends EventHandler {
         }
 
         this.slashCommandReminderCooldown[ctx.guild.id] =
-            Date.now() + 24 * 60 * 1000; // 24 hours from now
+            Date.now() + 24 * 60 * 60 * 1000; // 24 hours from now
     }
 }
