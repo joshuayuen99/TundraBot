@@ -1,4 +1,4 @@
-import { Client, Collection, Intents, Invite } from "discord.js";
+import { Client, Collection, Intents, Invite, Snowflake } from "discord.js";
 import { DBGuild, guildInterface } from "../models/Guild";
 import * as fs from "fs";
 import { Command } from "./Command";
@@ -33,7 +33,7 @@ export class TundraBot extends Client {
 
     // Map with guilds playing soundboard effects
     /** <guildID, SoundboardQueue> */
-    soundboardGuilds: Map<string, SoundboardQueue>;
+    soundboardGuilds: Map<Snowflake, SoundboardQueue>;
 
     // Map with members playing games
     /** <`${message.guild.id}${message.member.id}`, TODO> */
@@ -45,21 +45,21 @@ export class TundraBot extends Client {
 
     // Set of people we are currently waiting on a response from so that we can ignore any further commands until we get it
     /** <userID> */
-    waitingResponse: Set<string>;
+    waitingResponse: Set<Snowflake>;
 
     // Map with invites for each guild
     /** <guildID, <invite code, invite>> */
-    guildInvites: Map<string, Map<string, Invite>>;
+    guildInvites: Map<string, Map<Snowflake, Invite>>;
 
     discordTogether: DiscordTogether<{ "TundraBot" }>;
 
     databaseCache: {
         /** <guildID, guildInterface> */
-        settings: Collection<string, guildInterface>;
+        settings: Collection<Snowflake, guildInterface>;
         /** <messageID, eventInterface> */
-        events: Collection<string, eventInterface>;
+        events: Collection<Snowflake, eventInterface>;
         /** <messageID, roleMenuInterface> */
-        roleMenus: Collection<string, roleMenuInterface>;
+        roleMenus: Collection<Snowflake, roleMenuInterface>;
         /** <`${message.guild.id}${soundEffect.name}`, soundEffectInterface> */
         soundEffects: Collection<string, soundEffectInterface>;
         /** <`${message.member.guild.id}${message.author.id}`, MemberSoundEffects> */
