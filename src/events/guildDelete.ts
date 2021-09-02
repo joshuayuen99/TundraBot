@@ -48,14 +48,14 @@ export default class GuildDeleteHandler extends EventHandler {
                 **\\> Created at:** ${formatDateLong(guild.createdAt)}
                 **\\> Joined at:** ${formatDateLong(guild.joinedAt)}`
             );
-        const guildOwner = await guild.fetchOwner();
+        const guildOwner = this.client.users.cache.get(guild.ownerId);
         if (guildOwner) {
             embedMsg.addField(
                 "Server owner information",
-                stripIndents`**\\> ID:** ${guildOwner.user.id}
-                    **\\> Username:** ${guildOwner.user.username}
-                    **\\> Discord Tag:** ${guildOwner.user.tag}
-                    **\\> Created account:** ${formatDateShort(guildOwner.user.createdAt)}`,
+                stripIndents`**\\> ID:** ${guildOwner.id}
+                    **\\> Username:** ${guildOwner.username}
+                    **\\> Discord Tag:** ${guildOwner.tag}
+                    **\\> Created account:** ${formatDateShort(guildOwner.createdAt)}`,
                 true
             );
         }
