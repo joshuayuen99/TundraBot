@@ -77,7 +77,7 @@ export default class Mute implements Command {
 
         const mMember =
             ctx.msg.mentions.members.first() ||
-            (await ctx.guild.members.fetch(args[0]).catch());
+            ctx.guild.members.cache.get(args[0]);
 
         // No member found
         if (!mMember) {
@@ -151,7 +151,9 @@ export default class Mute implements Command {
         const confirmDescription = `Do you want to mute ${mMember} ${
             muteDuration == 0
                 ? "permanently"
-                : `for ${momentDurationToHumanReadable(moment.duration(muteDuration))}`
+                : `for ${momentDurationToHumanReadable(
+                      moment.duration(muteDuration)
+                  )}`
         }?`;
 
         const confirmResult = await commandConfirmMessage(
@@ -256,7 +258,11 @@ export default class Mute implements Command {
                     })
                     **\\> Muted by:** ${moderator}
                     **\\> Duration:** ${
-                        duration == 0 ? "Forever" : momentDurationToHumanReadable(moment.duration(duration))
+                        duration == 0
+                            ? "Forever"
+                            : momentDurationToHumanReadable(
+                                  moment.duration(duration)
+                              )
                     }
                     **\\> Reason:** ${reason}`);
                 } else {
@@ -265,7 +271,11 @@ export default class Mute implements Command {
                     })
                     **\\> Muted by:** ${moderator}
                     **\\> Duration:** ${
-                        duration == 0 ? "Forever" : momentDurationToHumanReadable(moment.duration(duration))
+                        duration == 0
+                            ? "Forever"
+                            : momentDurationToHumanReadable(
+                                  moment.duration(duration)
+                              )
                     }
                     **\\> Reason:** \`Not specified\``);
                 }
@@ -280,7 +290,11 @@ export default class Mute implements Command {
                         mMember.id
                     })
                     **\\> Duration:** ${
-                        duration == 0 ? "Forever" : momentDurationToHumanReadable(moment.duration(duration))
+                        duration == 0
+                            ? "Forever"
+                            : momentDurationToHumanReadable(
+                                  moment.duration(duration)
+                              )
                     }
                     **\\> Reason:** ${reason}`);
                 } else {
@@ -288,7 +302,11 @@ export default class Mute implements Command {
                         mMember.id
                     })
                     **\\> Duration:** ${
-                        duration == 0 ? "Forever" : momentDurationToHumanReadable(moment.duration(duration))
+                        duration == 0
+                            ? "Forever"
+                            : momentDurationToHumanReadable(
+                                  moment.duration(duration)
+                              )
                     }
                     **\\> Reason:** \`Not specified\``);
                 }

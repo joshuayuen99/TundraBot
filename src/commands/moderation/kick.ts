@@ -59,15 +59,16 @@ export default class Kick implements Command {
 
         const kMember =
             ctx.msg.mentions.members.first() ||
-            (await ctx.guild.members.fetch(args[0]).catch(() => {
-                // No member found
-                sendReply(
-                    ctx.client,
-                    "Couldn't find that member, try again!",
-                    ctx.msg
-                );
-                throw new Error("Member is not in the server");
-            }));
+            ctx.guild.members.cache.get(args[0]);
+
+        if (!kMember) {
+            sendReply(
+                ctx.client,
+                "Couldn't find that member, try again!",
+                ctx.msg
+            );
+            return;
+        }
 
         // Can't kick yourself
         if (kMember.id === ctx.author.id) {

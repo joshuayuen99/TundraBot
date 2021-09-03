@@ -63,7 +63,7 @@ export default class Ban implements Command {
 
         const bMember =
             ctx.msg.mentions.members.first() ||
-            (await ctx.guild.members.fetch(args[0]).catch());
+            ctx.guild.members.cache.get(args[0]);
 
         // No member found
         if (!bMember) {

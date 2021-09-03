@@ -58,9 +58,7 @@ export default class Report implements Command {
 
         const rMember =
             ctx.msg.mentions.members.first() ||
-            (await ctx.guild.members.fetch(args[0]).catch(() => {
-                throw new Error("Member is not in the server");
-            }));
+            ctx.guild.members.cache.get(args[0]);
 
         // If the reported member couldn't be found
         if (!rMember) {

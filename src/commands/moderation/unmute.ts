@@ -61,9 +61,7 @@ export default class Unmute implements Command {
 
         const mMember =
             ctx.msg.mentions.members.first() ||
-            (await ctx.guild.members.fetch(args[0]).catch(() => {
-                throw new Error("Member is not in the server");
-            }));
+            ctx.guild.members.cache.get(args[0]);
 
         // No member found
         if (!mMember) {
