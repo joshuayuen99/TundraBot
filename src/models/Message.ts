@@ -91,7 +91,7 @@ export class DBMessage extends DBWrapper<Message, messageInterface> {
 
         const attachments = message.attachments.map((attachment) => attachment.url);
 
-        const newMessage = await new messageModel({
+        const newMessage = new messageModel({
             messageID: message.id,
             text: message.content,
             command: command,
