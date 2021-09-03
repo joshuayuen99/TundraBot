@@ -19,6 +19,8 @@ export default class GuildDeleteHandler extends EventHandler {
     }
 
     async invoke(guild: Guild): Promise<void> {
+        if (!this.client.readyAt || !guild || !guild.name) return;
+
         await this.DBGuildManager.delete(guild).catch((err) => {
             Logger.log("error", `Error deleting guild from database:\n${err}`);
         });
