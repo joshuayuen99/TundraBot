@@ -347,27 +347,27 @@ export function momentDurationToHumanReadable(momentDuration: moment.Duration): 
     
     const durationUnits: string[] = [];
     
-    if (momentDuration.years() > 1) {
+    if (momentDuration.years() > 0) {
         durationUnits.push(`${momentDuration.years()} years`);
     }
 
-    if (momentDuration.months() > 1) {
+    if (momentDuration.months() > 0) {
         durationUnits.push(`${momentDuration.months()} months`);
     }
 
-    if (momentDuration.days() > 1) {
+    if (momentDuration.days() > 0) {
         durationUnits.push(`${momentDuration.days()} days`);
     }
 
-    if (momentDuration.hours() > 1) {
+    if (momentDuration.hours() > 0) {
         durationUnits.push(`${momentDuration.hours()} hours`);
     }
 
-    if (momentDuration.minutes() > 1) {
+    if (momentDuration.minutes() > 0) {
         durationUnits.push(`${momentDuration.minutes()} minutes`);
     }
 
-    if (momentDuration.seconds() > 1) {
+    if (momentDuration.seconds() > 0) {
         durationUnits.push(`${momentDuration.seconds()} seconds`);
     }
 
