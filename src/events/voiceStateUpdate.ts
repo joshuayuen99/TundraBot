@@ -38,22 +38,21 @@ export default class VoiceStateUpdateHandler extends EventHandler {
                     }
                 );
 
-                if (!searchResult || searchResult.tracks.length === 0) {
-                    return;
+                if (searchResult && searchResult.tracks.length > 0) {
+                    const queue = this.client.player.createQueue(
+                        oldState.guild
+                    );
+                    try {
+                        if (!queue.connection)
+                            await queue.connect(oldState.channel);
+
+                        queue.addTrack(searchResult.tracks[0]);
+
+                        if (!queue.playing) await queue.play();
+                    } catch {
+                        this.client.player.deleteQueue(oldState.guild.id);
+                    }
                 }
-
-                const queue = this.client.player.createQueue(oldState.guild);
-                try {
-                    if (!queue.connection)
-                        await queue.connect(oldState.channel);
-                } catch {
-                    this.client.player.deleteQueue(oldState.guild.id);
-                    return;
-                }
-
-                queue.addTrack(searchResult.tracks[0]);
-
-                if (!queue.playing) await queue.play();
             }
 
             // Update voice activity in database
@@ -102,22 +101,21 @@ export default class VoiceStateUpdateHandler extends EventHandler {
                     }
                 );
 
-                if (!searchResult || searchResult.tracks.length === 0) {
-                    return;
+                if (searchResult && searchResult.tracks.length > 0) {
+                    const queue = this.client.player.createQueue(
+                        newState.guild
+                    );
+                    try {
+                        if (!queue.connection)
+                            await queue.connect(newState.channel);
+
+                        queue.addTrack(searchResult.tracks[0]);
+
+                        if (!queue.playing) await queue.play();
+                    } catch {
+                        this.client.player.deleteQueue(newState.guild.id);
+                    }
                 }
-
-                const queue = this.client.player.createQueue(newState.guild);
-                try {
-                    if (!queue.connection)
-                        await queue.connect(newState.channel);
-                } catch {
-                    this.client.player.deleteQueue(newState.guild.id);
-                    return;
-                }
-
-                queue.addTrack(searchResult.tracks[0]);
-
-                if (!queue.playing) await queue.play();
             }
 
             // Update voice activity in database
