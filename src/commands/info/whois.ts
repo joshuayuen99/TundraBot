@@ -12,8 +12,19 @@ import {
     PermissionResolvable,
     Permissions,
 } from "discord.js";
-import { getMember, formatDateShort, sendReply } from "../../utils/functions";
+import {
+    getMember,
+    formatDateShort,
+    sendReply,
+    momentDurationToHumanReadable,
+} from "../../utils/functions";
 import { stripIndents } from "common-tags";
+import { DBMember, memberInterface } from "../../models/Member";
+import Deps from "../../utils/deps";
+import Logger from "../../utils/logger";
+import { messageInterface, messageModel } from "../../models/Message";
+import { FilterQuery } from "mongoose";
+import moment from "moment";
 
 export default class WhoIs implements Command {
     name = "whois";
@@ -41,6 +52,11 @@ export default class WhoIs implements Command {
         },
     ];
 
+    DBMemberManager: DBMember;
+    constructor() {
+        this.DBMemberManager = Deps.get<DBMember>(DBMember);
+    }
+
     async execute(ctx: CommandContext, args: string[]): Promise<void> {
         const member = await getMember(ctx.msg, args.join(" "));
 
@@ -51,6 +67,78 @@ export default class WhoIs implements Command {
                 .filter((r) => r.id !== ctx.guild.id) // Filters out the @everyone role
                 .map((r) => r)
                 .join(", ") || "`none`";
+
+        const searchParams = {
+            userID: member.id,
+            guildID: member.guild.id,
+        } as FilterQuery<messageInterface>;
+
+        const [savedMember, savedMessages]: [
+            memberInterface | void,
+            messageInterface[] | void
+        ] = await Promise.all([
+            this.DBMemberManager.get(member),
+            messageModel.find(searchParams),
+        ]).catch((err) => {
+            Logger.log(
+                "error",
+                `Error getting member (${member.id}) from database:\n${err}`
+            );
+
+            return [null, null];
+        });
+
+        let messageCount: number;
+        let voiceDuration: string;
+        let streamDuration: string;
+
+        if (savedMember) {
+            const dateNow = new Date(Date.now());
+
+            // Update voice duration
+            if (member.voice) {
+                savedMember.voiceActivity.leaveTime = dateNow;
+
+                if (savedMember.voiceActivity.joinTime) {
+                    savedMember.voiceActivity.voiceDuration +=
+                        savedMember.voiceActivity.leaveTime.getTime() -
+                        savedMember.voiceActivity.joinTime.getTime();
+                }
+
+                savedMember.voiceActivity.joinTime = dateNow;
+
+                // Check if they're streaming
+                if (member.voice.streaming) {
+                    savedMember.voiceActivity.streamEndTime = dateNow;
+
+                    if (savedMember.voiceActivity.streamStartTime) {
+                        savedMember.voiceActivity.streamDuration +=
+                            savedMember.voiceActivity.streamEndTime.getTime() -
+                            savedMember.voiceActivity.streamStartTime.getTime();
+                    }
+
+                    savedMember.voiceActivity.streamStartTime = dateNow;
+                }
+            }
+
+            this.DBMemberManager.save(savedMember);
+
+            voiceDuration = momentDurationToHumanReadable(
+                moment.duration(savedMember.voiceActivity.voiceDuration)
+            );
+            streamDuration = momentDurationToHumanReadable(
+                moment.duration(savedMember.voiceActivity.streamDuration)
+            );
+        } else {
+            voiceDuration = null;
+            streamDuration = null;
+        }
+
+        if (savedMessages) {
+            messageCount = savedMessages.length;
+        } else {
+            messageCount = 0;
+        }
 
         // User variables
         const created = formatDateShort(member.user.createdAt);
@@ -70,20 +158,33 @@ export default class WhoIs implements Command {
             .addField(
                 "Member information",
                 stripIndents`**\\> Display name:** ${member.displayName}
-            **\\> Joined the server:** ${joined}
-            **\\> Roles: ** ${roles}`,
+                    **\\> Joined the server:** ${joined}
+                    **\\> Roles: ** ${roles}`,
                 true
             )
 
             .addField(
                 "User information",
                 stripIndents`**\\> ID:** ${member.user.id}
-            **\\> Username:** ${member.user.username}
-            **\\> Discord Tag:** ${member.user.tag}
-            **\\>** [Avatar link](${avatarURL})
-            **\\> Created account:** ${created}`,
+                    **\\> Username:** ${member.user.username}
+                    **\\> Discord Tag:** ${member.user.tag}
+                    **\\>** [Avatar link](${avatarURL})
+                    **\\> Created account:** ${created}`,
                 true
             );
+
+        if (messageCount !== null) {
+            embedMsg.addField("Messages sent", messageCount.toString());
+        }
+        if (voiceDuration !== null) {
+            embedMsg.addField("Time spent in voice channels", voiceDuration);
+        }
+        if (streamDuration !== null) {
+            embedMsg.addField(
+                "Time spent streaming in voice channels",
+                streamDuration
+            );
+        }
 
         // User activities
         if (member.presence) {
@@ -153,6 +254,78 @@ export default class WhoIs implements Command {
                 .map((r) => r)
                 .join(", ") || "`none`";
 
+        const searchParams = {
+            userID: member.id,
+            guildID: member.guild.id,
+        } as FilterQuery<messageInterface>;
+
+        const [savedMember, savedMessages]: [
+            memberInterface | void,
+            messageInterface[] | void
+        ] = await Promise.all([
+            this.DBMemberManager.get(member),
+            messageModel.find(searchParams),
+        ]).catch((err) => {
+            Logger.log(
+                "error",
+                `Error getting member (${member.id}) from database:\n${err}`
+            );
+
+            return [null, null];
+        });
+
+        let messageCount: number;
+        let voiceDuration: string;
+        let streamDuration: string;
+
+        if (savedMember) {
+            const dateNow = new Date(Date.now());
+
+            // Update voice duration
+            if (member.voice) {
+                savedMember.voiceActivity.leaveTime = dateNow;
+
+                if (savedMember.voiceActivity.joinTime) {
+                    savedMember.voiceActivity.voiceDuration +=
+                        savedMember.voiceActivity.leaveTime.getTime() -
+                        savedMember.voiceActivity.joinTime.getTime();
+                }
+                
+                savedMember.voiceActivity.joinTime = dateNow;
+
+                // Check if they're streaming
+                if (member.voice.streaming) {
+                    savedMember.voiceActivity.streamEndTime = dateNow;
+
+                    if (savedMember.voiceActivity.streamStartTime) {
+                        savedMember.voiceActivity.streamDuration +=
+                            savedMember.voiceActivity.streamEndTime.getTime() -
+                            savedMember.voiceActivity.streamStartTime.getTime();
+                    }
+
+                    savedMember.voiceActivity.streamStartTime = dateNow;
+                }
+            }
+
+            this.DBMemberManager.save(savedMember);
+
+            voiceDuration = momentDurationToHumanReadable(
+                moment.duration(savedMember.voiceActivity.voiceDuration)
+            );
+            streamDuration = momentDurationToHumanReadable(
+                moment.duration(savedMember.voiceActivity.streamDuration)
+            );
+        } else {
+            voiceDuration = null;
+            streamDuration = null;
+        }
+
+        if (savedMessages) {
+            messageCount = savedMessages.length;
+        } else {
+            messageCount = 0;
+        }
+
         // User variables
         const created = formatDateShort(member.user.createdAt);
         const avatarURL = member.user.displayAvatarURL({ format: "png" });
@@ -171,20 +344,33 @@ export default class WhoIs implements Command {
             .addField(
                 "Member information",
                 stripIndents`**\\> Display name:** ${member.displayName}
-            **\\> Joined the server:** ${joined}
-            **\\> Roles: ** ${roles}`,
+                    **\\> Joined the server:** ${joined}
+                    **\\> Roles: ** ${roles}`,
                 true
             )
 
             .addField(
                 "User information",
                 stripIndents`**\\> ID:** ${member.user.id}
-            **\\> Username:** ${member.user.username}
-            **\\> Discord Tag:** ${member.user.tag}
-            **\\>** [Avatar link](${avatarURL})
-            **\\> Created account:** ${created}`,
+                    **\\> Username:** ${member.user.username}
+                    **\\> Discord Tag:** ${member.user.tag}
+                    **\\>** [Avatar link](${avatarURL})
+                    **\\> Created account:** ${created}`,
                 true
             );
+
+        if (messageCount !== null) {
+            embedMsg.addField("Messages sent", messageCount.toString());
+        }
+        if (voiceDuration !== null) {
+            embedMsg.addField("Time spent in voice channels", voiceDuration);
+        }
+        if (streamDuration !== null) {
+            embedMsg.addField(
+                "Time spent streaming in voice channels",
+                streamDuration
+            );
+        }
 
         // User activities
         if (member.presence) {

@@ -14,6 +14,7 @@ import CheckBans from "../helpers/checkBans";
 import LoadRoleMenus from "../helpers/loadRoleMenus";
 import { PresenceData } from "discord.js";
 import { registerInteractiveCommands } from "../handlers/commands";
+import CheckVoiceActivities from "../helpers/checkVoiceActivities";
 
 export default class ReadyHandler extends EventHandler {
     botStatusState: number; // index of current status
@@ -57,6 +58,7 @@ export default class ReadyHandler extends EventHandler {
     ];
     Player: PlayerInit;
     GuildsSanityCheck: GuildsSanityCheck;
+    CheckVoiceActivities: CheckVoiceActivities;
     CacheMembers: CacheMembers;
     CheckPolls: CheckPolls;
     CheckEvents: CheckEvents;
@@ -71,6 +73,7 @@ export default class ReadyHandler extends EventHandler {
         this.botStatusState = 0;
         this.Player = new PlayerInit(this.client);
         this.GuildsSanityCheck = new GuildsSanityCheck(this.client);
+        this.CheckVoiceActivities = new CheckVoiceActivities(this.client);
         this.CacheMembers = new CacheMembers(this.client);
         this.CheckPolls = new CheckPolls(this.client);
         this.CheckEvents = new CheckEvents(this.client);
@@ -88,6 +91,7 @@ export default class ReadyHandler extends EventHandler {
 
         this.Player.init();
         await this.GuildsSanityCheck.init();
+        this.CheckVoiceActivities.init();
         this.CacheMembers.init();
         this.CheckPolls.init();
         this.CheckEvents.init();

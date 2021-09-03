@@ -8,6 +8,16 @@ export interface memberSettings {
     leaveSoundEffect: Schema.Types.ObjectId;
 }
 
+export interface voiceActivity {
+    joinTime: Date;
+    leaveTime: Date;
+    voiceDuration: number; // milliseconds
+
+    streamStartTime: Date;
+    streamEndTime: Date;
+    streamDuration: number; // milliseconds
+}
+
 export interface memberInterface extends Document {
     userID: Snowflake;
     guildID: Snowflake;
@@ -19,6 +29,7 @@ export interface memberInterface extends Document {
     mute: {
         endTime: Date;
     };
+    voiceActivity: voiceActivity;
 }
 
 const memberSchema = new Schema<memberInterface>({
@@ -42,6 +53,15 @@ const memberSchema = new Schema<memberInterface>({
     },
     mute: {
         endTime: { type: Date, default: null },
+    },
+    voiceActivity: {
+        joinTime: { type: Date, default: null },
+        leaveTime: { type: Date, default: null },
+        voiceDuration: { type: Number, default: 0 },
+
+        streamStartTime: { type: Date, default: null },
+        streamEndTime: { type: Date, default: null },
+        streamDuration: { type: Number, default: 0 },
     },
 });
 

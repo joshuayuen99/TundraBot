@@ -338,6 +338,44 @@ export async function sendReply(
 }
 
 /**
+ * 
+ * @param momentDuration moment duration to convert
+ * @returns human-readable in the form "Y years, M months, D days, h hours, m minutes, s seconds"
+ */
+export function momentDurationToHumanReadable(momentDuration: moment.Duration): string {
+    if (momentDuration.asMilliseconds() === 0) return "0 seconds";
+    
+    const durationUnits: string[] = [];
+    
+    if (momentDuration.years() > 1) {
+        durationUnits.push(`${momentDuration.years()} years`);
+    }
+
+    if (momentDuration.months() > 1) {
+        durationUnits.push(`${momentDuration.months()} months`);
+    }
+
+    if (momentDuration.days() > 1) {
+        durationUnits.push(`${momentDuration.days()} days`);
+    }
+
+    if (momentDuration.hours() > 1) {
+        durationUnits.push(`${momentDuration.hours()} hours`);
+    }
+
+    if (momentDuration.minutes() > 1) {
+        durationUnits.push(`${momentDuration.minutes()} minutes`);
+    }
+
+    if (momentDuration.seconds() > 1) {
+        durationUnits.push(`${momentDuration.seconds()} seconds`);
+    }
+
+    const durationString = durationUnits.join(", ");
+    return durationString;
+}
+
+/**
  *
  * @param str HH:MM:SS formatted string
  * @returns total seconds of input string
