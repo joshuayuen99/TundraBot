@@ -8,7 +8,7 @@ import {
     Permissions,
     TextChannel,
 } from "discord.js";
-import { commandConfirmMessage, sendMessage, sendReply } from "../../utils/functions";
+import { commandConfirmMessage, momentDurationToHumanReadable, sendMessage, sendReply } from "../../utils/functions";
 import { stripIndents } from "common-tags";
 import Logger from "../../utils/logger";
 import { TundraBot } from "../../base/TundraBot";
@@ -16,6 +16,7 @@ import { DBGuild, guildInterface } from "../../models/Guild";
 import Deps from "../../utils/deps";
 import { DBMember } from "../../models/Member";
 import ms from "ms";
+import moment from "moment";
 
 export default class Ban implements Command {
     name = "ban";
@@ -136,7 +137,7 @@ export default class Ban implements Command {
         const confirmDescription = `Do you want to ban ${bMember} ${
             banDuration == 0
                 ? "permanently"
-                : `for ${ms(banDuration, { long: true })}`
+                : `for ${momentDurationToHumanReadable(moment.duration(banDuration))}`
         }?`;
 
         const confirmResult = await commandConfirmMessage(
@@ -232,7 +233,7 @@ export default class Ban implements Command {
                         **\\> Duration:** ${
                             duration == 0
                                 ? "Forever"
-                                : ms(duration, { long: true })
+                                : momentDurationToHumanReadable(moment.duration(duration))
                         }
                         **\\> Reason:** ${reason}`);
                         } else {
@@ -243,7 +244,7 @@ export default class Ban implements Command {
                         **\\> Duration:** ${
                             duration == 0
                                 ? "Forever"
-                                : ms(duration, { long: true })
+                                : momentDurationToHumanReadable(moment.duration(duration))
                         }
                         **\\> Reason:** \`Not specified\``);
                         }
@@ -260,7 +261,7 @@ export default class Ban implements Command {
                         **\\> Duration:** ${
                             duration == 0
                                 ? "Forever"
-                                : ms(duration, { long: true })
+                                : momentDurationToHumanReadable(moment.duration(duration))
                         }
                         **\\> Reason:** ${reason}`);
                         } else {
@@ -270,7 +271,7 @@ export default class Ban implements Command {
                         **\\> Duration:** ${
                             duration == 0
                                 ? "Forever"
-                                : ms(duration, { long: true })
+                                : momentDurationToHumanReadable(moment.duration(duration))
                         }
                         **\\> Reason:** \`Not specified\``);
                         }

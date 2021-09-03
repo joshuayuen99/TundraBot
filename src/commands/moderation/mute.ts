@@ -11,6 +11,7 @@ import {
 import {
     commandConfirmMessage,
     createRole,
+    momentDurationToHumanReadable,
     sendMessage,
     sendReply,
 } from "../../utils/functions";
@@ -22,6 +23,7 @@ import { DBGuild, guildInterface } from "../../models/Guild";
 import Deps from "../../utils/deps";
 import { DBMember } from "../../models/Member";
 import Unmute from "./unmute";
+import moment from "moment";
 
 export default class Mute implements Command {
     name = "mute";
@@ -149,7 +151,7 @@ export default class Mute implements Command {
         const confirmDescription = `Do you want to mute ${mMember} ${
             muteDuration == 0
                 ? "permanently"
-                : `for ${ms(muteDuration, { long: true })}`
+                : `for ${momentDurationToHumanReadable(moment.duration(muteDuration))}`
         }?`;
 
         const confirmResult = await commandConfirmMessage(
@@ -247,8 +249,6 @@ export default class Mute implements Command {
                 .setThumbnail(mMember.user.displayAvatarURL())
                 .setTimestamp();
 
-            // TODO: display more accurate timer
-
             if (moderator) {
                 if (reason) {
                     embedMsg.setDescription(stripIndents`**\\> Muted member:** ${mMember} (${
@@ -256,7 +256,7 @@ export default class Mute implements Command {
                     })
                     **\\> Muted by:** ${moderator}
                     **\\> Duration:** ${
-                        duration == 0 ? "Forever" : ms(duration, { long: true })
+                        duration == 0 ? "Forever" : momentDurationToHumanReadable(moment.duration(duration))
                     }
                     **\\> Reason:** ${reason}`);
                 } else {
@@ -265,7 +265,7 @@ export default class Mute implements Command {
                     })
                     **\\> Muted by:** ${moderator}
                     **\\> Duration:** ${
-                        duration == 0 ? "Forever" : ms(duration, { long: true })
+                        duration == 0 ? "Forever" : momentDurationToHumanReadable(moment.duration(duration))
                     }
                     **\\> Reason:** \`Not specified\``);
                 }
@@ -280,7 +280,7 @@ export default class Mute implements Command {
                         mMember.id
                     })
                     **\\> Duration:** ${
-                        duration == 0 ? "Forever" : ms(duration, { long: true })
+                        duration == 0 ? "Forever" : momentDurationToHumanReadable(moment.duration(duration))
                     }
                     **\\> Reason:** ${reason}`);
                 } else {
@@ -288,7 +288,7 @@ export default class Mute implements Command {
                         mMember.id
                     })
                     **\\> Duration:** ${
-                        duration == 0 ? "Forever" : ms(duration, { long: true })
+                        duration == 0 ? "Forever" : momentDurationToHumanReadable(moment.duration(duration))
                     }
                     **\\> Reason:** \`Not specified\``);
                 }
