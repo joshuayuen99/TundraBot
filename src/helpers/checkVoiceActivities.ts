@@ -29,6 +29,11 @@ export default class CheckVoiceActivities extends StartupHelper {
             }
         }
 
+        Logger.log(
+            "ready",
+            `Currently ${voiceMembers.length} members in voice channels`
+        );
+
         await Promise.all(
             voiceMembers.map(async (member) => {
                 await this.DBMemberManager.get(member).then(async (savedMember) => {
@@ -50,10 +55,6 @@ export default class CheckVoiceActivities extends StartupHelper {
 
         Logger.log(
             "ready",
-            `Currently ${voiceMembers.length} members in voice channels`
-        );
-        Logger.log(
-            "ready",
             `Successfully updated ${resolvedMembersCount} members' voice states`
         );
     }
@@ -73,6 +74,11 @@ export default class CheckVoiceActivities extends StartupHelper {
                 }
             }
         }
+
+        Logger.log(
+            "info",
+            `Currently ${voiceMembers.length} in voice channels`
+        );
 
         await Promise.all(
             voiceMembers.map(async (member) => {
@@ -110,10 +116,6 @@ export default class CheckVoiceActivities extends StartupHelper {
             })
         );
 
-        Logger.log(
-            "info",
-            `Currently ${voiceMembers.length} in voice channels`
-        );
         Logger.log(
             "info",
             `Successfully updated ${resolvedMembersCount} member voice states`
