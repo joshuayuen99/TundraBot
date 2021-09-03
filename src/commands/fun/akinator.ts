@@ -1,6 +1,17 @@
-import { Command, CommandContext, SlashCommandContext } from "../../base/Command";
+import {
+    Command,
+    CommandContext,
+    SlashCommandContext,
+} from "../../base/Command";
 import { Aki, region } from "aki-api";
-import { ApplicationCommandOption, Message, MessageEmbed, PermissionResolvable, Permissions, ThreadChannel } from "discord.js";
+import {
+    ApplicationCommandOption,
+    Message,
+    MessageEmbed,
+    PermissionResolvable,
+    Permissions,
+    ThreadChannel,
+} from "discord.js";
 import { sendMessage, sendReply, waitResponse } from "../../utils/functions";
 import Logger from "../../utils/logger";
 import { guess } from "aki-api/typings/src/functions";
@@ -20,7 +31,11 @@ export default class Akinator implements Command {
     enabled = true;
     slashCommandEnabled = true;
     guildOnly = true;
-    botPermissions: PermissionResolvable[] = [Permissions.FLAGS.USE_PUBLIC_THREADS, Permissions.FLAGS.MANAGE_THREADS];
+    botPermissions: PermissionResolvable[] = [
+        Permissions.FLAGS.CREATE_INSTANT_INVITE,
+        Permissions.FLAGS.CONNECT,
+        Permissions.FLAGS.SPEAK,
+    ];
     memberPermissions = [];
     ownerOnly = true;
     premiumOnly = false;
@@ -44,9 +59,9 @@ export default class Akinator implements Command {
                 {
                     name: "Animals",
                     value: "animals",
-                }
-            ]
-        }
+                },
+            ],
+        },
     ];
 
     async execute(ctx: CommandContext, args: string[]): Promise<void> {
@@ -106,7 +121,11 @@ export default class Akinator implements Command {
             );
             if (!startingMessage) return;
 
-            const aki = new Aki({ region: region, childMode: false, proxyOptions: null });
+            const aki = new Aki({
+                region: region,
+                childMode: false,
+                proxyOptions: null,
+            });
             await aki.start();
 
             // start new thread for game
@@ -322,8 +341,10 @@ export default class Akinator implements Command {
     }
 
     async slashCommandExecute(ctx: SlashCommandContext): Promise<void> {
-        const category = ctx.commandInteraction.options.getString("category") || "characters";
-        
+        const category =
+            ctx.commandInteraction.options.getString("category") ||
+            "characters";
+
         let startingMessage: Message | void;
         let gameThread: ThreadChannel;
         try {
@@ -369,12 +390,17 @@ export default class Akinator implements Command {
                 .setTitle("Akinator")
                 .setDescription(`🧠 Starting up... Guessing ${category}!`)
                 .setFooter(ctx.member.displayName, ctx.author.avatarURL());
-            startingMessage = await ctx.commandInteraction.reply(
-                { embeds: [embedMsg], fetchReply: true }
-            ) as Message;
+            startingMessage = (await ctx.commandInteraction.reply({
+                embeds: [embedMsg],
+                fetchReply: true,
+            })) as Message;
             if (!startingMessage) return;
 
-            const aki = new Aki({ region: region, childMode: false, proxyOptions: null });
+            const aki = new Aki({
+                region: region,
+                childMode: false,
+                proxyOptions: null,
+            });
             await aki.start();
 
             // start new thread for game

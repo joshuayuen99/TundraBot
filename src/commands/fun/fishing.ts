@@ -1,5 +1,9 @@
 import { PermissionResolvable, Permissions } from "discord.js";
-import { Command, CommandContext, SlashCommandContext } from "../../base/Command";
+import {
+    Command,
+    CommandContext,
+    SlashCommandContext,
+} from "../../base/Command";
 import { sendReply } from "../../utils/functions";
 
 export default class Fishing implements Command {
@@ -11,7 +15,11 @@ export default class Fishing implements Command {
     enabled = true;
     slashCommandEnabled = true;
     guildOnly = true;
-    botPermissions: PermissionResolvable[] = [Permissions.FLAGS.CONNECT, Permissions.FLAGS.SPEAK];
+    botPermissions: PermissionResolvable[] = [
+        Permissions.FLAGS.CREATE_INSTANT_INVITE,
+        Permissions.FLAGS.CONNECT,
+        Permissions.FLAGS.SPEAK,
+    ];
     memberPermissions = [];
     ownerOnly = false;
     premiumOnly = false;
@@ -23,51 +31,76 @@ export default class Fishing implements Command {
         // Make sure user is in a voice channel
         const voice = ctx.member.voice.channel;
         if (!voice) {
-            sendReply(ctx.client, "You must be connected to a voice channel!", ctx.msg);
+            sendReply(
+                ctx.client,
+                "You must be connected to a voice channel!",
+                ctx.msg
+            );
             return;
         }
 
         // Check bot permissions
         const perms = voice.permissionsFor(ctx.client.user);
         if (!perms.has(Permissions.FLAGS.VIEW_CHANNEL)) {
-            sendReply(ctx.client, "I need permission to view your voice channel!", ctx.msg);
+            sendReply(
+                ctx.client,
+                "I need permission to view your voice channel!",
+                ctx.msg
+            );
             return;
         }
 
         if (!perms.has(Permissions.FLAGS.CONNECT)) {
-            sendReply(ctx.client, "I need permission to join your voice channel!", ctx.msg);
+            sendReply(
+                ctx.client,
+                "I need permission to join your voice channel!",
+                ctx.msg
+            );
             return;
         }
 
-        ctx.client.discordTogether.createTogetherCode(voice.id, "fishing").then(async (invite) => {
-            sendReply(ctx.client, invite.code, ctx.msg);
-            return;
-        });
+        ctx.client.discordTogether
+            .createTogetherCode(voice.id, "fishing")
+            .then(async (invite) => {
+                sendReply(ctx.client, invite.code, ctx.msg);
+                return;
+            });
     }
 
     async slashCommandExecute(ctx: SlashCommandContext): Promise<void> {
         // Make sure user is in a voice channel
         const voice = ctx.member.voice.channel;
         if (!voice) {
-            ctx.commandInteraction.reply({ content: "You must be connected to a voice channel!", ephemeral: true });
+            ctx.commandInteraction.reply({
+                content: "You must be connected to a voice channel!",
+                ephemeral: true,
+            });
             return;
         }
 
         // Check bot permissions
         const perms = voice.permissionsFor(ctx.client.user);
         if (!perms.has(Permissions.FLAGS.VIEW_CHANNEL)) {
-            ctx.commandInteraction.reply({ content: "I need permission to view your voice channel!", ephemeral: true });
+            ctx.commandInteraction.reply({
+                content: "I need permission to view your voice channel!",
+                ephemeral: true,
+            });
             return;
         }
 
         if (!perms.has(Permissions.FLAGS.CONNECT)) {
-            ctx.commandInteraction.reply({ content: "I need permission to join your voice channel!", ephemeral: true });
+            ctx.commandInteraction.reply({
+                content: "I need permission to join your voice channel!",
+                ephemeral: true,
+            });
             return;
         }
 
-        ctx.client.discordTogether.createTogetherCode(voice.id, "fishing").then(async (invite) => {
-            ctx.commandInteraction.reply(invite.code);
-            return;
-        });
+        ctx.client.discordTogether
+            .createTogetherCode(voice.id, "fishing")
+            .then(async (invite) => {
+                ctx.commandInteraction.reply(invite.code);
+                return;
+            });
     }
 }
