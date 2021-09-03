@@ -96,7 +96,7 @@ export default class WhoIs implements Command {
             const dateNow = new Date(Date.now());
 
             // Update voice duration
-            if (member.voice) {
+            if (member.voice.channel) {
                 savedMember.voiceActivity.leaveTime = dateNow;
 
                 if (savedMember.voiceActivity.joinTime) {
@@ -282,7 +282,7 @@ export default class WhoIs implements Command {
             const dateNow = new Date(Date.now());
 
             // Update voice duration
-            if (member.voice) {
+            if (member.voice.channel) {
                 savedMember.voiceActivity.leaveTime = dateNow;
 
                 if (savedMember.voiceActivity.joinTime) {
