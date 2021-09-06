@@ -26,7 +26,7 @@ export default class Filter implements Command {
     memberPermissions = [];
     ownerOnly = false;
     premiumOnly = false;
-    cooldown = 3000; // 3 seconds
+    cooldown = 5000; // 5 seconds
     slashDescription =
         "Lists all available filters or toggles the specified filter(s)";
     commandOptions: ApplicationCommandOption[] = [
