@@ -346,29 +346,36 @@ export function momentDurationToHumanReadable(momentDuration: moment.Duration): 
     if (momentDuration.asMilliseconds() === 0) return "0 seconds";
     
     const durationUnits: string[] = [];
+
+    const years = momentDuration.years();
+    const months = momentDuration.months();
+    const days = momentDuration.days();
+    const hours = momentDuration.hours();
+    const minutes = momentDuration.minutes();
+    const seconds = momentDuration.seconds();
     
-    if (momentDuration.years() > 0) {
-        durationUnits.push(`${momentDuration.years()} years`);
+    if (years > 0) {
+        durationUnits.push(`${years} year${years === 1 ? "" : "s"}`);
     }
 
-    if (momentDuration.months() > 0) {
-        durationUnits.push(`${momentDuration.months()} months`);
+    if (months > 0 || durationUnits[0]) {
+        durationUnits.push(`${months} month${months === 1 ? "" : "s"}`);
     }
 
-    if (momentDuration.days() > 0) {
-        durationUnits.push(`${momentDuration.days()} days`);
+    if (days > 0 || durationUnits[0]) {
+        durationUnits.push(`${days} day${days === 1 ? "" : "s"}`);
     }
 
-    if (momentDuration.hours() > 0) {
-        durationUnits.push(`${momentDuration.hours()} hours`);
+    if (hours > 0 || durationUnits[0]) {
+        durationUnits.push(`${hours} hour${hours === 1 ? "" : "s"}`);
     }
 
-    if (momentDuration.minutes() > 0) {
-        durationUnits.push(`${momentDuration.minutes()} minutes`);
+    if (minutes > 0 || durationUnits[0]) {
+        durationUnits.push(`${minutes} minute${minutes === 1 ? "" : "s"}`);
     }
 
-    if (momentDuration.seconds() > 0) {
-        durationUnits.push(`${momentDuration.seconds()} seconds`);
+    if (seconds > 0 || durationUnits[0]) {
+        durationUnits.push(`${seconds} second${seconds === 1 ? "" : "s"}`);
     }
 
     const durationString = durationUnits.join(", ");
