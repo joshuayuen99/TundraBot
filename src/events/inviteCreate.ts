@@ -1,9 +1,14 @@
-import { Guild, Invite } from "discord.js";
+import { Collection, Guild, Invite, Snowflake } from "discord.js";
 import { EventHandler } from "../base/EventHandler";
 import { TundraBot } from "../base/TundraBot";
 import { DBGuild } from "../models/Guild";
 import Deps from "../utils/deps";
 import Logger from "../utils/logger";
+
+export interface CachedInvite {
+    code: string;
+    uses: number;
+}
 
 export default class InviteCreateHandler extends EventHandler {
     protected DBGuildManager: DBGuild;
@@ -27,8 +32,12 @@ export default class InviteCreateHandler extends EventHandler {
                 let currentInvites = this.client.guildInvites.get(
                     invite.guild.id
                 );
-                if (!currentInvites) currentInvites = new Map();
-                currentInvites.set(invite.code, invite);
+                if (!currentInvites) currentInvites = new Map<Snowflake, CachedInvite>();
+                const cachedInvite: CachedInvite = {
+                    code: invite.code,
+                    uses: invite.uses,
+                };
+                currentInvites.set(invite.code, cachedInvite);
                 this.client.guildInvites.set(invite.guild.id, currentInvites);
             }
         } catch (err) {

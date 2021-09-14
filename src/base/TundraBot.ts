@@ -17,6 +17,7 @@ import { MemberSoundEffects } from "../helpers/loadMemberSoundEffects";
 import { SoundboardQueue } from "../commands/music/soundboard";
 
 import { DiscordTogether } from "discord-together";
+import { CachedInvite } from "../events/inviteCreate";
 
 export class TundraBot extends Client {
     /** <command name, command module> */
@@ -49,7 +50,7 @@ export class TundraBot extends Client {
 
     // Map with invites for each guild
     /** <guildID, <invite code, invite>> */
-    guildInvites: Map<string, Map<Snowflake, Invite>>;
+    guildInvites: Map<string, Map<Snowflake, CachedInvite>>;
 
     discordTogether: DiscordTogether<{ "TundraBot" }>;
 

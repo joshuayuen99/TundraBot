@@ -5,6 +5,7 @@ import Deps from "../utils/deps";
 import { TundraBot } from "../base/TundraBot";
 import { DBGuild } from "../models/Guild";
 import Logger from "../utils/logger";
+import { CachedInvite } from "./inviteCreate";
 
 export default class GuildMemberAddHandler extends EventHandler {
     protected DBGuildManager: DBGuild;
@@ -56,7 +57,11 @@ export default class GuildMemberAddHandler extends EventHandler {
                                     inviteUsed = invite[1];
 
                                     // Update cached invite uses
-                                    cachedInvites.set(invite[0], invite[1]);
+                                    const cachedInvite: CachedInvite = {
+                                        code: invite[1].code,
+                                        uses: invite[1].uses,
+                                    };
+                                    cachedInvites.set(invite[0], cachedInvite);
                                     break;
                                 }
                             }

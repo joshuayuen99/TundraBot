@@ -3,7 +3,8 @@ import Logger from "../utils/logger";
 import { TundraBot } from "../base/TundraBot";
 import { DBGuild, guildModel } from "../models/Guild";
 import Deps from "../utils/deps";
-import { Guild, Permissions } from "discord.js";
+import { Guild, Permissions, Snowflake } from "discord.js";
+import { CachedInvite } from "../events/inviteCreate";
 
 export default class CacheInvites extends StartupHelper {
     DBGuildManager: DBGuild;
@@ -64,8 +65,12 @@ export default class CacheInvites extends StartupHelper {
             .then((invites) => {
                 for (const invite of invites) {
                     let currentInvites = client.guildInvites.get(guild.id);
-                    if (!currentInvites) currentInvites = new Map();
-                    currentInvites.set(invite[0], invite[1]);
+                    if (!currentInvites) currentInvites = new Map<Snowflake, CachedInvite>();
+                    const cachedInvite: CachedInvite = {
+                        code: invite[1].code,
+                        uses: invite[1].uses,
+                    };
+                    currentInvites.set(invite[0], cachedInvite);
                     client.guildInvites.set(guild.id, currentInvites);
                 }
                 inviteCount += invites.size;
