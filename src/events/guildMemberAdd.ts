@@ -1,5 +1,5 @@
 import { EventHandler } from "../base/EventHandler";
-import { Guild, GuildMember, MessageEmbed, TextChannel } from "discord.js";
+import { Guild, GuildMember, Invite, MessageEmbed, TextChannel } from "discord.js";
 import { formatDateLong, sendMessage } from "../utils/functions";
 import Deps from "../utils/deps";
 import { TundraBot } from "../base/TundraBot";
@@ -46,7 +46,7 @@ export default class GuildMemberAddHandler extends EventHandler {
                                 guild.id
                             );
 
-                            let inviteUsed;
+                            let inviteUsed: Invite;
                             for (const invite of invites) {
                                 if (!cachedInvites.get(invite[0])) continue;
                                 if (
