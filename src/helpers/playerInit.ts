@@ -5,9 +5,15 @@ import { sendMessage } from "../utils/functions";
 import Logger from "../utils/logger";
 import { StartupHelper } from "./startupHelper";
 
+interface MessageInfo {
+    guildID: Snowflake;
+    channelID: Snowflake;
+    messageID: Snowflake;
+}
+
 export default class PlayerInit extends StartupHelper {
-    // <guildID, now playing message>
-    nowPlayingMessages: Map<Snowflake, Message>;
+    // <guildID, now playing message info>
+    nowPlayingMessages: Map<Snowflake, MessageInfo>;
 
     constructor(client: TundraBot) {
         super(client);
@@ -39,16 +45,34 @@ export default class PlayerInit extends StartupHelper {
                     <TextChannel>queue.metadata
                 ).then((message) => {
                     if (!message) return;
-                    this.nowPlayingMessages.set(queue.guild.id, message);
+
+                    const messageInfo = {
+                        guildID: message.guild.id,
+                        channelID: message.channel.id,
+                        messageID: message.id,
+                    } as MessageInfo;
+                    this.nowPlayingMessages.set(queue.guild.id, messageInfo);
                 });
             })
             .on("trackEnd", async (queue, track) => {
-                let nowPlayingMessage = this.nowPlayingMessages.get(queue.guild.id);
-                if (nowPlayingMessage) nowPlayingMessage = await nowPlayingMessage.fetch();
-
-                if (nowPlayingMessage && nowPlayingMessage.deletable) {
-                    nowPlayingMessage.delete().catch();
-                }
+                const nowPlayingMessageInfo = this.nowPlayingMessages.get(
+                    queue.guild.id
+                );
+                (<TextChannel>(
+                    this.client.guilds.cache
+                        .get(nowPlayingMessageInfo.guildID)
+                        .channels.cache.get(nowPlayingMessageInfo.channelID)
+                )).messages
+                    .fetch(nowPlayingMessageInfo.messageID)
+                    .then((nowPlayingMessage) => {
+                        if (
+                            !nowPlayingMessage.deleted &&
+                            nowPlayingMessage.deletable
+                        ) {
+                            nowPlayingMessage.delete().catch();
+                        }
+                    })
+                    .catch();
             })
             .on("botDisconnect", async (queue) => {
                 sendMessage(
