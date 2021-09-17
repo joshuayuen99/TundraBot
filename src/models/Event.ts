@@ -12,19 +12,25 @@ export interface eventInterface extends Document {
     creatorID: Snowflake;
     startTime: Date;
     endTime: Date;
+
+    createdAt: Date;
+    updatedAt: Date;
 }
 
-const eventSchema = new Schema<eventInterface>({
-    messageID: String,
-    guildID: String,
-    channelID: String,
-    event: String,
-    maxParticipants: { type: Number, default: 0 },
-    participants: [{ type: String }],
-    creatorID: String,
-    startTime: Date,
-    endTime: Date,
-});
+const eventSchema = new Schema<eventInterface>(
+    {
+        messageID: String,
+        guildID: String,
+        channelID: String,
+        event: String,
+        maxParticipants: { type: Number, default: 0 },
+        participants: [{ type: String }],
+        creatorID: String,
+        startTime: Date,
+        endTime: Date,
+    },
+    { timestamps: true }
+);
 
 export const eventModel = model<eventInterface>("Event", eventSchema);
 
@@ -39,11 +45,9 @@ export class DBEvent extends DBWrapper<
         if (this.client.databaseCache.events.has(event.messageID))
             return this.client.databaseCache.events.get(event.messageID);
 
-        const savedEvent = await eventModel
-            .findOne({ messageID: event.messageID })
-            .catch(() => {
-                throw new Error("Error finding event in database");
-            });
+        const savedEvent = await eventModel.findOne({
+            messageID: event.messageID,
+        });
 
         // Update cache
         this.client.databaseCache.events.set(event.messageID, savedEvent);
@@ -82,9 +86,13 @@ export class DBEvent extends DBWrapper<
                     },
                 },
                 { new: true }
-            ).then((updatedEvent) => {
+            )
+            .then((updatedEvent) => {
                 // Update cache
-                this.client.databaseCache.events.set(event.messageID, updatedEvent);
+                this.client.databaseCache.events.set(
+                    event.messageID,
+                    updatedEvent
+                );
 
                 return updatedEvent;
             });
@@ -103,9 +111,13 @@ export class DBEvent extends DBWrapper<
                     $pull: { participants: participant },
                 },
                 { new: true }
-            ).then((updatedEvent) => {
+            )
+            .then((updatedEvent) => {
                 // Update cache
-                this.client.databaseCache.events.set(event.messageID, updatedEvent);
+                this.client.databaseCache.events.set(
+                    event.messageID,
+                    updatedEvent
+                );
 
                 return updatedEvent;
             });

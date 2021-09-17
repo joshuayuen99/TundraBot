@@ -6,15 +6,24 @@ export interface soundEffectInterface extends Document {
     name: string;
     link: string;
     guildID: Snowflake;
+
+    createdAt: Date;
+    updatedAt: Date;
 }
 
-const soundEffectSchema = new Schema<soundEffectInterface>({
-    name: String,
-    link: String,
-    guildID: String,
-});
+const soundEffectSchema = new Schema<soundEffectInterface>(
+    {
+        name: String,
+        link: String,
+        guildID: String,
+    },
+    { timestamps: true }
+);
 
-export const soundEffectModel = model<soundEffectInterface>("SoundEffect", soundEffectSchema);
+export const soundEffectModel = model<soundEffectInterface>(
+    "SoundEffect",
+    soundEffectSchema
+);
 
 export class DBSoundEffect extends DBWrapper<
     Partial<soundEffectInterface>,
@@ -31,22 +40,17 @@ export class DBSoundEffect extends DBWrapper<
     async create(
         soundEffect: Partial<soundEffectInterface>
     ): Promise<soundEffectInterface> {
-        const newSoundEffect = await new soundEffectModel(soundEffect);
+        const newSoundEffect = new soundEffectModel(soundEffect);
 
-        return newSoundEffect
-            .save()
-            .then((newSoundEffect) => {
-                // Update cache
-                this.client.databaseCache.soundEffects.set(
-                    `${newSoundEffect.guildID}${newSoundEffect.name}`,
-                    newSoundEffect
-                );
+        return newSoundEffect.save().then((newSoundEffect) => {
+            // Update cache
+            this.client.databaseCache.soundEffects.set(
+                `${newSoundEffect.guildID}${newSoundEffect.name}`,
+                newSoundEffect
+            );
 
-                return newSoundEffect;
-            })
-            .catch(() => {
-                throw new Error("Error creating new sound effect in database");
-            });
+            return newSoundEffect;
+        });
     }
 
     async getNoCreate(
@@ -62,11 +66,10 @@ export class DBSoundEffect extends DBWrapper<
                 `${soundEffect.guildID}${soundEffect.name}`
             );
 
-        const savedSoundEffect = await soundEffectModel
-            .findOne({ name: soundEffect.name, guildID: soundEffect.guildID })
-            .catch(() => {
-                throw new Error("Error finding sound effect in database");
-            });
+        const savedSoundEffect = await soundEffectModel.findOne({
+            name: soundEffect.name,
+            guildID: soundEffect.guildID,
+        });
 
         // Update cache
         this.client.databaseCache.soundEffects.set(
@@ -78,13 +81,11 @@ export class DBSoundEffect extends DBWrapper<
     }
 
     async delete(soundEffect: soundEffectInterface): Promise<void> {
-        return soundEffect
-            .delete()
-            .then(() => {
-                this.client.databaseCache.soundEffects.delete(
-                    `${soundEffect.guildID}${soundEffect.name}`
-                );
-            });
+        return soundEffect.delete().then(() => {
+            this.client.databaseCache.soundEffects.delete(
+                `${soundEffect.guildID}${soundEffect.name}`
+            );
+        });
     }
 
     async save(

@@ -53,13 +53,9 @@ export class DBMessage extends DBWrapper<Message, messageInterface> {
     }
 
     protected async getOrCreate(message: Message): Promise<messageInterface> {
-        const savedMessage = await messageModel
-            .findOne({
-                messageID: message.id,
-            })
-            .catch(() => {
-                throw new Error("Error finding message in database");
-            });
+        const savedMessage = await messageModel.findOne({
+            messageID: message.id,
+        });
 
         return savedMessage ?? this.create(message);
     }
@@ -67,7 +63,7 @@ export class DBMessage extends DBWrapper<Message, messageInterface> {
     async create(message: Message): Promise<messageInterface> {
         const settings = await this.DBGuildManager.get(message.guild);
 
-        let command;
+        let command: string;
         if (message.content.startsWith(settings.prefix)) {
             const commandString = message.content
                 .split(" ")[0]
@@ -88,7 +84,9 @@ export class DBMessage extends DBWrapper<Message, messageInterface> {
             command = "";
         }
 
-        const attachments = message.attachments.map((attachment) => attachment.url);
+        const attachments = message.attachments.map(
+            (attachment) => attachment.url
+        );
 
         const newMessage = new messageModel({
             messageID: message.id,
@@ -112,18 +110,12 @@ export class DBMessage extends DBWrapper<Message, messageInterface> {
     ): Promise<messageInterface> {
         // The message was edited (check to make sure it wasn't just an embed being added onto the message)
         if (newMessage && message.content != newMessage.content) {
-            return await messageModel
-                .findOneAndUpdate(
-                    { messageID: message.id },
-                    {
-                        $push: { editedText: newMessage.content },
-                    }
-                )
-                .catch(() => {
-                    throw new Error(
-                        "Error updating edited message in database"
-                    );
-                });
+            return await messageModel.findOneAndUpdate(
+                { messageID: message.id },
+                {
+                    $push: { editedText: newMessage.content },
+                }
+            );
         }
 
         // Change message attributes (deleted)
@@ -134,16 +126,12 @@ export class DBMessage extends DBWrapper<Message, messageInterface> {
             else continue;
         }
 
-        return await messageModel
-            .findOneAndUpdate(
-                {
-                    messageID: message.id,
-                },
-                data,
-                { new: true }
-            )
-            .catch(() => {
-                throw new Error("Error updating message in database");
-            });
+        return await messageModel.findOneAndUpdate(
+            {
+                messageID: message.id,
+            },
+            data,
+            { new: true }
+        );
     }
 }

@@ -30,40 +30,46 @@ export interface memberInterface extends Document {
         endTime: Date;
     };
     voiceActivity: voiceActivity;
+
+    createdAt: Date;
+    updatedAt: Date;
 }
 
-const memberSchema = new Schema<memberInterface>({
-    userID: String,
-    guildID: String,
-    username: String,
-    settings: {
-        joinSoundEffect: {
-            type: Schema.Types.ObjectId,
-            ref: "SoundEffect",
-            default: null,
+const memberSchema = new Schema<memberInterface>(
+    {
+        userID: String,
+        guildID: String,
+        username: String,
+        settings: {
+            joinSoundEffect: {
+                type: Schema.Types.ObjectId,
+                ref: "SoundEffect",
+                default: null,
+            },
+            leaveSoundEffect: {
+                type: Schema.Types.ObjectId,
+                ref: "SoundEffect",
+                default: null,
+            },
         },
-        leaveSoundEffect: {
-            type: Schema.Types.ObjectId,
-            ref: "SoundEffect",
-            default: null,
+        ban: {
+            endTime: { type: Date, default: null },
         },
-    },
-    ban: {
-        endTime: { type: Date, default: null },
-    },
-    mute: {
-        endTime: { type: Date, default: null },
-    },
-    voiceActivity: {
-        joinTime: { type: Date, default: null },
-        leaveTime: { type: Date, default: null },
-        voiceDuration: { type: Number, default: 0 },
+        mute: {
+            endTime: { type: Date, default: null },
+        },
+        voiceActivity: {
+            joinTime: { type: Date, default: null },
+            leaveTime: { type: Date, default: null },
+            voiceDuration: { type: Number, default: 0 },
 
-        streamStartTime: { type: Date, default: null },
-        streamEndTime: { type: Date, default: null },
-        streamDuration: { type: Number, default: 0 },
+            streamStartTime: { type: Date, default: null },
+            streamEndTime: { type: Date, default: null },
+            streamDuration: { type: Number, default: 0 },
+        },
     },
-});
+    { timestamps: true }
+);
 
 export const memberModel = model<memberInterface>("Member", memberSchema);
 
@@ -83,9 +89,7 @@ export class DBMember extends DBWrapper<GuildMember, memberInterface> {
             username: member.user.username,
         });
 
-        return this.save(newMember).catch(() => {
-            throw new Error("Error creating new member in database");
-        });
+        return this.save(newMember);
     }
 
     async update(
@@ -101,20 +105,16 @@ export class DBMember extends DBWrapper<GuildMember, memberInterface> {
             else continue;
         }
 
-        return memberModel
-            .findOneAndUpdate(
-                {
-                    userID: member.user.id,
-                    guildID: member.guild.id,
-                },
-                {
-                    settings: memberSettings,
-                },
-                { new: true }
-            )
-            .catch(() => {
-                throw new Error("Error updating user settings in database");
-            });
+        return memberModel.findOneAndUpdate(
+            {
+                userID: member.user.id,
+                guildID: member.guild.id,
+            },
+            {
+                settings: memberSettings,
+            },
+            { new: true }
+        );
     }
 
     async updateJoinEffect(

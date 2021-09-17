@@ -32,55 +32,61 @@ export interface guildInterface extends Document {
         channelID: Snowflake;
     };
     blacklistedChannelIDs: Snowflake[];
+
+    createdAt: Date;
+    updatedAt: Date;
 }
 
-const guildSchema = new Schema<guildInterface>({
-    guildID: {
-        type: String,
-        unique: true,
-    },
-    guildName: String,
-    timeJoined: Date,
-    prefix: {
-        type: String,
-        default: process.env.COMMAND_PREFIX,
-    },
-    welcomeMessage: {
-        enabled: { type: Boolean, default: false },
-        welcomeMessage: {
+const guildSchema = new Schema<guildInterface>(
+    {
+        guildID: {
             type: String,
-            default:
-                defaults.defaultGuildSettings.welcomeMessage.welcomeMessage,
+            unique: true,
         },
-        channelID: { type: String, default: null },
+        guildName: String,
+        timeJoined: Date,
+        prefix: {
+            type: String,
+            default: process.env.COMMAND_PREFIX,
+        },
+        welcomeMessage: {
+            enabled: { type: Boolean, default: false },
+            welcomeMessage: {
+                type: String,
+                default:
+                    defaults.defaultGuildSettings.welcomeMessage.welcomeMessage,
+            },
+            channelID: { type: String, default: null },
+        },
+        joinMessages: {
+            enabled: { type: Boolean, default: false },
+            channelID: { type: String, default: null },
+            trackInvites: { type: Boolean, default: true },
+        },
+        leaveMessages: {
+            enabled: { type: Boolean, default: false },
+            channelID: { type: String, default: null },
+        },
+        soundboardRoleID: {
+            type: String,
+            default: null,
+        },
+        modRole: {
+            type: String,
+            default: defaults.defaultGuildSettings.modRole,
+        },
+        adminRole: {
+            type: String,
+            default: defaults.defaultGuildSettings.adminRole,
+        },
+        logMessages: {
+            enabled: { type: Boolean, default: false },
+            channelID: { type: String, default: null },
+        },
+        blacklistedChannelIDs: [{ type: String }],
     },
-    joinMessages: {
-        enabled: { type: Boolean, default: false },
-        channelID: { type: String, default: null },
-        trackInvites: { type: Boolean, default: true },
-    },
-    leaveMessages: {
-        enabled: { type: Boolean, default: false },
-        channelID: { type: String, default: null },
-    },
-    soundboardRoleID: {
-        type: String,
-        default: null,
-    },
-    modRole: {
-        type: String,
-        default: defaults.defaultGuildSettings.modRole,
-    },
-    adminRole: {
-        type: String,
-        default: defaults.defaultGuildSettings.adminRole,
-    },
-    logMessages: {
-        enabled: { type: Boolean, default: false },
-        channelID: { type: String, default: null },
-    },
-    blacklistedChannelIDs: [{ type: String }],
-});
+    { timestamps: true }
+);
 
 export const guildModel = model<guildInterface>("Guild", guildSchema);
 

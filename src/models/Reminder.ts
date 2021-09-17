@@ -7,16 +7,25 @@ export interface reminderInterface extends Document {
     reminder: string;
     startTime: Date;
     endTime: Date;
+
+    createdAt: Date;
+    updatedAt: Date;
 }
 
-const reminderSchema = new Schema<reminderInterface>({
-    userID: String,
-    reminder: String,
-    startTime: Date,
-    endTime: Date,
-});
+const reminderSchema = new Schema<reminderInterface>(
+    {
+        userID: String,
+        reminder: String,
+        startTime: Date,
+        endTime: Date,
+    },
+    { timestamps: true }
+);
 
-export const reminderModel = model<reminderInterface>("Reminder", reminderSchema);
+export const reminderModel = model<reminderInterface>(
+    "Reminder",
+    reminderSchema
+);
 
 export class DBReminder extends DBWrapper<
     Partial<reminderInterface>,
@@ -37,21 +46,16 @@ export class DBReminder extends DBWrapper<
     }
 
     async delete(reminder: reminderInterface): Promise<void> {
-        await reminderModel
-            .findOneAndDelete({
-                userID: reminder.userID,
-                reminder: reminder.reminder,
-                startTime: reminder.startTime,
-                endTime: reminder.endTime,
-            });
+        await reminderModel.findOneAndDelete({
+            userID: reminder.userID,
+            reminder: reminder.reminder,
+            startTime: reminder.startTime,
+            endTime: reminder.endTime,
+        });
         return;
     }
 
     async getUsersReminders(userID: string): Promise<reminderInterface[]> {
-        return reminderModel.find({ userID: userID }).catch(() => {
-            throw new Error(
-                `Error getting user's reminders (userID: ${userID})`
-            );
-        });
+        return reminderModel.find({ userID: userID });
     }
 }
