@@ -50,7 +50,7 @@ export default class LoadRoleMenus extends StartupHelper {
                             () => {
                                 Logger.log(
                                     "error",
-                                    `Couldn't delete role menu from database:\n${err}`
+                                    `Couldn't delete role menu (messageID: ${roleMenu.messageID}) (guildID: ${roleMenu.guildID}) from database:\n${err}`
                                 );
                             }
                         );

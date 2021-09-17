@@ -381,13 +381,13 @@ export default class Ban implements Command {
                 });
             })
             .catch((err) => {
-                Logger.log("error", `Error unbanning user:\n${err}`);
+                Logger.log("error", `Error unbanning user (userID: ${bUserID}) from (guildID: ${guild.id}):\n${err}`);
 
                 // Remove ban from database
                 DBMemberManager.unban(bUserID, guild.id).catch((err) => {
                     Logger.log(
                         "error",
-                        `Error unbanning member in database:\n${err}`
+                        `Error unbanning member (userID: ${bUserID}) from (guildID: ${guild.id}) in database:\n${err}`
                     );
                 });
             });

@@ -1,4 +1,4 @@
-import { Collection, Guild, Invite, Snowflake } from "discord.js";
+import { Guild, Invite, Snowflake } from "discord.js";
 import { EventHandler } from "../base/EventHandler";
 import { TundraBot } from "../base/TundraBot";
 import { DBGuild } from "../models/Guild";
@@ -41,7 +41,7 @@ export default class InviteCreateHandler extends EventHandler {
                 this.client.guildInvites.set(invite.guild.id, currentInvites);
             }
         } catch (err) {
-            Logger.log("error", `guildMemberAdd event error:\n${err}`);
+            Logger.log("error", `inviteCreate event error (guildID: ${invite.guild.id}):\n${err}`);
         }
     }
 }

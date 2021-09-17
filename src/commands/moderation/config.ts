@@ -67,7 +67,7 @@ export default class Config implements Command {
                     } catch (err) {
                         Logger.log(
                             "error",
-                            `Error updating prefix in config:\n${err}`
+                            `(guildID: ${ctx.guild.id}) Error updating prefix in config:\n${err}`
                         );
                         sendReply(
                             ctx.client,
@@ -137,7 +137,7 @@ export default class Config implements Command {
                     } catch (err) {
                         Logger.log(
                             "error",
-                            `Error updating logChannel in config:\n${err}`
+                            `(guildID: ${ctx.guild.id}) Error updating logChannel in config:\n${err}`
                         );
                         sendReply(
                             ctx.client,
@@ -185,7 +185,7 @@ export default class Config implements Command {
                 } catch (err) {
                     Logger.log(
                         "error",
-                        `Error updating soundboardRole in config:\n${err}`
+                        `(guildID: ${ctx.guild.id}) Error updating soundboardRole in config:\n${err}`
                     );
                     sendReply(
                         ctx.client,
@@ -231,7 +231,7 @@ export default class Config implements Command {
                 } catch (err) {
                     Logger.log(
                         "error",
-                        `Error displaying guild config (${ctx.guild.id}):\n${err}`
+                        `(guildID: ${ctx.guild.id}) Error displaying guild config:\n${err}`
                     );
                     sendReply(
                         ctx.client,

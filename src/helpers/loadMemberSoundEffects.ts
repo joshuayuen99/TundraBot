@@ -37,13 +37,13 @@ export default class LoadMemberSoundEffects extends StartupHelper {
                     const joinSoundEffect = await soundEffectModel.findById(
                         member.settings.joinSoundEffect
                     ).catch((err) => {
-                        Logger.log("error", `Error loading sound effect from loadMemberSoundEffect.ts:\n${err}`);
+                        Logger.log("error", `Error loading sound effect (${member.settings.joinSoundEffect}) from loadMemberSoundEffect.ts:\n${err}`);
                     });
 
                     const leaveSoundEffect = await soundEffectModel.findById(
                         member.settings.leaveSoundEffect
                     ).catch((err) => {
-                        Logger.log("error", `Error loading sound effect from loadMemberSoundEffect.ts:\n${err}`);
+                        Logger.log("error", `Error loading sound effect (${member.settings.joinSoundEffect}) from loadMemberSoundEffect.ts:\n${err}`);
                     });
 
                     const soundEffects = {

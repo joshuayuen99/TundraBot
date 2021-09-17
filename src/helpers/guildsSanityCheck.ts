@@ -21,7 +21,7 @@ export default class GuildsSanityCheck extends StartupHelper {
                 try {
                     // Check if guild was deleted
                     if (!this.client.guilds.cache.has(guild.guildID)) {
-                        throw new Error(`Guild was deleted (${guild.guildID})`);
+                        throw new Error(`Guild was deleted (guildID: ${guild.guildID})`);
                     }
                 } catch (err) {
                     Logger.log("warn", err);

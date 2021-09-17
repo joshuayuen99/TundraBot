@@ -22,10 +22,10 @@ export default class GuildDeleteHandler extends EventHandler {
         if (!this.client.readyAt || !guild || !guild.name) return;
 
         await this.DBGuildManager.delete(guild).catch((err) => {
-            Logger.log("error", `Error deleting guild from database:\n${err}`);
+            Logger.log("error", `Error deleting guild (${guild.id}) from database:\n${err}`);
         });
 
-        Logger.log("info", `Left guild: ${guild.name}`);
+        Logger.log("info", `Left guild: "${guild.name}" (${guild.id})`);
 
         this.notifyOwner(guild);
     }

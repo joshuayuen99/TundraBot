@@ -40,7 +40,7 @@ export default class SetTimeZone implements Command {
             }
 
             userSettings = await this.DBUserManager.update(ctx.author, { timezone: args[0] }).catch((err) => {
-                Logger.log("error", `Error updating user in database:\n${err}`);
+                Logger.log("error", `Error updating user (userID: ${ctx.author.id}) in database:\n${err}`);
             });
 
             if (!userSettings) {
@@ -84,7 +84,7 @@ export default class SetTimeZone implements Command {
         userSettings = await this.DBUserManager.update(ctx.author, {
             timezone: timezoneMessage.content,
         }).catch((err) => {
-            Logger.log("error", `Error updating user in database:\n${err}`);
+            Logger.log("error", `Error updating user (userID: ${ctx.author.id}) in database:\n${err}`);
         });
 
         if (!userSettings) {

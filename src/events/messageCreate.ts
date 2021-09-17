@@ -46,7 +46,7 @@ export default class MessageCreateHandler extends EventHandler {
                     this.DBMessageManager.create(message).catch((err) => {
                         Logger.log(
                             "error",
-                            `Error saving message to database:\n${err}`
+                            `Error saving message (messageID: ${message.id}) (guildID: ${message.guild.id}) to database:\n${err}`
                         );
                     });
                 }

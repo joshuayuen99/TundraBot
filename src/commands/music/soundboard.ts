@@ -337,7 +337,7 @@ export default class Soundboard implements Command {
                 return;
             })
             .catch((err) => {
-                Logger.log("error", `Error creating new sound effect:\n${err}`);
+                Logger.log("error", `Error creating new sound effect (${soundEffect.name}) in (guildID: ${soundEffect.guildID}):\n${err}`);
             });
     }
 
@@ -376,7 +376,10 @@ export default class Soundboard implements Command {
                 return;
             })
             .catch((err) => {
-                Logger.log("error", `Error deleting sound effect from database:\n${err}`);
+                Logger.log(
+                    "error",
+                    `Error deleting sound effect (${soundEffect.name}) in (guildID: ${soundEffect.guildID}) from database:\n${err}`
+                );
                 sendReply(
                     ctx.client,
                     "There was an error deleting the sound effect. This has been reported to my developer.",
@@ -440,7 +443,7 @@ export default class Soundboard implements Command {
             .catch((err) => {
                 Logger.log(
                     "error",
-                    `Error renaming sound effect in database:\n${err}`
+                    `Error renaming sound effect (${oldSoundEffect.name}) in (guildID: ${oldSoundEffect.guildID}) in database:\n${err}`
                 );
                 sendReply(
                     ctx.client,

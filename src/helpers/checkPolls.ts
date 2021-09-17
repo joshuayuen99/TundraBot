@@ -40,7 +40,7 @@ export default class CheckEvents extends StartupHelper {
                     }
                 } catch (err) {
                     // remove poll from database
-                    Logger.log("warn", `Removing poll from database:\n${err}`);
+                    Logger.log("warn", `Removing poll (messageID: ${poll.messageID}) (guildID: ${poll.guildID}) from database:\n${err}`);
                     this.DBPollManager.delete(poll);
                 }
             }

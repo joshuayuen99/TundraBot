@@ -96,7 +96,7 @@ export default class PlayerInit extends StartupHelper {
             .on("error", async (queue, error) => {
                 Logger.log(
                     "error",
-                    `[${queue.guild.name}] Error emitted from the queue: ${error.message}`
+                    `[guildID: ${queue.guild.id}] Error emitted from the queue: ${error.message}`
                 );
 
                 switch (error.message) {

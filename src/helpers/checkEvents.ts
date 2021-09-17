@@ -66,11 +66,11 @@ export default class CheckEvents extends StartupHelper {
                         }
                     } catch (err) {
                         // remove event from database
-                        Logger.log("warn", `Deleting event from database:\n${err}`);
+                        Logger.log("warn", `Deleting event from database (messageID: ${event.messageID}) (guildID: ${event.guildID}):\n${err}`);
                         this.DBEventManager.delete(event).catch(() => {
                             Logger.log(
                                 "error",
-                                "Couldn't delete event from database"
+                                `Couldn't delete event from database (messageID: ${event.messageID}) (guildID: ${event.guildID}):\n${err}`
                             );
                         });
                     }

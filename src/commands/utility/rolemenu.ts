@@ -456,7 +456,7 @@ export default class RoleMenu implements Command {
                     ).catch((err) => {
                         Logger.log(
                             "error",
-                            `Error updating role menu (${cachedRoleMenu.messageID}):\n${err}`
+                            `Error updating role menu in (guildID: ${cachedRoleMenu.guildID}) (messageID: ${cachedRoleMenu.messageID}):\n${err}`
                         );
                     });
 
@@ -622,7 +622,7 @@ export default class RoleMenu implements Command {
                             ).catch((err) => {
                                 Logger.log(
                                     "error",
-                                    `Error updating role menu (${cachedRoleMenu.messageID}):\n${err}`
+                                    `Error updating role menu in (guildID: ${cachedRoleMenu.guildID}) (messageID: ${cachedRoleMenu.messageID}):\n${err}`
                                 );
                             });
 
@@ -742,7 +742,7 @@ export default class RoleMenu implements Command {
                         ).catch((err) => {
                             Logger.log(
                                 "error",
-                                `Error updating role menu (${cachedRoleMenu.messageID}):\n${err}`
+                                `Error updating role menu in (guildID: ${cachedRoleMenu.guildID}) (messageID: ${cachedRoleMenu.messageID}):\n${err}`
                             );
                         });
 

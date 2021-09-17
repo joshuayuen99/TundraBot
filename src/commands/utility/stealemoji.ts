@@ -121,7 +121,7 @@ export default class StealEmoji implements Command {
 
                             Logger.log(
                                 "error",
-                                `Could not upload emoji: ${
+                                `Could not upload emoji to (guildID: ${ctx.guild.id}): ${
                                     args[0] || reaction.emoji.name
                                 } (${reaction.emoji.id}): ${err}`
                             );

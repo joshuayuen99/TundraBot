@@ -54,7 +54,7 @@ export default class CheckMutes extends StartupHelper {
                                         } catch (err) {
                                             Logger.log(
                                                 "error",
-                                                `Error getting settings for guild in checkMutes:\n${err}`
+                                                `Error getting settings for guild (guildID: ${guild.id}) in checkMutes:\n${err}`
                                             );
                                         }
                                     }, member.mute.endTime.valueOf() - dateNow.valueOf());
@@ -76,7 +76,7 @@ export default class CheckMutes extends StartupHelper {
                                     } catch (err) {
                                         Logger.log(
                                             "error",
-                                            `Error getting settings for guild in checkMutes:\n${err}`
+                                            `Error getting settings for guild (guildID: ${guild.id}) in checkMutes:\n${err}`
                                         );
                                     }
                                 }
@@ -85,7 +85,7 @@ export default class CheckMutes extends StartupHelper {
                                 // muted member left the server
                             });
                     } catch (err) {
-                        Logger.log("error", `Error unmuting member in checkMutes:\n${err}`);
+                        Logger.log("error", `Error unmuting member (userID: ${member.userID}) (guildID: ${member.guildID}) in checkMutes:\n${err}`);
                     }
                 }
                 Logger.log("ready", `Loaded ${members.length} mutes`);

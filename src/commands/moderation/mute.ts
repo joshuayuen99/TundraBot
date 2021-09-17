@@ -209,6 +209,8 @@ export default class Mute implements Command {
             mentionable: false,
         });
 
+        // TODO: track down DiscordAPIError: Missing Access
+
         // Set channel overwrites for the role
         if (guild.me.permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) {
             guild.channels.cache.forEach((channel) => {
@@ -335,7 +337,7 @@ export default class Mute implements Command {
                 .catch((err) => {
                     Logger.log(
                         "error",
-                        `Error saving unmute time to database:\n${err}`
+                        `Error saving unmute time to database (userID: ${mMember.id} in (guildID: ${mMember.guild.id})):\n${err}`
                     );
                 });
         }

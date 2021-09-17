@@ -23,9 +23,8 @@ export default class GuildCreateHandler extends EventHandler {
 
     async invoke(guild: Guild): Promise<void> {
         try {
+            Logger.log("info", `Joined new guild: "${guild.name}" (${guild.id})`);
             await this.DBGuildManager.create(guild);
-
-            Logger.log("info", `Joined new guild: ${guild.name}`);
 
             this.notifyOwner(guild);
 
@@ -34,7 +33,7 @@ export default class GuildCreateHandler extends EventHandler {
             this.createChannels(guild);
             this.createRoles(guild);
         } catch (err) {
-            Logger.log("error", `Join server error:\n${err}`);
+            Logger.log("error", `Join server (${guild.id}) error:\n${err}`);
         }
     }
 
@@ -99,7 +98,7 @@ export default class GuildCreateHandler extends EventHandler {
             }).catch((err) => {
                 Logger.log(
                     "error",
-                    `Database error when updating logChannel:\n${err}`
+                    `Database error when updating logChannel (guildID: ${guild.id}):\n${err}`
                 );
             });
             return;
@@ -113,7 +112,7 @@ export default class GuildCreateHandler extends EventHandler {
         }).catch((err) => {
             Logger.log(
                 "error",
-                `Database error when adding logChannel:\n${err}`
+                `Database error when adding logChannel (guildID: ${guild.id}):\n${err}`
             );
         });
 
@@ -153,7 +152,7 @@ export default class GuildCreateHandler extends EventHandler {
             }).catch((err) => {
                 Logger.log(
                     "error",
-                    `Database error when updating soundboardRoleID to @everyone:\n${err}`
+                    `Database error when updating soundboardRoleID to @everyone (guildID: ${guild.id}):\n${err}`
                 );
             });
             return;
@@ -164,7 +163,7 @@ export default class GuildCreateHandler extends EventHandler {
         }).catch((err) => {
             Logger.log(
                 "error",
-                `Database error when adding soundboardRole:\n${err}`
+                `Database error when adding soundboardRole (guildID: ${guild.id}):\n${err}`
             );
         });
     }

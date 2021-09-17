@@ -49,7 +49,7 @@ export default class CheckBans extends StartupHelper {
                                 } catch (err) {
                                     Logger.log(
                                         "error",
-                                        `Error getting settings for guild in checkBans:\n${err}`
+                                        `Error getting settings for guild (guildID: ${guild.id}) in checkBans:\n${err}`
                                     );
                                 }
                             }, member.ban.endTime.valueOf() - dateNow.valueOf());
@@ -70,14 +70,14 @@ export default class CheckBans extends StartupHelper {
                             } catch (err) {
                                 Logger.log(
                                     "error",
-                                    `Error getting settings for guild in checkBans:\n${err}`
+                                    `Error getting settings for guild (guildID: ${guild.id}) in checkBans:\n${err}`
                                 );
                             }
                         }
                     } catch (err) {
                         Logger.log(
                             "error",
-                            `Error unbanning member in checkBans:\n${err}`
+                            `Error unbanning member (userID: ${member.userID}) (guildID: ${member.guildID}) in checkBans:\n${err}`
                         );
                     }
                 }

@@ -46,7 +46,7 @@ export default class GuildMemberRemoveHandler extends EventHandler {
                 }
             }
         } catch (err) {
-            Logger.log("error", `guildMemberRemove event error:\n${err}`);
+            Logger.log("error", `guildMemberRemove event error (guildID: ${member.guild.id}) (userID: ${member.id}):\n${err}`);
         }
     }
 }

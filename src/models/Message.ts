@@ -2,7 +2,6 @@ import { Message, Snowflake } from "discord.js";
 import { Document, model, Schema } from "mongoose";
 import { TundraBot } from "../base/TundraBot";
 import Deps from "../utils/deps";
-import Logger from "../utils/logger";
 import DBWrapper from "./db-wrapper";
 import { DBGuild } from "./Guild";
 
@@ -102,10 +101,7 @@ export class DBMessage extends DBWrapper<Message, messageInterface> {
             channelID: message.channel.id,
         });
 
-        return this.save(newMessage).catch((err) => {
-            Logger.log("error", err);
-            throw new Error("Error saving new message to database");
-        });
+        return this.save(newMessage);
     }
 
     // TODO: separate into two different functions

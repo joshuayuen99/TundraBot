@@ -185,21 +185,21 @@ export default class Unmute implements Command {
                 DBMemberManager.unmute(mMember).catch((err) => {
                     Logger.log(
                         "error",
-                        `Error unmuting member in database:\n${err}`
+                        `Error unmuting member (${mMember.id}) in (${mMember.guild.id}) in database:\n${err}`
                     );
                 });
             })
             .catch((err) => {
                 Logger.log(
                     "error",
-                    `Error removing muted role from member:\n${err}`
+                    `Error removing muted role from member (userID: ${mMember.id}) in (guildID: ${mMember.guild.id}):\n${err}`
                 );
 
                 // Remove mute from database
                 DBMemberManager.unmute(mMember).catch((err) => {
                     Logger.log(
                         "error",
-                        `Error unmuting member in database:\n${err}`
+                        `Error unmuting member (userID: ${mMember.id}) in (guildID: ${mMember.guild.id}) in database:\n${err}`
                     );
                 });
             });

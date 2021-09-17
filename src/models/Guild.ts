@@ -120,7 +120,7 @@ export class DBGuild extends DBWrapper<Guild, guildInterface> {
 
         Logger.log(
             "info",
-            `Default settings saved for guild "${mergedGuildSettings.guildName}" (${mergedGuildSettings.guildID})`
+            `Default settings saved for guild (${mergedGuildSettings.guildID})`
         );
 
         // Update cache
@@ -148,7 +148,7 @@ export class DBGuild extends DBWrapper<Guild, guildInterface> {
 
         Logger.log(
             "info",
-            `Guild "${updatedGuild.guildName}" updated settings: ${Object.keys(
+            `Guild (${updatedGuild.guildID}) updated settings: ${Object.keys(
                 settings
             ).join(", ")}`
         );

@@ -190,7 +190,7 @@ export default class Event implements Command {
             userSettings = await this.DBUserManager.update(ctx.author, {
                 timezone: timezoneMessage.content,
             }).catch((err) => {
-                Logger.log("error", `Error updating user in database:\n${err}`);
+                Logger.log("error", `Error updating user (userID: ${ctx.author.id}) in database:\n${err}`);
             });
 
             if (!userSettings) {
@@ -347,7 +347,7 @@ export default class Event implements Command {
             .catch((err) => {
                 Logger.log(
                     "error",
-                    `Error saving new event in database:\n${err}`
+                    `Error saving new event in (guildID: ${ctx.guild.id}) in database:\n${err}`
                 );
 
                 // remove event from database and cache
@@ -400,7 +400,7 @@ export default class Event implements Command {
             (err) => {
                 Logger.log(
                     "error",
-                    `Error adding participant to event (messageID: ${cachedEvent.messageID}) in database:\n${err}`
+                    `Error adding participant to event in (guildID: ${cachedEvent.guildID}) (messageID: ${cachedEvent.messageID}) in database:\n${err}`
                 );
             }
         );
@@ -503,7 +503,7 @@ export default class Event implements Command {
             (err) => {
                 Logger.log(
                     "error",
-                    `Error removing participant from event (messageID: ${cachedEvent.messageID}) in database:\n${err}`
+                    `Error removing participant from event in (guildID: ${cachedEvent.guildID}) (messageID: ${cachedEvent.messageID}) in database:\n${err}`
                 );
             }
         );

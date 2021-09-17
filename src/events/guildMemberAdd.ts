@@ -81,7 +81,7 @@ export default class GuildMemberAddHandler extends EventHandler {
                         .catch((err) => {
                             Logger.log(
                                 "error",
-                                `Invite tracker fetchInvites error:\n${err}`
+                                `Invite tracker fetchInvites error (guildID: ${guild.id}):\n${err}`
                             );
                         });
                 }
@@ -121,7 +121,7 @@ export default class GuildMemberAddHandler extends EventHandler {
                 }
             }
         } catch (err) {
-            Logger.log("error", `guildMemberAdd event error:\n${err}`);
+            Logger.log("error", `guildMemberAdd event error (guildID: ${member.guild.id}) (userID: ${member.id}):\n${err}`);
         }
     }
 
