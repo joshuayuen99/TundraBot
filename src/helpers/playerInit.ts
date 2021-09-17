@@ -1,5 +1,5 @@
 /* eslint-disable no-case-declarations */
-import { Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
+import { MessageEmbed, Snowflake, TextChannel } from "discord.js";
 import { TundraBot } from "../base/TundraBot";
 import { sendMessage } from "../utils/functions";
 import Logger from "../utils/logger";
@@ -54,10 +54,13 @@ export default class PlayerInit extends StartupHelper {
                     this.nowPlayingMessages.set(queue.guild.id, messageInfo);
                 });
             })
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             .on("trackEnd", async (queue, track) => {
                 const nowPlayingMessageInfo = this.nowPlayingMessages.get(
                     queue.guild.id
                 );
+                if (!nowPlayingMessageInfo) return;
+
                 (<TextChannel>(
                     this.client.guilds.cache
                         .get(nowPlayingMessageInfo.guildID)
@@ -81,12 +84,15 @@ export default class PlayerInit extends StartupHelper {
                     <TextChannel>queue.metadata
                 );
             })
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             .on("queueEnd", async (queue) => {
                 // Just leave
             })
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             .on("trackAdd", async (queue, track) => {
                 // do nothing, handle in play command
             })
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             .on("tracksAdd", async (queue, tracks) => {
                 // do nothing, handle in play command
             })
