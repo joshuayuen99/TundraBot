@@ -39,7 +39,7 @@ export default class Event implements Command {
     usage = "event";
     enabled = true;
     guildOnly = true;
-    botPermissions: PermissionResolvable[] = [Permissions.FLAGS.ADD_REACTIONS];
+    botPermissions: PermissionResolvable[] = [Permissions.FLAGS.USE_PUBLIC_THREADS, Permissions.FLAGS.MANAGE_THREADS, Permissions.FLAGS.ADD_REACTIONS];
     memberPermissions = [];
     ownerOnly = false;
     premiumOnly = false;
@@ -325,6 +325,9 @@ export default class Event implements Command {
             startTime: startTime,
             endTime: endTime.toDate(),
         } as eventInterface;
+
+        // Start event thread that auto archives after 1 day
+        await eventMessage.startThread({autoArchiveDuration: 1440, name: eventObject.event });
 
         // Save event to database
         this.DBEventManager.create(eventObject)
@@ -617,6 +620,13 @@ export default class Event implements Command {
         }
 
         msg.edit({ embeds: [finalEmbed] });
+
+        // Lock and archive thread if it hasn't been manually removed
+        if (msg.hasThread) {
+            const eventThread = msg.thread;
+            eventThread.setLocked(true);
+            eventThread.setArchived(true);
+        }
 
         const eventMessageLink = `https://discord.com/channels/${event.guildID}/${event.channelID}/${event.messageID}`;
 
