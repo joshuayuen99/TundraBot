@@ -32,9 +32,8 @@ export default class Akinator implements Command {
     slashCommandEnabled = true;
     guildOnly = true;
     botPermissions: PermissionResolvable[] = [
-        Permissions.FLAGS.CREATE_INSTANT_INVITE,
-        Permissions.FLAGS.CONNECT,
-        Permissions.FLAGS.SPEAK,
+        Permissions.FLAGS.USE_PUBLIC_THREADS,
+        Permissions.FLAGS.MANAGE_THREADS
     ];
     memberPermissions = [];
     ownerOnly = true;
