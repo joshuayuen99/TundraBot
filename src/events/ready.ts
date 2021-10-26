@@ -102,14 +102,12 @@ export default class ReadyHandler extends EventHandler {
         this.CheckReminders.init();
         this.CacheInvites.init();
 
-        if (process.env.TESTING === "true") {
-            registerInteractiveCommands(this.client).catch((err) => {
-                Logger.log(
-                    "error",
-                    `Error registering interactive commands on startup:\n${err}`
-                );
-            });
-        }
+        registerInteractiveCommands(this.client).catch((err) => {
+            Logger.log(
+                "error",
+                `Error registering interactive commands on startup:\n${err}`
+            );
+        });
 
         Logger.log(
             "ready",
