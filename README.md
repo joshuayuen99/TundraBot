@@ -20,13 +20,13 @@ To add me to your server click [here](https://discord.com/api/oauth2/authorize?c
 <!--ts-->
 - [TundraBot](#tundrabot)
 - [Table of Contents](#table-of-contents)
-
 - [Commands](#commands)
   - [Info](#info)
   - [Music](#music)
   - [Moderation](#moderation)
   - [Utility](#utility)
   - [Fun](#fun)
+- [Self-hosting](#self-hosting)
 - [Contributing](#contributing)
 
 <!--te-->
