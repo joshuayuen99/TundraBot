@@ -20,13 +20,7 @@ To add me to your server click [here](https://discord.com/api/oauth2/authorize?c
 <!--ts-->
 - [TundraBot](#tundrabot)
 - [Table of Contents](#table-of-contents)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installing](#installing)
-- [Using the Bot](#using-the-bot)
-  - [Setting up the Bot](#setting-up-the-bot)
-  - [Starting the Bot](#starting-the-bot)
-  - [Inviting the Bot to Servers](#inviting-the-bot-to-servers)
+
 - [Commands](#commands)
   - [Info](#info)
   - [Music](#music)
@@ -36,118 +30,6 @@ To add me to your server click [here](https://discord.com/api/oauth2/authorize?c
 - [Contributing](#contributing)
 
 <!--te-->
-
-# Getting Started
-
-These instructions will get you a copy of the bot up and running on your local machine for development and testing purposes.
-
-If you'd like to just use my bot on your server without setting anything up yourself locally, invite my bot to your Discord server [here](https://discord.com/api/oauth2/authorize?client_id=647196546492006423&permissions=259241012342&scope=bot%20applications.commands)!
-
-## Prerequisites
-
-![node-current](https://img.shields.io/badge/node-%3E%3D12.0.0-brightgreen?style=flat)
-[![NPM Version](https://img.shields.io/badge/npm-v6.14.5-blue?style=flat)]()
-
-### [Node.js v12.x](https://nodejs.org/en/download/)
-
-When installing Node.js, make sure you check the box to install Python and Visual Studio Build Tools:
-
-![Node.js Setup](/images/node_setup.png)
-
-If you are having trouble with installing npm packages, not having Python or Visual Studio Build Tools is likely the issue.
-
-To check if you have Node.js installed, run this command in your terminal:
-```
-node -v
-```
-
-### [FFmpeg](https://www.ffmpeg.org/)
-
-To install on Debian/Ubuntu, run this command in your terminal:
-
-```
-sudo apt-get install ffmpeg
-```
-
-To install on Windows:
-
-- Download FFmpeg from [here](https://ffmpeg.zeranoe.com/builds/) (latest version should work fine)
-- Unzip the .zip file with a tool such as [7-Zip](https://www.7-zip.org/)
-- Save the resulting `ffmpeg` folder wherever you want to keep it
-- Add the absolute path of the `bin` folder within your new `ffmpeg` folder to your computer's [environment variables](https://www.howtogeek.com/118594/how-to-edit-your-system-path-for-easy-command-line-access/)
-
-![Setting up environment variables](/images/environment_variables.png)
-
-To check if you have FFmpeg installed, run this command in your terminal:
-```
-ffmpeg -version
-```
-
-# Installing
-
-Download or clone this repository with the command:
-```
-git clone https://github.com/joshuayuen99/TundraBot.git
-```
-
-Navigate to the newly created `TundraBot` directory and type the following command:
-```
-npm install
-```
-
-You are likely to get a ton of errors that look fatal, however this won't affect the bot functioning at all—that's all for installing!
-
-# Using the Bot
-
-If you'd like to just use my bot on your server without setting anything up yourself locally, invite my bot to your Discord server [here](https://discord.com/api/oauth2/authorize?client_id=647196546492006423&permissions=259241012342&scope=bot%20applications.commands)!
-
-## Setting Up the Bot
-
-To start using the bot, you will first need to generate a Discord API token.
-
-1) Visit https://discord.com/developers/applications/ and log in to your Discord account.
-2) Click "New Application" at the top right and give it a name.
-3) Click the "Bot" tab on the left.
-4) Click the "Add Bot" button at the top right and give it a name.
-5) Where it says "Token", click the "Copy" button.
-6) Open up the `.env` file in your `TundraBot` directory and paste your token directly after `DISCORDTOKEN=`
-
-Secondly, for the music playing functionality to work correctly, you will need to provide a YouTube API key as well.
-
-1) Visit https://console.developers.google.com/apis/dashboard and log in to your Google account.
-2) Click "Create Project" and give it a name.
-3) Select your newly created project from the dropdown at the top left.
-4) Click the "Enable APIs and Services" button.
-5) Enter "YouTube" in the search bar and click on "YouTube Data API v3".
-6) Enable the API.
-7) On the left hand side, click the "Credentials" tab.
-8) Select "YouTube Data API v3" from the dropdown menu.
-9) Select "Web server (node.js)" for where you will be calling it from.
-10) Select "Public data" for which type of data you will be accessing.
-11) Click "What credentials will I need?".
-12) Copy your new API key and click done.
-13) Open up the `.env` file in your `TundraBot` directory and paste your key directly after `YOUTUBEKEY=`
-
-## Starting the Bot
-
-Once you've set up your Discord and YouTube APIs, you're ready to start the bot.
-
-To start the bot, simply navigate to your `TundraBot` directory and enter the command:
-```
-npm start
-```
-
-## Inviting the Bot to Servers
-
-1) Visit https://discord.com/developers/applications/ and log in to your Discord account.
-2) Click on your newly created project.
-3) Click the "OAuth2" tab on the left.
-4) Under "Scopes", check the "bot" box.
-5) Check all the permissions you want your bot to request upon joining a new server (the server owner will still have to agree to these upon the bot joining). The following are the bare minimum permissions the bot needs to function properly, but checking "Administrator" is a safe bet to make sure it has everything it needs.
-
-![Bot Permissions](/images/bot_permissions.png)
-
-You're done! All you need now is to copy the link at the bottom of the "Scopes" section and share that with any server owner that wants to use the bot.
 
 # Commands
 
@@ -230,6 +112,10 @@ My bot will automatically log whenever someone joins and leaves the server, alon
 - `Akinator` Play a game of Akinator!
 - `RPS (rock paper scissors)` Play a game of rock paper scissors against the bot. Choose your move by reacting to the bot's response message.
 - `Love [mention | id | username]` Displays how much love a given person has for you (just a random fun command). If a user is not given, it randomly chooses someone else in the server.
+
+# Self-hosting
+
+If you'd like to self-host TundraBot, check out the [installation guide](INSTALL.md).
 
 # Contributing
 
