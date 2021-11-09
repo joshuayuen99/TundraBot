@@ -43,8 +43,8 @@ export default class ReadyHandler extends EventHandler {
                 {
                     name: "slash commands! /help",
                     type: "WATCHING",
-                }
-            ]
+                },
+            ],
         },
         {
             status: "online",
@@ -91,7 +91,6 @@ export default class ReadyHandler extends EventHandler {
 
         this.Player.init();
         await this.GuildsSanityCheck.init();
-        this.CheckVoiceActivities.init();
         this.CacheMembers.init();
         this.CheckPolls.init();
         this.CheckEvents.init();
@@ -101,6 +100,7 @@ export default class ReadyHandler extends EventHandler {
         this.CheckMutes.init();
         this.CheckReminders.init();
         this.CacheInvites.init();
+        this.CheckVoiceActivities.init();
 
         registerInteractiveCommands(this.client).catch((err) => {
             Logger.log(
