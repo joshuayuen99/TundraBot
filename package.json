@@ -81,6 +81,7 @@
     "eslint": "^7.14.0",
     "mocha": "^7.2.0",
     "nodemon": "^2.0.6",
+    "prettier": "^2.4.1",
     "sinon": "^9.2.1",
     "ts-node-dev": "^1.1.6"
   }
