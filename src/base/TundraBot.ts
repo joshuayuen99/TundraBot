@@ -1,4 +1,4 @@
-import { Client, Collection, Intents, Invite, Snowflake } from "discord.js";
+import { Client, Collection, Intents, Snowflake } from "discord.js";
 import { DBGuild, guildInterface } from "../models/Guild";
 import * as fs from "fs";
 import { Command } from "./Command";
@@ -14,7 +14,6 @@ import { DBPoll } from "../models/Poll";
 import { DBReminder } from "../models/Reminder";
 import { DBUser } from "../models/User";
 import { MemberSoundEffects } from "../helpers/loadMemberSoundEffects";
-import { SoundboardQueue } from "../commands/music/soundboard";
 
 import { DiscordTogether } from "discord-together";
 import { CachedInvite } from "../events/inviteCreate";
@@ -31,10 +30,6 @@ export class TundraBot extends Client {
 
     // TODO: add types
     player: Player;
-
-    // Map with guilds playing soundboard effects
-    /** <guildID, SoundboardQueue> */
-    soundboardGuilds: Map<Snowflake, SoundboardQueue>;
 
     // Map with members playing games
     /** <`${message.guild.id}${message.member.id}`, TODO> */
@@ -141,7 +136,6 @@ export class TundraBot extends Client {
         // let spamRule = new Rule("spam", triggers, conditions, effects);
         // client.rules.set("770547365978701834", [spamRule]);
 
-        this.soundboardGuilds = new Map();
         this.gameMembers = new Map();
         this.activeEmojiStealing = new Set();
         // TODO: use event emitting to properly set and remove users
