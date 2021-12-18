@@ -7,6 +7,7 @@ python:
 before_install:
   - pyenv install 3.6.0
   - pyenv global 3.6.0
+  - npm config set python "/opt/pyenv/versions/3.6.0" # where pyenv installs python
 install:
   - npm install
 
