@@ -13,17 +13,20 @@ function setup(): TundraBot {
             path: __dirname + "/../.env",
         });
         if (result.error) {
-            Logger.log("error", `Error loading .env file:\n${result.error.message}`);
+            Logger.log(
+                "error",
+                `Error loading .env file:\n${result.error.message}`
+            );
             exit(1);
         }
-    
+
         const client = new TundraBot();
-    
+
         // Login
         client.login(process.env.DISCORDTOKEN).catch((err) => {
             Logger.log("error", err);
         });
-        
+
         try {
             // Start dashboard server
             new Server(client);
@@ -47,11 +50,17 @@ process.on("unhandledRejection", (err) => {
 process.on("SIGINT", async () => {
     for (const [commandName, command] of client.commands) {
         if (command.shutdown) {
-            await command.shutdown().then(() => {
-                Logger.log("info", `Successfully shut down ${commandName}`);
-            }).catch((err) => {
-                Logger.log("error", `Error shutting down ${commandName}:\n${err}`);
-            });
+            await command
+                .shutdown()
+                .then(() => {
+                    Logger.log("info", `Successfully shut down ${commandName}`);
+                })
+                .catch((err) => {
+                    Logger.log(
+                        "error",
+                        `Error shutting down ${commandName}:\n${err}`
+                    );
+                });
         }
     }
 

@@ -72,10 +72,10 @@ export default class PlayerInit extends StartupHelper {
                             !nowPlayingMessage.deleted &&
                             nowPlayingMessage.deletable
                         ) {
-                            nowPlayingMessage.delete().catch();
+                            nowPlayingMessage.delete().catch((err) => void err);
                         }
                     })
-                    .catch();
+                    .catch((err) => void err);
             })
             .on("botDisconnect", async (queue) => {
                 sendMessage(
