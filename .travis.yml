@@ -1,13 +1,12 @@
-dist: xenial
+dist: bionic
 language: node_js
 node_js:
   - 16
 python:
-  - "3.6"
+  - "3.10"
 before_install:
-  - pyenv install 3.6.0
-  - pyenv global 3.6.0
-  - npm config set python "/opt/pyenv/versions/3.6.0" # where pyenv installs python
+  - pyenv install 3.10.0
+  - pyenv global 3.10.0
 install:
   - npm install
 
