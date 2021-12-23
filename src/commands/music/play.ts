@@ -116,7 +116,7 @@ export default class Play implements Command {
             const selectMenuOptions = searchResult.tracks.map(
                 (track, index) =>
                     ({
-                        label: track.title,
+                        label: track.title.slice(0, 100),
                         description: `${track.author} | [${track.duration}]`,
                         value: index.toString(),
                     } as MessageSelectOptionData)
