@@ -165,13 +165,13 @@ export default class Play implements Command {
             } catch (err) {
                 // No interactions were collected
 
-                if (messageSelectMenuMessage.deletable)
+                if (messageSelectMenuMessage && messageSelectMenuMessage.deletable)
                     messageSelectMenuMessage.delete();
 
                 return;
             }
 
-            if (messageSelectMenuMessage.deletable)
+            if (messageSelectMenuMessage && messageSelectMenuMessage.deletable)
                 messageSelectMenuMessage.delete();
 
             // play user option, or first choice if none selected
@@ -329,7 +329,7 @@ export default class Play implements Command {
                 });
             } catch (err) {
                 // No interactions were collected
-                if (messageSelectMenuMessage.deletable)
+                if (messageSelectMenuMessage && messageSelectMenuMessage.deletable)
                     messageSelectMenuMessage.delete();
 
                 return;
