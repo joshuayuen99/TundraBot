@@ -9,8 +9,8 @@
   "main": "TundraBot.ts",
   "scripts": {
     "start": "node dist/TundraBot.js",
-    "build": "npx tsc && npm run copy-files",
-    "copy-files": "copyfiles -u 1 \"src/dashboard/**/*.pug\" \"src/dashboard/assets/**/*\" dist/",
+    "build": "npx tsc && npm run copy-files && npm run copy-files",
+    "copy-files": "copyfiles \"src/dashboard/**/*.pug\" \"src/dashboard/assets/**/*\" dist/",
     "dev": "ts-node-dev src/TundraBot.ts",
     "test": "mocha"
   },
