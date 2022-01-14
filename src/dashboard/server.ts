@@ -68,8 +68,8 @@ export default class Server {
         https.createServer({
             cert: certificate,
             key: privateKey
-        }, app).listen(443, () => {
-            Logger.log("ready", `The web server is live on port ${443}!`);
+        }, app).listen(process.env.DASHBOARD_PORT, () => {
+            Logger.log("ready", `The web server is live on port ${process.env.DASHBOARD_PORT}!`);
         });
     }
 }
