@@ -66,7 +66,7 @@
     "utf-8-validate": "^5.0.5",
     "youtube-search": "^1.1.6",
     "youtube-sr": "^4.1.7",
-    "ytdl-core": "^4.10.1",
+    "ytdl-core": "^4.11.0",
     "zlib-sync": "^0.1.7"
   },
   "devDependencies": {
