@@ -52,6 +52,16 @@ export default class Play implements Command {
         },
     ];
 
+    ytdlOptions = {
+        filter: "audioonly",
+        fmt: "mp3",
+        highWaterMark: 1 << 62,
+        liveBuffer: 1 << 62,
+        dlChunkSize: 0, // disabling chunking is recommended for a Discord bot
+        bitrate: 128,
+        quality: "lowestaudio",
+    };
+
     async execute(ctx: CommandContext, args: string[]): Promise<void> {
         const song = args.join(" ");
         if (!song) {
@@ -228,7 +238,7 @@ export default class Play implements Command {
             sendReply(ctx.client, { embeds: [embedMsg] }, ctx.msg);
         }
 
-        if (!queue.playing) await queue.play();
+        if (!queue.playing) await queue.play(undefined, { ytdlOptions: this.ytdlOptions });
     }
 
     async slashCommandExecute(ctx: SlashCommandContext): Promise<void> {
@@ -407,6 +417,6 @@ export default class Play implements Command {
             });
         }
 
-        if (!queue.playing) await queue.play();
+        if (!queue.playing) await queue.play(undefined, { ytdlOptions: this.ytdlOptions });
     }
 }
