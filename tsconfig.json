@@ -7,6 +7,7 @@
       "inlineSourceMap": true,
       "lib": ["es2020"],
       "module": "CommonJS",
+      "moduleResolution": "node",
       "noImplicitAny": false,
       "outDir": "./dist",
       "resolveJsonModule": true,
