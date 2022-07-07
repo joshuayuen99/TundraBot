@@ -12,10 +12,10 @@ export function init (): void {
     } as mongoose.ConnectOptions;
 
     // MongoDB Atlas connection
-    // mongoose.connect(`mongodb+srv://${process.env.MONGOOSE_USERNAME}:${process.env.MONGOOSE_PASSWORD}@${process.env.MONGOOSE_URL}/${process.env.MONGOOSE_DB}?retryWrites=true&w=majority`, dbOptions);
+    mongoose.connect(`mongodb+srv://${process.env.MONGOOSE_USERNAME}:${process.env.MONGOOSE_PASSWORD}@${process.env.MONGOOSE_URL}/${process.env.MONGOOSE_DB}?retryWrites=true&w=majority`, dbOptions);
 
     // localhost MongoDB database
-    mongoose.connect(`mongodb://${process.env.MONGOOSE_URL}/${process.env.MONGOOSE_DB}?retryWrites=true&w=majority`, dbOptions);
+    // mongoose.connect(`mongodb://${process.env.MONGOOSE_URL}/${process.env.MONGOOSE_DB}?retryWrites=true&w=majority`, dbOptions);
 
     mongoose.set("useFindAndModify", false);
 
