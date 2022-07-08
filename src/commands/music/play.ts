@@ -238,6 +238,8 @@ export default class Play implements Command {
             sendReply(ctx.client, { embeds: [embedMsg] }, ctx.msg);
         }
 
+        // eslint-disable-next-line
+        // @ts-ignore
         if (!queue.playing) await queue.play(undefined, { ytdlOptions: this.ytdlOptions });
     }
 
@@ -417,6 +419,8 @@ export default class Play implements Command {
             });
         }
 
+        // eslint-disable-next-line
+        // @ts-ignore
         if (!queue.playing) await queue.play(undefined, { ytdlOptions: this.ytdlOptions });
     }
 }
