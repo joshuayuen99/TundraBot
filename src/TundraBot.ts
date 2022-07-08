@@ -47,28 +47,33 @@ process.on("unhandledRejection", (err) => {
 });
 
 // register on shutdown events
-process.on("SIGINT", async () => {
-    for (const [commandName, command] of client.commands) {
-        if (command.shutdown) {
-            await command
-                .shutdown()
-                .then(() => {
-                    Logger.log("info", `Successfully shut down ${commandName}`);
-                })
-                .catch((err) => {
-                    Logger.log(
-                        "error",
-                        `Error shutting down ${commandName}:\n${err}`
-                    );
-                });
+["SIGINT", "SIGTERM", "SIGQUIT"].forEach((signal) =>
+    process.on(signal, async () => {
+        for (const [commandName, command] of client.commands) {
+            if (command.shutdown) {
+                await command
+                    .shutdown()
+                    .then(() => {
+                        Logger.log(
+                            "info",
+                            `Successfully shut down ${commandName}`
+                        );
+                    })
+                    .catch((err) => {
+                        Logger.log(
+                            "error",
+                            `Error shutting down ${commandName}:\n${err}`
+                        );
+                    });
+            }
         }
-    }
 
-    const checkVoiceActivities = new CheckVoiceActivities(client);
+        const checkVoiceActivities = new CheckVoiceActivities(client);
 
-    await checkVoiceActivities.shutdown();
+        await checkVoiceActivities.shutdown();
 
-    process.exit(0);
-});
+        process.exit(0);
+    })
+);
 
 const client = setup();
