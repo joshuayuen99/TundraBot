@@ -28,7 +28,7 @@
     "@babel/core": "^7.14.6",
     "@discord-player/downloader": "^3.0.1",
     "@discord-player/extractor": "^3.0.2",
-    "@discordjs/opus": "^0.7.0",
+    "@discordjs/opus": "^0.8.0",
     "@discordjs/voice": "^0.9.0",
     "aki-api": "^6.0.8",
     "ascii-table": "0.0.9",
