@@ -50,7 +50,7 @@
     "fuse.js": "^6.4.3",
     "grapheme-splitter": "^1.0.4",
     "he": "^1.2.0",
-    "jstransformer-markdown-it": "^2.1.0",
+    "jstransformer-markdown-it": "^3.0.0",
     "libsodium-wrappers": "^0.7.9",
     "method-override": "^3.0.0",
     "moment": "^2.29.1",
