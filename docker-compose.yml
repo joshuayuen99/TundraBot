@@ -6,28 +6,41 @@ services:
     image: tundrabot:latest
     restart: always
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
     env_file:
       - .env
     environment:
-      - MONGOOSE_PROTOCOL=mongodb
-      - MONGOOSE_URL=mongodb:27017
-      - MONGOOSE_USERNAME=root
-      - MONGOOSE_PASSWORD=example
+      MONGOOSE_PROTOCOL: mongodb
+      MONGOOSE_URL: mongodb
+      MONGOOSE_USERNAME: root
+      MONGOOSE_PASSWORD: example
     networks:
       - tundrabot-network
+    ports:
+      - ${DASHBOARD_PORT}:${DASHBOARD_PORT}
   mongodb:
-    image: mongo:4
+    image: mongo:7
     restart: always
+    env_file:
+      - .env
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=example
-      - MONGO_INITDB_DATABASE=TundraBotDev
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: ${MONGOOSE_DB}
     volumes:
       - mongodb_data_container:/data/db
       - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
     networks:
       - tundrabot-network
+    ports:
+      - 27017:27017
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 networks:
   tundrabot-network:
     driver: bridge
