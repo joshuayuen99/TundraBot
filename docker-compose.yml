@@ -1,4 +1,4 @@
-version: "2.0"
+version: "3"
 services:
   tundrabot:
     build:
@@ -7,6 +7,8 @@ services:
     restart: always
     depends_on:
       - mongodb
+    env_file:
+      - .env
     environment:
       - MONGOOSE_PROTOCOL=mongodb
       - MONGOOSE_URL=mongodb:27017
