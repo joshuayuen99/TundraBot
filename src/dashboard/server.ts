@@ -62,14 +62,20 @@ export default class Server {
             res.render("errors/404");
         });
 
-        const certificate = readFileSync(process.env.CERTIFICATE_PATH);
-        const privateKey = readFileSync(process.env.PRIVATE_KEY_PATH);
+        if (!process.env.CERTIFICATE_PATH || !process.env.PRIVATE_KEY_PATH) {
+            app.listen(process.env.DASHBOARD_PORT, () => {
+                Logger.log("ready", `The HTTP web server is live on port ${process.env.DASHBOARD_PORT}!`);
+            })
+        } else {
+            const certificate = readFileSync(process.env.CERTIFICATE_PATH);
+            const privateKey = readFileSync(process.env.PRIVATE_KEY_PATH);
 
-        https.createServer({
-            cert: certificate,
-            key: privateKey
-        }, app).listen(process.env.DASHBOARD_PORT, () => {
-            Logger.log("ready", `The web server is live on port ${process.env.DASHBOARD_PORT}!`);
-        });
+            https.createServer({
+                cert: certificate,
+                key: privateKey
+            }, app).listen(process.env.DASHBOARD_PORT, () => {
+                Logger.log("ready", `The HTTPS web server is live on port ${process.env.DASHBOARD_PORT}!`);
+            });
+        }
     }
 }
