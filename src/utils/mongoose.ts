@@ -11,7 +11,9 @@ export function init (): void {
         useUnifiedTopology: true
     } as mongoose.ConnectOptions;
 
-    mongoose.connect(`${process.env.MONGOOSE_PROTOCOL}://${process.env.MONGOOSE_USERNAME}:${process.env.MONGOOSE_PASSWORD}@${process.env.MONGOOSE_URL}/${process.env.MONGOOSE_DB}?retryWrites=true&w=majority`, dbOptions);
+    const connectionString = `${process.env.MONGOOSE_PROTOCOL}://${process.env.MONGOOSE_USERNAME}:${process.env.MONGOOSE_PASSWORD}@${process.env.MONGOOSE_URL}/${process.env.MONGOOSE_DB}?retryWrites=true&w=majority`;
+    Logger.log("debug", `Mongoose connection string: ${connectionString}`);
+    mongoose.connect(connectionString, dbOptions);
     mongoose.set("useFindAndModify", false);
 
     mongoose.connection.on("connected", () => {
