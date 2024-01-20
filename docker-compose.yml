@@ -4,6 +4,7 @@ services:
     build:
       context: .
     image: tundrabot:latest
+    container_name: tundrabot
     restart: always
     depends_on:
       mongodb:
@@ -21,6 +22,7 @@ services:
       - ${DASHBOARD_PORT}:${DASHBOARD_PORT}
   mongodb:
     image: mongo:7
+    container_name: mongodb
     restart: always
     env_file:
       - .env
