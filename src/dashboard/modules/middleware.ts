@@ -30,10 +30,8 @@ export default class Middleware {
             const key = res.cookies.get("key");
             if (key) {
                 const { authUser, authGuilds } = await req.app.get("sessions").get(key);
-                Logger.log("debug", "CHECKING");
                 if (DASHBOARD_OWNER_FULL_ACCESS && authUser.id === process.env.OWNERID) {
                     // owner has access to everything
-                    Logger.log("debug", "HERE");
 
 
                     res.locals.guilds = [...req.app.get("client").guilds.cache.values()]
