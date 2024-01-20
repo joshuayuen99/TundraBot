@@ -5,7 +5,7 @@ services:
       context: .
     image: tundrabot:latest
     container_name: tundrabot
-    restart: always
+    restart: unless-stopped
     depends_on:
       mongodb:
         condition: service_healthy
@@ -23,7 +23,7 @@ services:
   mongodb:
     image: mongo:7
     container_name: mongodb
-    restart: always
+    restart: unless-stopped
     env_file:
       - .env
     environment:
