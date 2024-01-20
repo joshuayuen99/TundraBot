@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TundraBot } from "../../base/TundraBot";
+import { DASHBOARD_OWNER_FULL_ACCESS } from "../../config";
 import Deps from "../../utils/deps";
+import Logger from "../../utils/logger";
 import Sessions from "./sessions";
 
 export default class Middleware {
@@ -28,8 +30,10 @@ export default class Middleware {
             const key = res.cookies.get("key");
             if (key) {
                 const { authUser, authGuilds } = await req.app.get("sessions").get(key);
-                if (authUser.id === process.env.OWNERID) {
+                Logger.log("debug", "CHECKING");
+                if (DASHBOARD_OWNER_FULL_ACCESS && authUser.id === process.env.OWNERID) {
                     // owner has access to everything
+                    Logger.log("debug", "HERE");
 
 
                     res.locals.guilds = [...req.app.get("client").guilds.cache.values()]

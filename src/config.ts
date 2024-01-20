@@ -12,3 +12,5 @@ export default {
         logChannel: "tundra-logs",
     },
 };
+
+export const DASHBOARD_OWNER_FULL_ACCESS = false;
