@@ -1,20 +1,14 @@
 {
-    "compileOnSave": true,
+    "extends": [
+        "@tsconfig/node-lts/tsconfig.json",
+        "@tsconfig/node-ts/tsconfig.json"
+    ],
     "compilerOptions": {
-      "downlevelIteration": true,
-      "esModuleInterop": true,
-      "allowSyntheticDefaultImports": true,
-      "inlineSourceMap": true,
-      "lib": ["es2020"],
-      "module": "CommonJS",
-      "moduleResolution": "node",
-      "noImplicitAny": false,
-      "outDir": "./dist",
-      "resolveJsonModule": true,
-      "strict": true,
-      "strictNullChecks": false,
-      "target": "ES6",
-      "typeRoots": ["@types"],
+        "module": "preserve",
+        "moduleResolution": "bundler",
+        "noImplicitAny": true,
+        "strict": true,
+        "strictNullChecks": true
     },
-    "include": ["src"]
-  }
+    "include": ["src"],
+}
