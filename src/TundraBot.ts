@@ -8,7 +8,7 @@ process.on("unhandledRejection", (err) => {
 });
 
 // register on shutdown events
-["SIGINT", "SIGTERM", "SIGQUIT"].forEach((signal) =>
+["SIGINT", "SIGTERM", "SIGQUIT"].forEach(signal =>
     process.on(signal, async () => {
         process.exit(0);
     }),
