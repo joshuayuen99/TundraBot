@@ -5,7 +5,7 @@ jobs:
   define-matrix:
     runs-on: ubuntu-24.04
     outputs:
-      node-versions: ${{ steps.node-versions.node-versions }}
+      node-versions: ${{ steps.node-versions.outputs.node-versions }}
     steps:
       - name: Define Node.js versions
         id: node-versions
