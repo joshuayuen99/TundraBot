@@ -1,4 +1,6 @@
-import { Logger } from "./utils/Logger";
+import { Logger } from "./utils/Logger.ts";
+
+Logger.info("Hello, World!");
 
 // if there is an unhandledRejection, log them
 process.on("unhandledRejection", (err) => {
