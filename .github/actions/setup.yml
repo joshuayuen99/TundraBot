@@ -1,0 +1,27 @@
+name: Setup
+description: Set up dependencies
+
+inputs:
+  node-version:
+    description: Node.js version to install
+    required: true
+  pnpm-version:
+    description: pnpm version to install
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout repo
+      uses: actions/checkout@v6
+    - name: Install pnpm ${{ inputs.pnpm-version }}
+      uses: pnpm/action-setup@v5
+      with:
+        version: ${{ inputs.pnpm-version}}
+    - name: Use Node.js ${{ inputs.node-version }}
+      uses: actions/setup-node@v6
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: "pnpm"
+    - name: Install dependencies
+      run: pnpm install
