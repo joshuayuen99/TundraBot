@@ -20,7 +20,10 @@ jobs:
       matrix:
         node-version: ${{ fromJSON(needs.define-matrix.outputs.node-versions )}}
     steps:
-      - uses: ./.github/actions/setup
+      - name: Checkout repo
+        uses: actions/checkout@v6
+      - name: Set up dependencies
+        uses: ./.github/actions/setup
         with:
           node-version: ${{ matrix.node-version }}
           pnpm-version: 10
@@ -35,7 +38,10 @@ jobs:
       matrix:
         node-version: ${{ fromJSON(needs.define-matrix.outputs.node-versions )}}
     steps:
-      - uses: ./.github/actions/setup
+      - name: Checkout repo
+        uses: actions/checkout@v6
+      - name: Set up dependencies
+        uses: ./.github/actions/setup
         with:
           node-version: ${{ matrix.node-version }}
           pnpm-version: 10
