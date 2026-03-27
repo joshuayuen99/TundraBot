@@ -38,7 +38,7 @@ export default defineConfig(
                     },
                 ],
                 "camelcase": "error",
-                "import/extensions": ["error", "always"],
+                "import/extensions": ["error", "ignorePackages"],
                 "import/no-commonjs": "error",
                 "import/order": "error",
                 "no-duplicate-imports": "error",
