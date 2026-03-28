@@ -9,9 +9,12 @@
   "main": "TundraBot.ts",
   "type": "module",
   "scripts": {
-    "start": "node --enable-source-maps ./dist/TundraBot.cjs",
-    "build": "pnpm run lint && pnpm run typecheck && pnpm esbuild ./src/TundraBot.ts --outdir=dist --out-extension:.js=.cjs --bundle --sourcemap --platform=node --format=cjs",
-    "dev": "node --watch ./src/TundraBot.ts",
+    "start": "node --env-file=.env --enable-source-maps ./dist/TundraBot.cjs | pnpm pino-pretty",
+    "build": "pnpm run format && pnpm run lint && pnpm run typecheck && pnpm esbuild ./src/TundraBot.ts --outdir=dist --out-extension:.js=.cjs --bundle --sourcemap --platform=node --format=cjs",
+    "db:generate": "pnpm drizzle-kit generate",
+    "db:migrate": "node --env-file=.env ./src/db/migrate.ts | pnpm pino-pretty",
+    "dev": "node --watch ./src/TundraBot.ts | pnpm pino-pretty",
+    "format": "pnpm prettier . --write",
     "lint": "pnpm eslint ./src --fix",
     "typecheck": "pnpm tsc --noEmit"
   },
