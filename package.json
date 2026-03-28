@@ -21,8 +21,8 @@
   },
   "lint-staged": {
     "*": [
-      "pnpm run format",
-      "pnpm run lint"
+      "pnpm prettier --write",
+      "pnpm eslint --fix"
     ]
   },
   "repository": {
