@@ -2,6 +2,7 @@
 import eslint from "@eslint/js";
 import stylistic from "@stylistic/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
+import eslintConfigPrettier from "eslint-config-prettier/flat";
 import { defineConfig, globalIgnores } from "eslint/config";
 import globals from "globals";
 import importPlugin from "eslint-plugin-import";
@@ -14,6 +15,7 @@ export default defineConfig(
     tseslint.configs.stylistic,
     importPlugin.flatConfigs.recommended,
     importPlugin.flatConfigs.typescript,
+    eslintConfigPrettier,
     [
         {
             languageOptions: {
