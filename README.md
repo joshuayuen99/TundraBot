@@ -18,14 +18,15 @@ To add me to your server click [here](https://discord.com/api/oauth2/authorize?c
 # Table of Contents
 
 <!--ts-->
+
 - [TundraBot](#tundrabot)
 - [Table of Contents](#table-of-contents)
 - [Commands](#commands)
-  - [Info](#info)
-  - [Music](#music)
-  - [Moderation](#moderation)
-  - [Utility](#utility)
-  - [Fun](#fun)
+    - [Info](#info)
+    - [Music](#music)
+    - [Moderation](#moderation)
+    - [Utility](#utility)
+    - [Fun](#fun)
 - [Self-hosting](#self-hosting)
 - [Contributing](#contributing)
 
@@ -81,6 +82,7 @@ Soundboard commands are locked behind a configurable role (`config` command) to 
 - `Restart` Restarts the currently playing song immediately.
 
 ## Moderation
+
 My bot will automatically log whenever someone joins and leaves the server, along with when they first joined. Alongside this feature, my bot will provide logs for server admins whenever commands such as `ban`, `kick`, and `mute` are used, including information such as who issued the command and for what reason. These logs will be posted in a private admin channel that will be created automatically if it doesn't already exist. It will default to disallowing the @everyone role from being able to read it, thus allowing only members with Administrator permission to see it.
 
 - `Undelete [all | id | mention] [-c channel] [-n number of messages]` Displays the user's last `n` (default 10) deleted messages in the server, or the specified channel if one was given. The `all`, `id`, and `mention` options can only be used by members with the `Manage Messages` permission and will display the last `n` deleted messages of the specified member(s) in the server/specified channel.
