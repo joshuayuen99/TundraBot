@@ -23,18 +23,13 @@ export default defineConfig(
                 parser: tsParser,
             },
             rules: {
-                "@stylistic/comma-dangle": ["error", "always-multiline"],
-                "@stylistic/indent": ["error", 4, { "SwitchCase": 1 }],
-                "@stylistic/linebreak-style": ["error", "unix"],
-                "@stylistic/quotes": ["error", "double"],
-                "@stylistic/semi": ["error", "always"],
                 "@stylistic/space-before-function-paren": [
-                    "error", 
+                    "error",
                     {
-                        "anonymous": "always",
-                        "named": "never",
-                        "asyncArrow": "always",
-                        "catch": "always",
+                        anonymous: "always",
+                        named: "never",
+                        asyncArrow: "always",
+                        catch: "always",
                     },
                 ],
                 "camelcase": "error",
@@ -49,13 +44,11 @@ export default defineConfig(
             },
             settings: {
                 "import/resolver": {
-                    "node": true,
-                    "typescript": true,
+                    node: true,
+                    typescript: true,
                 },
-            }
+            },
         },
-        globalIgnores([
-            "dist/",
-        ]),
-    ],
+        globalIgnores(["dist/"]),
+    ]
 );
