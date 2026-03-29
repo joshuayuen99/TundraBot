@@ -30,7 +30,7 @@
     "url": "git+https://github.com/joshuayuen99/tundrabot.git"
   },
   "author": "Joshua Yuen",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/joshuayuen99/tundrabot/issues"
   },
