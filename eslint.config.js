@@ -34,6 +34,13 @@ export default defineConfig(
                         catch: "always",
                     },
                 ],
+                "@typescript-eslint/no-unused-vars": [
+                    "error",
+                    {
+                        argsIgnorePattern: "^_",
+                        varsIgnorePattern: "^_",
+                    },
+                ],
                 "camelcase": "error",
                 "import/extensions": ["error", "ignorePackages"],
                 "import/no-commonjs": "error",
