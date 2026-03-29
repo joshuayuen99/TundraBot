@@ -1,3 +1,7 @@
 import PinoLogger from "pino";
 
-export const Logger = PinoLogger();
+const logLevel = process.env["LOG_LEVEL"] || "info";
+
+export const Logger = PinoLogger({
+    level: logLevel,
+});
