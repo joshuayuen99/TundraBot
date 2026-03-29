@@ -1,5 +1,5 @@
 export class UndefinedEnvironmentVariable extends Error {
-    constructor(message?: string) {
+    constructor(message: string) {
         super(`Environment variable ${message} must be defined.`);
         this.name = "UndefinedEnvironmentVariable";
     }
@@ -7,7 +7,7 @@ export class UndefinedEnvironmentVariable extends Error {
 
 function getEnv(name: string): string {
     const value = process.env[name];
-    if (value === undefined || value == null) {
+    if (value === undefined || value == "") {
         throw new UndefinedEnvironmentVariable(name);
     }
     return value;
@@ -18,3 +18,6 @@ export const DATABASE_PORT = parseInt(getEnv("DATABASE_PORT"));
 export const DATABASE_USER = getEnv("POSTGRES_USER");
 export const DATABASE_PASSWORD = getEnv("POSTGRES_PASSWORD");
 export const DATABASE_DB = getEnv("POSTGRES_DB");
+
+export const BOT_SECRET = getEnv("BOT_SECRET");
+export const DISCORD_TOKEN = getEnv("DISCORD_TOKEN");
