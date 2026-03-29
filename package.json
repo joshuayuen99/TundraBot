@@ -36,6 +36,7 @@
   },
   "homepage": "https://github.com/joshuayuen99/tundrabot#readme",
   "dependencies": {
+    "discord.js": "^14.25.1",
     "drizzle-orm": "^0.45.2",
     "pg": "^8.20.0",
     "pino": "^10.3.1"
