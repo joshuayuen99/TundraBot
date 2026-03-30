@@ -2,15 +2,17 @@ import type {
     ChatInputCommandInteraction,
     PermissionResolvable,
     SlashCommandBuilder,
+    SlashCommandSubcommandsOnlyBuilder,
 } from "discord.js";
 
 export type Category = "Utility";
 
 export interface SlashCommand {
-    readonly slashCommand: SlashCommandBuilder;
+    readonly slashCommand:
+        | SlashCommandBuilder
+        | SlashCommandSubcommandsOnlyBuilder;
     readonly category: Category;
     readonly enabled: boolean;
-    readonly guildOnly: boolean;
     readonly requiresVC: boolean;
     readonly botPermissions: PermissionResolvable[];
     readonly memberPermissions: PermissionResolvable[];
