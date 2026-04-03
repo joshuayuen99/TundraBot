@@ -34,6 +34,7 @@ export default defineConfig(
                         catch: "always",
                     },
                 ],
+                "@typescript-eslint/no-non-null-assertion": "off",
                 "@typescript-eslint/no-unused-vars": [
                     "error",
                     {
