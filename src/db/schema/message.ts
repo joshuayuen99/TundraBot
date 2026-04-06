@@ -1,7 +1,7 @@
 import { pgTable, bigint } from "drizzle-orm/pg-core";
 import { timestamps } from "../columnHelpers.ts";
-import { usersTable } from "./user.ts";
 import { channelsTable } from "./channel.ts";
+import { usersTable } from "./user.ts";
 
 export const messagesTable = pgTable("messages", {
     id: bigint({ mode: "bigint" }).primaryKey(),

@@ -3,9 +3,9 @@ import eslint from "@eslint/js";
 import stylistic from "@stylistic/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 import eslintConfigPrettier from "eslint-config-prettier/flat";
+import importPlugin from "eslint-plugin-import";
 import { defineConfig, globalIgnores } from "eslint/config";
 import globals from "globals";
-import importPlugin from "eslint-plugin-import";
 import tseslint from "typescript-eslint";
 
 export default defineConfig(
@@ -45,7 +45,6 @@ export default defineConfig(
                 "camelcase": "error",
                 "import/extensions": ["error", "ignorePackages"],
                 "import/no-commonjs": "error",
-                "import/order": "error",
                 "no-duplicate-imports": "error",
                 "prefer-const": "error",
             },

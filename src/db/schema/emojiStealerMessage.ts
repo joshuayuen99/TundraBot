@@ -6,8 +6,8 @@ import {
     uuid,
 } from "drizzle-orm/pg-core";
 import { timestamps } from "../columnHelpers.ts";
-import { messagesTable } from "./message.ts";
 import { emojisTable } from "./emoji.ts";
+import { messagesTable } from "./message.ts";
 
 export const emojiStealerMessagesTable = pgTable(
     "emoji_stealer_messages",

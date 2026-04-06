@@ -7,14 +7,14 @@ import {
     type InteractionReplyOptions,
 } from "discord.js";
 import { type EventHandler } from "../base/EventHandler.ts";
-import { Logger } from "../utils/Logger.ts";
 import {
     ensureDMChannelExists,
     ensureGuildChannelExists,
 } from "../db/queries/channelQueries.ts";
-import { type Member } from "../db/schema/member.ts";
 import { insertMember } from "../db/queries/memberQueries.ts";
 import { ensureUserExists } from "../db/queries/userQueries.ts";
+import { type Member } from "../db/schema/member.ts";
+import { Logger } from "../utils/Logger.ts";
 
 export default class InteractionCreateHandler implements EventHandler {
     readonly event = Events.InteractionCreate;

@@ -14,20 +14,20 @@ import {
     User,
 } from "discord.js";
 import { Category, type SlashCommand } from "../../base/Command.ts";
-import { Logger } from "../../utils/Logger.ts";
-import { errorEmbed } from "../../utils/embeds.ts";
-import { MissingEmojiData } from "../../utils/errors.ts";
-import { stripWhitespace } from "../../utils/stringUtils.ts";
-import { type EmojiStealer } from "../../db/schema/emojiStealerMessage.ts";
-import { type Emoji as EmojiRow } from "../../db/schema/emoji.ts";
-import { type Message } from "../../db/schema/message.ts";
+import { DB } from "../../db/db.ts";
+import { insertEmoji } from "../../db/queries/emojiQueries.ts";
 import {
     getEmojiInfoFromMessageId,
     insertEmojiStealerMessage,
 } from "../../db/queries/emojiStealerMessageQueries.ts";
-import { insertEmoji } from "../../db/queries/emojiQueries.ts";
 import { insertGuildMessage } from "../../db/queries/messageQueries.ts";
-import { DB } from "../../db/db.ts";
+import { type Emoji as EmojiRow } from "../../db/schema/emoji.ts";
+import { type EmojiStealer } from "../../db/schema/emojiStealerMessage.ts";
+import { type Message } from "../../db/schema/message.ts";
+import { Logger } from "../../utils/Logger.ts";
+import { errorEmbed } from "../../utils/embeds.ts";
+import { MissingEmojiData } from "../../utils/errors.ts";
+import { stripWhitespace } from "../../utils/stringUtils.ts";
 
 export default class Emoji implements SlashCommand {
     public readonly slashCommand = new SlashCommandBuilder()

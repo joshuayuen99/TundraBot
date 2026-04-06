@@ -1,8 +1,8 @@
 import { type Client } from "discord.js";
-import { Logger } from "../utils/Logger.ts";
 import type { SlashCommand } from "../base/Command.ts";
-import Ping from "../commands/utility/ping.ts";
 import Emoji from "../commands/utility/emoji.ts";
+import Ping from "../commands/utility/ping.ts";
+import { Logger } from "../utils/Logger.ts";
 
 export const slashCommands: SlashCommand[] = [new Emoji(), new Ping()];
 

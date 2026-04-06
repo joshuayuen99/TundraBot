@@ -1,10 +1,10 @@
 import { REST, Routes } from "discord.js";
+import { Logger } from "../src/utils/Logger.ts";
 import {
     BOT_ID,
     DISCORD_TOKEN,
     SUPPORT_SERVER_ID,
 } from "../src/utils/loadEnvironmentVars.ts";
-import { Logger } from "../src/utils/Logger.ts";
 
 const rest = new REST().setToken(DISCORD_TOKEN);
 

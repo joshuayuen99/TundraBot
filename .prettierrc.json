@@ -2,6 +2,7 @@
   "arrowParens": "always",
   "bracketSpacing": true,
   "endOfLine": "lf",
+  "importOrder": ["<THIRD_PARTY_MODULES>", "^[./]"],
   "printWidth": 80,
   "quoteProps": "consistent",
   "semi": true,
@@ -16,5 +17,6 @@
         "tabWidth": 2
       }
     }
-  ]
+  ],
+  "plugins": ["@trivago/prettier-plugin-sort-imports"]
 }

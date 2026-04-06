@@ -1,11 +1,11 @@
 import { defineRelations } from "drizzle-orm";
-import { usersTable } from "./schema/user.ts";
-import { membersTable } from "./schema/member.ts";
-import { emojisTable } from "./schema/emoji.ts";
-import { guildsTable } from "./schema/guild.ts";
 import { channelsTable } from "./schema/channel.ts";
-import { messagesTable } from "./schema/message.ts";
+import { emojisTable } from "./schema/emoji.ts";
 import { emojiStealerMessagesTable } from "./schema/emojiStealerMessage.ts";
+import { guildsTable } from "./schema/guild.ts";
+import { membersTable } from "./schema/member.ts";
+import { messagesTable } from "./schema/message.ts";
+import { usersTable } from "./schema/user.ts";
 
 export const relations = defineRelations(
     {

@@ -1,7 +1,7 @@
 import { DB } from "../db.ts";
 import { messagesTable, type Message } from "../schema/message.ts";
-import { ensureUserExists } from "./userQueries.ts";
 import { ensureGuildChannelExists } from "./channelQueries.ts";
+import { ensureUserExists } from "./userQueries.ts";
 
 export async function insertGuildMessage(message: Message, guildId: bigint) {
     await ensureGuildChannelExists(message.channelId, guildId);

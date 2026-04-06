@@ -1,8 +1,8 @@
 import { Logger } from "../../utils/Logger.ts";
 import { DB } from "../db.ts";
 import { membersTable, type Member } from "../schema/member.ts";
-import { ensureUserExists } from "./userQueries.ts";
 import { ensureGuildExists } from "./guildQueries.ts";
+import { ensureUserExists } from "./userQueries.ts";
 
 export async function insertMember(member: Member) {
     await ensureUserExists(member.userId);

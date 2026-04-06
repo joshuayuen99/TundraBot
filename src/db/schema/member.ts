@@ -1,7 +1,7 @@
 import { pgTable, bigint, primaryKey } from "drizzle-orm/pg-core";
 import { timestamps } from "../columnHelpers.ts";
-import { usersTable } from "./user.ts";
 import { guildsTable } from "./guild.ts";
+import { usersTable } from "./user.ts";
 
 export const membersTable = pgTable(
     "members",

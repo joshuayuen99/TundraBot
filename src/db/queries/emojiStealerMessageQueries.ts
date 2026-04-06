@@ -1,9 +1,9 @@
+import { Logger } from "../../utils/Logger.ts";
 import { DB } from "../db.ts";
 import {
     emojiStealerMessagesTable,
     type EmojiStealer,
 } from "../schema/emojiStealerMessage.ts";
-import { Logger } from "../../utils/Logger.ts";
 
 export async function insertEmojiStealerMessage(
     emojiStealerMessage: EmojiStealer

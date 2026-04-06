@@ -1,8 +1,8 @@
 import type { Client } from "discord.js";
-import { Logger } from "../utils/Logger.ts";
 import type { EventHandler } from "../base/EventHandler.ts";
 import ReadyHandler from "../events/ClientReady.ts";
 import InteractionCreateHandler from "../events/InteractionCreate.ts";
+import { Logger } from "../utils/Logger.ts";
 
 export function loadEventHandlers(client: Client) {
     const eventHandlers: EventHandler[] = [
