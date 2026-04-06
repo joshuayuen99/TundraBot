@@ -7,6 +7,7 @@ import {
     DATABASE_URL,
     DATABASE_USER,
 } from "../utils/loadEnvironmentVars.ts";
+import { relations } from "./relations.ts";
 
 export const pool = new Pool({
     host: DATABASE_URL,
@@ -16,4 +17,8 @@ export const pool = new Pool({
     password: DATABASE_PASSWORD,
 });
 
-export const DB = drizzle({ client: pool, casing: "snake_case" });
+export const DB = drizzle({
+    client: pool,
+    relations: relations,
+    casing: "snake_case",
+});

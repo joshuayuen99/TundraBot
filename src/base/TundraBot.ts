@@ -10,6 +10,7 @@ export class TundraBot {
         this.client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
         this.client.slashCommands = new Collection();
+        this.client.buttonInteractionHandlers = new Collection();
         loadSlashCommands(this.client);
 
         loadEventHandlers(this.client);
@@ -23,5 +24,7 @@ export class TundraBot {
 declare module "discord.js" {
     export interface Client {
         slashCommands: Collection<string, SlashCommand>;
+        /** Collection<customId, SlashCommand> */
+        buttonInteractionHandlers: Collection<string, SlashCommand>;
     }
 }

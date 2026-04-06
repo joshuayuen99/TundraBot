@@ -26,6 +26,6 @@ const rest = new REST().setToken(DISCORD_TOKEN);
             `Successfully deleted all application (/) commands for guild: ${guildId}.`
         );
     } catch (err) {
-        Logger.error(`Error deleting application (/) commands: ${err}`);
+        Logger.error(err, `Error deleting application (/) commands: ${err}`);
     }
 })();

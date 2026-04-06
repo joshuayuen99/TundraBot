@@ -1,11 +1,16 @@
 import type {
+    ButtonInteraction,
     ChatInputCommandInteraction,
     PermissionResolvable,
     SlashCommandBuilder,
     SlashCommandSubcommandsOnlyBuilder,
 } from "discord.js";
 
-export type Category = "Utility";
+const Category = {
+    Utility: "Utility",
+} as const;
+type Category = (typeof Category)[keyof typeof Category];
+export { Category };
 
 export interface SlashCommand {
     readonly slashCommand:
@@ -20,6 +25,8 @@ export interface SlashCommand {
     readonly premiumOnly: boolean;
     /** Milliseconds */
     readonly cooldown: number;
+    readonly buttonInteractionCustomIds: string[];
 
     execute: (interaction: ChatInputCommandInteraction) => Promise<void>;
+    handleButtons?: (interaction: ButtonInteraction) => Promise<void>;
 }

@@ -41,7 +41,7 @@
   "homepage": "https://github.com/joshuayuen99/tundrabot#readme",
   "dependencies": {
     "discord.js": "^14.25.1",
-    "drizzle-orm": "^0.45.2",
+    "drizzle-orm": "1.0.0-beta.20",
     "pg": "^8.20.0",
     "pino": "^10.3.1"
   },
@@ -53,7 +53,7 @@
     "@types/node": "^25.5.0",
     "@types/pg": "^8.20.0",
     "@typescript-eslint/parser": "^8.57.2",
-    "drizzle-kit": "^0.31.10",
+    "drizzle-kit": "1.0.0-beta.20",
     "esbuild": "^0.27.4",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",

@@ -33,6 +33,6 @@ const rest = new REST().setToken(DISCORD_TOKEN);
             `Successfully reloaded ${data.length} application (/) commands.`
         );
     } catch (err) {
-        Logger.error(`Error refreshing application (/) commands: ${err}`);
+        Logger.error(err, `Error refreshing application (/) commands: ${err}`);
     }
 })();

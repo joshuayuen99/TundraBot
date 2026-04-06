@@ -8,13 +8,13 @@ async function main() {
     try {
         await tundraBot.login(DISCORD_TOKEN);
     } catch (err) {
-        Logger.error(`Error logging in: ${err}`);
+        Logger.error(err, `Error logging in: ${err}`);
     }
 }
 
 // if there is an unhandledRejection, log them
 process.on("unhandledRejection", (err) => {
-    Logger.error(`unhandledRejection:\n${err}`);
+    Logger.error(err, `unhandledRejection:\n${err}`);
 });
 
 // register on shutdown events

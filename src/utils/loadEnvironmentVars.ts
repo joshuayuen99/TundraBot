@@ -20,6 +20,6 @@ export const DATABASE_PASSWORD = getEnv("POSTGRES_PASSWORD");
 export const DATABASE_DB = getEnv("POSTGRES_DB");
 
 export const BOT_ID = getEnv("BOT_ID");
-export const BOT_SECRET = getEnv("BOT_SECRET");
+// export const BOT_SECRET = getEnv("BOT_SECRET");
 export const DISCORD_TOKEN = getEnv("DISCORD_TOKEN");
 export const SUPPORT_SERVER_ID = getEnv("SUPPORT_SERVER_ID");
