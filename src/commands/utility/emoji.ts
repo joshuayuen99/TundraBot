@@ -207,7 +207,7 @@ export default class Emoji implements SlashCommand {
                     )
         );
 
-        if (emoji.guild.id === interaction.guildId) {
+        if (emoji.guild.id !== interaction.guildId) {
             const uploadButton = new ButtonBuilder().setCustomId(
                 CustomIds.UploadEmoji
             );
