@@ -11,6 +11,7 @@ import {
     MessageFlags,
     parseEmoji,
     SlashCommandBuilder,
+    User,
 } from "discord.js";
 import { Category, type SlashCommand } from "../../base/Command.ts";
 import { Logger } from "../../utils/Logger.ts";
@@ -89,7 +90,8 @@ export default class Emoji implements SlashCommand {
             const newEmoji = await this.uploadEmojiFromUrl(
                 interaction.guild!,
                 emojiInfo.url,
-                emojiInfo.emojiName
+                emojiInfo.emojiName,
+                interaction.user
             );
 
             Logger.debug(newEmoji.toString());
@@ -237,7 +239,8 @@ export default class Emoji implements SlashCommand {
     private async uploadEmojiFromUrl(
         guild: Guild,
         emojiUrl: string,
-        emojiName: string
+        emojiName: string,
+        stealer: User
     ): Promise<GuildEmoji> {
         const response = await fetch(emojiUrl);
         const emojiData = await response.arrayBuffer();
@@ -245,6 +248,7 @@ export default class Emoji implements SlashCommand {
         const newEmoji = await guild.emojis.create({
             name: emojiName,
             attachment: Buffer.from(emojiData),
+            reason: `Stolen by: ${stealer.username}`,
         });
 
         return newEmoji;
