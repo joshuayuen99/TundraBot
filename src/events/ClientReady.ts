@@ -1,4 +1,5 @@
 import { Client, Events } from "discord.js";
+
 import { type EventHandler } from "../base/EventHandler.ts";
 import { Logger } from "../utils/Logger.ts";
 

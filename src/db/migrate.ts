@@ -1,4 +1,5 @@
 import { migrate } from "drizzle-orm/node-postgres/migrator";
+
 import { Logger } from "../utils/Logger.ts";
 import { pool, DB } from "./db.ts";
 

@@ -13,6 +13,7 @@ import {
     SlashCommandBuilder,
     User,
 } from "discord.js";
+
 import { Category, type SlashCommand } from "../../base/Command.ts";
 import { DB } from "../../db/db.ts";
 import { insertEmoji } from "../../db/queries/emojiQueries.ts";

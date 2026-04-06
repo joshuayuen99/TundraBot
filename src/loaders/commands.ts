@@ -1,4 +1,5 @@
 import { type Client } from "discord.js";
+
 import type { SlashCommand } from "../base/Command.ts";
 import Emoji from "../commands/utility/emoji.ts";
 import Ping from "../commands/utility/ping.ts";

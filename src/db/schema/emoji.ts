@@ -1,4 +1,5 @@
 import { pgTable, varchar, uuid } from "drizzle-orm/pg-core";
+
 import { timestamps } from "../columnHelpers.ts";
 
 export const emojisTable = pgTable("emojis", {

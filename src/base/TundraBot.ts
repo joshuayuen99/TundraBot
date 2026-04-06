@@ -1,4 +1,5 @@
 import { Client, Collection, GatewayIntentBits } from "discord.js";
+
 import { loadSlashCommands } from "../loaders/commands.ts";
 import { loadEventHandlers } from "../loaders/events.ts";
 import type { SlashCommand } from "./Command.ts";

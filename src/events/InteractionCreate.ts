@@ -6,6 +6,7 @@ import {
     type Interaction,
     type InteractionReplyOptions,
 } from "discord.js";
+
 import { type EventHandler } from "../base/EventHandler.ts";
 import {
     ensureDMChannelExists,

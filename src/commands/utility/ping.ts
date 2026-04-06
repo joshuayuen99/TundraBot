@@ -1,4 +1,5 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+
 import { Category, type SlashCommand } from "../../base/Command.ts";
 import { successEmbed } from "../../utils/embeds.ts";
 

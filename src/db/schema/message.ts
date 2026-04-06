@@ -1,4 +1,5 @@
 import { pgTable, bigint } from "drizzle-orm/pg-core";
+
 import { timestamps } from "../columnHelpers.ts";
 import { channelsTable } from "./channel.ts";
 import { usersTable } from "./user.ts";

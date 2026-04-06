@@ -1,4 +1,5 @@
 import { defineConfig } from "drizzle-kit";
+
 import {
     DATABASE_DB,
     DATABASE_PASSWORD,

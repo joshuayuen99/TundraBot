@@ -1,4 +1,5 @@
 import type { Client } from "discord.js";
+
 import type { EventHandler } from "../base/EventHandler.ts";
 import ReadyHandler from "../events/ClientReady.ts";
 import InteractionCreateHandler from "../events/InteractionCreate.ts";

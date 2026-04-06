@@ -1,4 +1,5 @@
 import { REST, Routes } from "discord.js";
+
 import { Logger } from "../src/utils/Logger.ts";
 import {
     BOT_ID,

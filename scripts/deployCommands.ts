@@ -1,4 +1,5 @@
 import { REST, Routes } from "discord.js";
+
 import { slashCommands } from "../src/loaders/commands.ts";
 import { Logger } from "../src/utils/Logger.ts";
 import {

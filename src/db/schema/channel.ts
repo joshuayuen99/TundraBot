@@ -1,4 +1,5 @@
 import { pgTable, bigint } from "drizzle-orm/pg-core";
+
 import { timestamps } from "../columnHelpers.ts";
 
 export const channelsTable = pgTable("channels", {

@@ -1,4 +1,5 @@
 import { defineRelations } from "drizzle-orm";
+
 import { channelsTable } from "./schema/channel.ts";
 import { emojisTable } from "./schema/emoji.ts";
 import { emojiStealerMessagesTable } from "./schema/emojiStealerMessage.ts";

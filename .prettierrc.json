@@ -3,6 +3,7 @@
   "bracketSpacing": true,
   "endOfLine": "lf",
   "importOrder": ["<THIRD_PARTY_MODULES>", "^[./]"],
+  "importOrderSeparation": true,
   "printWidth": 80,
   "quoteProps": "consistent",
   "semi": true,

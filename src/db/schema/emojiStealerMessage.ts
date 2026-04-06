@@ -5,6 +5,7 @@ import {
     varchar,
     uuid,
 } from "drizzle-orm/pg-core";
+
 import { timestamps } from "../columnHelpers.ts";
 import { emojisTable } from "./emoji.ts";
 import { messagesTable } from "./message.ts";
