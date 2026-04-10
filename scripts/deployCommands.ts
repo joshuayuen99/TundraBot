@@ -2,18 +2,14 @@ import { REST, Routes } from "discord.js";
 
 import { slashCommands } from "../src/loaders/commands.ts";
 import { Logger } from "../src/utils/Logger.ts";
-import {
-    BOT_ID,
-    DISCORD_TOKEN,
-    SUPPORT_SERVER_ID,
-} from "../src/utils/loadEnvironmentVars.ts";
+import { Env, getEnv } from "../src/utils/loadEnvironmentVars.ts";
 
-const rest = new REST().setToken(DISCORD_TOKEN);
+const rest = new REST().setToken(getEnv(Env.DISCORD_TOKEN));
 
 (async () => {
     try {
         const argv = process.argv.slice(2);
-        const guildId = argv[0] || SUPPORT_SERVER_ID;
+        const guildId = argv[0] || getEnv(Env.SUPPORT_SERVER_ID);
 
         Logger.info(
             `Started refreshing ${slashCommands.length} application (/) commands.`
@@ -25,7 +21,7 @@ const rest = new REST().setToken(DISCORD_TOKEN);
 
         // The put method is used to fully refresh all commands in the guild with the current set
         const data = (await rest.put(
-            Routes.applicationGuildCommands(BOT_ID, guildId),
+            Routes.applicationGuildCommands(getEnv(Env.BOT_ID), guildId),
             { body: slashCommandBuilders }
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         )) as any[];

@@ -8,13 +8,6 @@ import {
 } from "discord.js";
 
 import { type EventHandler } from "../base/EventHandler.ts";
-import {
-    ensureDMChannelExists,
-    ensureGuildChannelExists,
-} from "../db/queries/channelQueries.ts";
-import { insertMember } from "../db/queries/memberQueries.ts";
-import { ensureUserExists } from "../db/queries/userQueries.ts";
-import { type Member } from "../db/schema/member.ts";
 import { Logger } from "../utils/Logger.ts";
 
 export default class InteractionCreateHandler implements EventHandler {
@@ -105,23 +98,26 @@ export default class InteractionCreateHandler implements EventHandler {
 
     async ensureDBRowsPresent(interaction: Interaction) {
         if (interaction.guildId) {
-            const member: Member = {
-                userId: BigInt(interaction.user.id),
-                guildId: BigInt(interaction.guildId),
-            };
-            await insertMember(member);
+            await interaction.client.memberRepository.createByUserAndGuildIds(
+                BigInt(interaction.user.id),
+                BigInt(interaction.guildId)
+            );
 
             if (interaction.channelId) {
-                await ensureGuildChannelExists(
+                await interaction.client.channelRepository.createGuildChannelById(
                     BigInt(interaction.channelId),
                     BigInt(interaction.guildId)
                 );
             }
         } else {
-            await ensureUserExists(BigInt(interaction.user.id));
+            await interaction.client.userRepository.createById(
+                BigInt(interaction.user.id)
+            );
 
             if (interaction.channelId) {
-                await ensureDMChannelExists(BigInt(interaction.channelId));
+                await interaction.client.channelRepository.createDMChannelById(
+                    BigInt(interaction.channelId)
+                );
             }
         }
     }

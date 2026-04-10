@@ -1,12 +1,12 @@
 import { TundraBot } from "./base/TundraBot.ts";
 import { Logger } from "./utils/Logger.ts";
-import { DISCORD_TOKEN } from "./utils/loadEnvironmentVars.ts";
+import { Env, getEnv } from "./utils/loadEnvironmentVars.ts";
 
 async function main() {
     const tundraBot = new TundraBot();
 
     try {
-        await tundraBot.login(DISCORD_TOKEN);
+        await tundraBot.login(getEnv(Env.DISCORD_TOKEN));
     } catch (err) {
         Logger.error(err, `Error logging in: ${err}`);
     }

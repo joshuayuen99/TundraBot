@@ -1,25 +1,25 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
-import {
-    DATABASE_DB,
-    DATABASE_PASSWORD,
-    DATABASE_PORT,
-    DATABASE_URL,
-    DATABASE_USER,
-} from "../utils/loadEnvironmentVars.ts";
+import { Env, getEnv } from "../utils/loadEnvironmentVars.ts";
 import { relations } from "./relations.ts";
 
-export const pool = new Pool({
-    host: DATABASE_URL,
-    port: DATABASE_PORT,
-    database: DATABASE_DB,
-    user: DATABASE_USER,
-    password: DATABASE_PASSWORD,
-});
+export type DBType = ReturnType<typeof createDbConnection>;
 
-export const DB = drizzle({
-    client: pool,
-    relations: relations,
-    casing: "snake_case",
-});
+export function createDbPool(): Pool {
+    return new Pool({
+        host: getEnv(Env.DATABASE_URL),
+        port: parseInt(getEnv(Env.DATABASE_PORT)),
+        database: getEnv(Env.DATABASE_DB),
+        user: getEnv(Env.DATABASE_USER),
+        password: getEnv(Env.DATABASE_PASSWORD),
+    });
+}
+
+export function createDbConnection(pool: Pool) {
+    return drizzle({
+        client: pool,
+        relations: relations,
+        casing: "snake_case",
+    });
+}

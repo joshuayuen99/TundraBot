@@ -15,16 +15,6 @@ import {
 } from "discord.js";
 
 import { Category, type SlashCommand } from "../../base/Command.ts";
-import { DB } from "../../db/db.ts";
-import { insertEmoji } from "../../db/queries/emojiQueries.ts";
-import {
-    getEmojiInfoFromMessageId,
-    insertEmojiStealerMessage,
-} from "../../db/queries/emojiStealerMessageQueries.ts";
-import { insertGuildMessage } from "../../db/queries/messageQueries.ts";
-import { type Emoji as EmojiRow } from "../../db/schema/emoji.ts";
-import { type EmojiStealer } from "../../db/schema/emojiStealerMessage.ts";
-import { type Message } from "../../db/schema/message.ts";
 import { Logger } from "../../utils/Logger.ts";
 import { errorEmbed } from "../../utils/embeds.ts";
 import { MissingEmojiData } from "../../utils/errors.ts";
@@ -73,9 +63,10 @@ export default class Emoji implements SlashCommand {
     }
 
     private async handleUploadEmojiButton(interaction: ButtonInteraction) {
-        const messageId = BigInt(interaction.message.id);
-        const emojiInfo = await getEmojiInfoFromMessageId(messageId);
-
+        const emojiInfo =
+            await interaction.client.emojiStealerMessageRepository.getEmojiInfoFromMessageId(
+                BigInt(interaction.message.id)
+            );
         if (!emojiInfo) {
             const embed = errorEmbed().setDescription(
                 "Had trouble fetching data for the emoji, please try this command again."
@@ -139,17 +130,17 @@ export default class Emoji implements SlashCommand {
         const emoji = emojiOrMissingEmoji;
 
         // Save emoji to DB
-        const emojiRow: EmojiRow = {
-            url: emoji.imageURL(),
-        };
-        let newEmojiRow = await insertEmoji(emojiRow);
+        let newEmojiRow = await interaction.client.emojiRepository.createByUrl(
+            emoji.imageURL()
+        );
         if (!newEmojiRow) {
             // We didn't return a result when inserting because we canceled the insert due to an already existing row
-            newEmojiRow = (await DB.query.emojisTable.findFirst({
-                where: {
-                    url: emojiRow.url,
-                },
-            }))!;
+            newEmojiRow =
+                (await interaction.client.db.query.emojisTable.findFirst({
+                    where: {
+                        url: emoji.imageURL(),
+                    },
+                }))!;
         }
 
         const container = this.buildEmojiStealerContainer(
@@ -164,22 +155,15 @@ export default class Emoji implements SlashCommand {
         });
         const messageResponse = await interactionResponse.fetch();
 
-        // Save response message to DB
-        const messageRow: Message = {
-            id: BigInt(messageResponse.id),
-            channelId: BigInt(interaction.channelId),
-            authorId: BigInt(interaction.client.user.id),
-        };
-        await insertGuildMessage(messageRow, BigInt(interaction.guildId!));
-
-        // Save emoji stealer relation to DB
-        const emojiStealerMessage: EmojiStealer = {
-            emojiId: newEmojiRow.id!,
-            messageId: BigInt(messageRow.id),
-            guildEmojiId: BigInt(emoji.id),
-            emojiName: emoji.name,
-        };
-        await insertEmojiStealerMessage(emojiStealerMessage);
+        // Save emoji stealer to DB
+        await interaction.client.emojiStealerMessageRepository.createEmojiStealerMessage(
+            BigInt(messageResponse.id),
+            newEmojiRow.id!,
+            BigInt(emoji.id),
+            emoji.name,
+            BigInt(interaction.channelId),
+            BigInt(interaction.guildId!)
+        );
     }
 
     private buildEmojiStealerContainer(
