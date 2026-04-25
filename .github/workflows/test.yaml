@@ -47,3 +47,21 @@ jobs:
           pnpm-version: 10
       - name: Run tsc to typecheck
         run: pnpm typecheck
+
+  test:
+    runs-on: ubuntu-24.04
+    needs: define-matrix
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ${{ fromJSON(needs.define-matrix.outputs.node-versions )}}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+      - name: Set up dependencies
+        uses: ./.github/actions/setup
+        with:
+          node-version: ${{ matrix.node-version }}
+          pnpm-version: 10
+      - name: Run jest tests
+        run: pnpm test:unit

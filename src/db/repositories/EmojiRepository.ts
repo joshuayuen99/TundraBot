@@ -9,6 +9,14 @@ export class EmojiRepository {
         this.db = db;
     }
 
+    async findById(uuid: string) {
+        return this.db.query.emojisTable.findFirst({
+            where: {
+                id: uuid,
+            },
+        });
+    }
+
     protected async create(emoji: Emoji): Promise<Emoji | null> {
         Logger.debug(`Inserting new emoji into DB`);
         const [row] = await this.db
