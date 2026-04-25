@@ -10,7 +10,7 @@ jobs:
       - name: Define Node.js versions
         id: node-versions
         run: |
-          echo 'node-versions=["22.12.0", "latest"]' >> "$GITHUB_OUTPUT"
+          echo 'node-versions=["23.6.0", "latest"]' >> "$GITHUB_OUTPUT"
 
   lint:
     runs-on: ubuntu-24.04
