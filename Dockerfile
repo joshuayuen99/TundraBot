@@ -3,7 +3,7 @@ FROM node:26 AS build
 
 # Python, make, and g++ are needed for node-gyp to compile native modules
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends python3 make g++ \
+    && apt-get install -y --no-install-recommends python3 python-is-python3 make g++ \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app/TundraBot
